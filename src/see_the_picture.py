@@ -25,6 +25,6 @@ def display_image_from_csv(row_number):
                 break
 
 # Example: Display the image from the first row (index 0)
-display_image_from_csv(0)
+display_image_from_csv(3)
 
-display_image_from_csv(100)
+display_image_from_csv(5)
