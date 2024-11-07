@@ -17,6 +17,7 @@ public class Main {
             // Display the X-th image and its label
             int image = 10;
             DataLoader.printData(test_vectors.get(image));
+            //label
             System.out.println(test_labels.get(image)+": "+DataLoader.getLabelName(test_labels.get(image)));
             //DataLoader.printNormalizedData(normalized_test_vectors.get(image));
 

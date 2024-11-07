@@ -27,6 +27,10 @@ public class Layer {
         this.y = new float[input_neurons_number];
     }
 
+    /**
+     * Returns the length of a layer (number of neurons it has)
+     * @return length of a layer
+     */
     public int getLength(){
         return neurons.length;
     }
