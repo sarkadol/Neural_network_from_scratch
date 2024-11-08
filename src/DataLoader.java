@@ -14,6 +14,7 @@ public class DataLoader {
             "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"
     };
 
+
     /**
      * Loads 28x28 pixel images from a CSV file where each line contains 784
      * comma-separated integers representing an image.

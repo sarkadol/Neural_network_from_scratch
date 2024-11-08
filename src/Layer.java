@@ -1,9 +1,12 @@
 package src;
 
+import java.util.Random;
+
 public class Layer {
     public Neuron[] neurons;
     String activation_function;
-    float[] y;
+    float[] y; //number of inputs
+    float[][] weights; //i - number of y from the first layer, j - number of neurons second layer
 
     /**
      * creates a hidden/output layer
@@ -28,7 +31,7 @@ public class Layer {
     }
 
     /**
-     * Returns the length of a layer (number of neurons it has)
+     * Returns the length of a layer (number of neurons in this layer)
      * @return length of a layer
      */
     public int getLength(){
@@ -38,4 +41,18 @@ public class Layer {
     public Neuron getNeuron(int index){
         return null;
     }*/
+
+    /**
+     * Randomly initializes weights for each neuron in this layer
+     */
+    public void InitializeWeights(){
+        Random random = new Random(); //TODO check if it is correct
+        for(int i = 0; i < neurons.length; i++){//each neuron i ...= for(Neuron neuron : neurons)
+            for(int j = 0; j < y.length; j++){//each input j in particular neuron
+                weights[i][j] = random.nextFloat();
+                neurons[i].weights[j] = weights[i][j]; //save this weight into one Neuron
+            }
+        }
+
+    }
 }

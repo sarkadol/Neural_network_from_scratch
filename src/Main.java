@@ -5,6 +5,8 @@ public class Main {
 
     public static void main(String[] args) {
         try {
+            System.out.println("loading the images...");
+
             // load the data
             List<int[]> test_vectors = DataLoader.loadVectors("data/fashion_mnist_test_vectors.csv");
             List<Integer> test_labels = DataLoader.loadLabels("data/fashion_mnist_test_labels.csv");
@@ -13,9 +15,10 @@ public class Main {
 
             List<float[]> normalized_test_vectors = DataLoader.normalizeVectors(test_vectors);
             List<float[]> normalized_train_vectors = DataLoader.normalizeVectors(train_vectors);
+            System.out.println("images loaded...");
 
             // Display the X-th image and its label
-            int image = 10;
+            int image = 11;
             DataLoader.printData(test_vectors.get(image));
             //label
             System.out.println(test_labels.get(image)+": "+DataLoader.getLabelName(test_labels.get(image)));
