@@ -9,7 +9,7 @@ public class NeuronTest {
         neuron.setX(new float[10]);
         neuron.setY(new float[10]);
         neuron.setBias(0);
-        neuron.PrintProperties();
+        neuron.printInfo();
     }
 
 }

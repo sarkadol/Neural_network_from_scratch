@@ -38,11 +38,27 @@ public class Neuron {
         this.y = y;
     }
 
-    public void PrintProperties(){
+    /**
+     * Prints the neuron's bias, weight values, input values, and output values
+     * in a multi-line format.
+     */
+    public void printInfo(){
         System.out.println("Neuron's properties:");
         System.out.println("Bias: " + bias);
         System.out.println("Weights: "+ Arrays.toString(weights));
         System.out.println("X: "+ Arrays.toString(x));
         System.out.println("Y: "+ Arrays.toString(y));
+    }
+    /**
+     * SINGLE LINE.
+     * Prints the bias, the count of weights, the count of inputs, and the count of outputs.
+     * This provides a quick overview without displaying all values in detail.
+     */
+    public void printInfoLine() {
+        System.out.println(
+                "Bias: " + bias + ", " +
+                "Weights count: " + (weights != null ? weights.length : 0) + ", " +
+                "Inputs count: " + (x != null ? x.length : 0) + ", " +
+                "Outputs count: " + (y != null ? y.length : 0));
     }
 }
