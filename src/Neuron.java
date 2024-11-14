@@ -38,6 +38,13 @@ public class Neuron {
         this.y = y;
     }
 
+    public float getInnerPotential() {
+        float innerPotential = bias;
+        innerPotential += Util.scalarProduct(weights, x);
+        return innerPotential;
+    }
+
+
     /**
      * Prints the neuron's bias, weight values, input values, and output values
      * in a multi-line format.
