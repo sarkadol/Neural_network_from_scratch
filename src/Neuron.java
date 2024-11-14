@@ -3,13 +3,17 @@ package src;
 import java.util.Arrays;
 
 public class Neuron {
-    public Neuron() {
-
-    }
     float bias;
     float[] weights; //array of weights w1...w_y
     float[] x;//array of input values from previous layer x1...x_y
     float[] y; //ted atribut, příště metoda
+
+    public Neuron() {
+        this.bias = 0;
+        this.weights = null;
+        this.x = null;
+        this.y = null;
+    }
 
     //getters and setters
     public float[] getWeights() {
