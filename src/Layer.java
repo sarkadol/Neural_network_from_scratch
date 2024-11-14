@@ -8,11 +8,7 @@ public class Layer {
     String activation_function; //TODO acivation function is just here but not used
     float[] x; //number of inputs
     float[] y; //number of inputs
-    // y_output layer1 = y_input layer2
-    // y_output layer2 = y_input layer3
-    //TODO rozlišit y - výsledky předchozí vrstvy a y - output této vrstvy
     float[][] weights; //i - number of y from the first layer, j - number of neurons second layer
-
     /**
      * creates a hidden/output layer
      * @param activation_function specifies activation function used in this layer
@@ -23,13 +19,14 @@ public class Layer {
         this.activation_function = activation_function;
         this.neurons = new Neuron[neurons_number]; // Initialize the neurons array
         for(int i = 0; i < neurons_number; i++) {
+            //float weights = 0;
+            //float bias = 0;
             this.neurons[i] = new Neuron();
-            //weight number for each neuron = input_length needed for initialization
-        }
-
+            }
         int input_length = previous_layer.getOutputLength();
         this.x = new float[input_length]; // number of inputs for this layer
         this.y = new float[this.neurons.length];
+        this.weights = new float[neurons_number][input_length];
     }
 
     /**
@@ -61,20 +58,16 @@ public class Layer {
      * @return length of an array y (inputs)
      */
     public int getInputLength(){
-        if (x !=null) {
-            return x.length;
-        }
-        else{
-            return 0;
-        }
+        if (x !=null) {return x.length;}
+        else{return 0;}
     }
+    /**
+     * Returns the length of an output ( = number of neurons in the previous layer)
+     * @return length of an array y (outputs)
+     */
     public int getOutputLength(){
-        if (y !=null) {
-            return y.length;
-        }
-        else{
-            return 0;
-        }
+        if (y !=null) {return y.length;}
+        else{return 0;}
     }
     /*
     public Neuron getNeuron(int index){
@@ -82,20 +75,35 @@ public class Layer {
     }*/
 
     /**
-     * Randomly initializes weights for each neuron in this layer
+     * Randomly initializes weights and biases for each neuron in this layer
      */
     public void InitializeWeights(){
         Random random = new Random(); //TODO check if it is correct
-        for(int i = 0; i < neurons.length; i++){//each neuron i ...= for(Neuron neuron : neurons)
-            for(int j = 0; j < x.length; j++){//each input j in particular neuron
-                weights[i][j] = random.nextFloat();
-                neurons[i].weights[j] = weights[i][j]; //save this weight into one Neuron
-            }
-        }
+        float range = 0.05f; // Adjust this to control how close to 0 the weights should be
 
+        for(int i = 0; i < neurons.length; i++){//each neuron i ...= for(Neuron neuron : neurons)
+
+            float[] neuron_weights = new float[x.length];// array of weights of one neuron
+            float bias = (random.nextFloat() * 2 - 1) * range;
+            for(int j = 0; j < x.length; j++){//each input j in particular neuron
+                //random.nextFloat() generates a number between 0 and 1.
+                weights[i][j] = (random.nextFloat() * 2 - 1) * range; // Generate weights in the range -0.05 to 0.05
+                //Multiplying by 2 and subtracting 1 shifts the range to [-1,1]
+                //multiplying by range (0.05 in this case) scales it to [-0.05,0.05]
+                neuron_weights[j] = weights[i][j];
+            }
+            neurons[i].setWeights(neuron_weights);
+            neurons[i].setBias(bias);
+            neurons[i].printInfo();
+        }
+        System.out.println("Weights initialized");
     }
 
-
+    /**
+     * Computes the output of this layer, by ...
+     * @param input array of input floats
+     * @return output
+     */
     public float[] computeOutput(float[] input){
         float[] inner_potentials = new float[neurons.length];
         for(int i = 0; i < neurons.length; i++){
