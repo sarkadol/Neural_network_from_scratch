@@ -28,7 +28,7 @@ public class Layer {
         if (layer.getLength()==0) {
             input_length = layer.getInputLength();}
         else {
-            input_length = layer.getLength();}
+            input_length = layer.getLength();}  // I don't get this. Why?
         this.y = new float[input_length]; // number of inputs for this layer
     }
 
@@ -92,7 +92,7 @@ public class Layer {
         if (includeNeurons && neurons != null) {
             for (int i = 0; i < neurons.length; i++) {
                 //System.out.print("Neuron " + (i + 1) + ": ");
-                System.out.printf("Neuron %-4d ", (i + 1));
+                System.out.printf("Neuron %-4d ", (i + 1)); // Why different indexing?
                 neurons[i].printInfoLine();
             }
         }

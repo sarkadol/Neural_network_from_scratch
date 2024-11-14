@@ -11,7 +11,7 @@ public class Util {
      * @param B second matrix (n x p)
      * @return matrix C (m x p)
      */
-    public float[][] MatrixMultiplication(float[][] A, float[][] B)
+    public static float[][] matrixMultiplication(float[][] A, float[][] B)
     {// NOT SURE IF THIS IS CORRECT, CHECK IT :) TODO
         int m = A.length;          // Number of rows in A
         int n = A[0].length;       // Number of columns in A (and rows in B)
@@ -34,14 +34,36 @@ public class Util {
                 }
             }
         }
-        return null; //C
+        return C;
     }
+
+    /**
+     * Performs scalar multiplication of the input vectors.
+     * @param u first vector of size n
+     * @param v second vector of size n
+     * @return the resulting product
+     */
+    public static float scalarProduct(float[] u, float[] v) {
+        float product = 0;
+        int n = u.length;
+
+        // Check if the scalar product is possible
+        if (v.length != n) {
+            throw new IllegalArgumentException("Length of the vectors in scalar product must be the same.");
+        }
+
+        for (int i = 0; i < n; i++) {
+            product += u[i] * v[i];
+        }
+        return product;
+    }
+
 
     /**
      *
      */
 
-    public void ActivationFunction(){
+    public static void ActivationFunction(){
 
 
     }
@@ -52,7 +74,7 @@ public class Util {
      * @param inner_potentials (ksi) vector of inner potentials
      * @return array of probabilities
      */
-    public float[] Softmax(float[] inner_potentials){
+    public static float[] softmax(float[] inner_potentials){
         int n = inner_potentials.length;
         float[] y = new float[n];
         float sum_e = 0;
@@ -74,20 +96,34 @@ public class Util {
      * @param inner_potential weighted sum + bias of a single Neuron
      * @return ReLU
      */
-    public float ReLU(float inner_potential){
+    public static float ReLU(float inner_potential){
         return Math.max(0, inner_potential);
     }
 
-    /** TODO
-     * Calculates the categorical cross entropy loss
-     * @return
+    /**
+     * Transforms a float array to a float array of logarithms
+     * @param inputArray the array to be transformed
+     * @return resulting array of natural logarithms
      */
-    public float CrossEntropy(float[] desired_output,float[] real_output){
-        int p=0; //number of samples in the dataset
-        Neuron[] neurons = null; // neurons
-        //TBD
+    public static float[] mapToNaturalLog(float[] inputArray) {
+        float[] resultArray = new float[inputArray.length];
+        for (int i = 0; i < inputArray.length; i++) {
+            resultArray[i] = (float) Math.log(inputArray[i]);
+        }
+        return resultArray;
+    }
+
+    /** TODO Discuss that I want it to be without p
+     * Calculates the categorical cross entropy loss
+     * @param desired_output the ground truth output
+     * @param real_output the output of the neural network
+     * @return value of cross entropy error function
+     */
+    public static float crossEntropy(float[] desired_output, float[] real_output){
         float result = 0;
-        return result;
+        float[] log_real_output = mapToNaturalLog(real_output);
+
+        return -scalarProduct(log_real_output, desired_output);
     }
 
     /**
@@ -95,7 +131,7 @@ public class Util {
      * @param label the output label in range 0-9
      * @return vector of probabilities where exactly one value is 1, others are 0
      */
-    public float[] labelToVector(int label){
+    public static float[] labelToVector(int label){
         //Fashion MNIST has 10 labels 0-9:
         //"T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
         //"Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"
