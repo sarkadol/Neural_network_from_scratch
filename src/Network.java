@@ -9,6 +9,7 @@ public class Network {
      */
     public Network(Layer[] layers) {
         this.layers = layers;
+        this.initializeWeights();
     }
 
     /**
@@ -26,5 +27,21 @@ public class Network {
     }
     public void BackPropagation(float learning_rate, float[] training_data){
 
+    }
+
+    /**
+     * Initializes weights and biases for all layers in the network, excluding the input layer.
+     */
+    public void initializeWeights(){
+        for (int i = 1; i < layers.length; i++){//skip 0th because it has no weights nor bias
+            layers[i].InitializeWeights();
+        }
+    }
+
+    public void printInfo() {
+        System.out.println("Network Information:");
+        System.out.println("Number of layers: " + layers.length);
+
+        System.out.println("Initialization complete.");
     }
 }

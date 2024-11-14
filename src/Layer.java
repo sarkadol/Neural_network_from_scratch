@@ -8,7 +8,6 @@ public class Layer {
     String activation_function; //TODO acivation function is just here but not used
     float[] x; //number of inputs
     float[] y; //number of inputs
-    float[][] weights; //i - number of y from the first layer, j - number of neurons second layer
     /**
      * creates a hidden/output layer
      * @param activation_function specifies activation function used in this layer
@@ -26,7 +25,6 @@ public class Layer {
         int input_length = previous_layer.getOutputLength();
         this.x = new float[input_length]; // number of inputs for this layer
         this.y = new float[this.neurons.length];
-        this.weights = new float[neurons_number][input_length];
     }
 
     /**
@@ -41,18 +39,6 @@ public class Layer {
         return this.activation_function;
     }
 
-    /**
-     * Returns the length of a layer (number of neurons in this layer)
-     * @return length of a layer
-     */
-    public int getLength(){
-        if (neurons!=null) {
-            return neurons.length;
-        }
-        else{
-            return 0;
-        }
-    }
     /**
      * Returns the length of an input ( = number of neurons in the previous layer)
      * @return length of an array y (inputs)
@@ -87,14 +73,14 @@ public class Layer {
             float bias = (random.nextFloat() * 2 - 1) * range;
             for(int j = 0; j < x.length; j++){//each input j in particular neuron
                 //random.nextFloat() generates a number between 0 and 1.
-                weights[i][j] = (random.nextFloat() * 2 - 1) * range; // Generate weights in the range -0.05 to 0.05
+                neuron_weights[j] = (random.nextFloat() * 2 - 1) * range; // Generate weights in the range -0.05 to 0.05
                 //Multiplying by 2 and subtracting 1 shifts the range to [-1,1]
                 //multiplying by range (0.05 in this case) scales it to [-0.05,0.05]
-                neuron_weights[j] = weights[i][j];
+                //neuron_weights[j] = weights[i][j];
             }
             neurons[i].setWeights(neuron_weights);
             neurons[i].setBias(bias);
-            neurons[i].printInfo();
+            //neurons[i].printInfo();
         }
         System.out.println("Weights initialized");
     }

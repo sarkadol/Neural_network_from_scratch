@@ -43,25 +43,19 @@ public class Main {
         }
         //creating the layers
         Layer layer0 = new Layer(28*28);
-        layer0.printInfo(false);
         Layer layer1 = new Layer(layer0, 16, "relu");
-        layer1.printInfo(false);
         Layer layer2 = new Layer(layer1, 8, "relu");
-        layer2.printInfo(false);
         Layer layer3 = new Layer(layer2, 24, "softmax");
-        layer3.printInfo(false);
-        System.out.println("layers initialized");
-        layer1.InitializeWeights();
-        layer2.InitializeWeights();
-
-        layer1.printInfo(true);
-        layer2.printInfo(true);
-
-
-
         Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
-        Network network = new Network(layers);
-        System.out.println(Arrays.toString(network.ForwardPass(DataLoader.loadVectors("../data/fashion_mnist_train_vectors").get(0))));
 
+        System.out.println("Layers initialized");
+
+        Network network = new Network(layers);
+        //System.out.println(Arrays.toString(network.ForwardPass(DataLoader.loadVectors("../data/fashion_mnist_train_vectors").get(0))));
+
+        layer0.printInfo(false);
+        layer1.printInfo(false);
+        layer2.printInfo(false);
+        layer3.printInfo(false);
     }
 }
