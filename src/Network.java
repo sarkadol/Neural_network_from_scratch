@@ -36,12 +36,14 @@ public class Network {
         for (int i = 1; i < layers.length; i++){//skip 0th because it has no weights nor bias
             layers[i].InitializeWeights();
         }
+        System.out.println("Initialization complete");
     }
 
     public void printInfo() {
-        System.out.println("Network Information:");
-        System.out.println("Number of layers: " + layers.length);
+        System.out.println("---Network - number of layers: " + layers.length);
+        for (Layer layer : layers){
+            layer.printInfoLine();
+        }
 
-        System.out.println("Initialization complete.");
     }
 }

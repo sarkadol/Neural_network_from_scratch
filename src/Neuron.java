@@ -67,6 +67,7 @@ public class Neuron {
      */
     public void printInfoLine() {
         System.out.println(
+                "Neuron "+
                 "Bias: " + bias + ", " +
                 "Weights count: " + (weights != null ? weights.length : 0) + ", " +
                 "Inputs count: " + (x != null ? x.length : 0) + ", " +

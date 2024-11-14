@@ -116,10 +116,10 @@ public class Layer {
      */
     public void printInfo(boolean includeNeurons) {
         System.out.println("---Layer Info:");
-        System.out.println("Activation function: " + activation_function);
-        System.out.println("Number of inputs: " + (x != null ? x.length : 0));
-        System.out.println("Number of neurons: " + (neurons != null ? neurons.length : 0));
-        System.out.println("Number of outputs: " + (y != null ? y.length : 0));
+        System.out.println("activation function: " + activation_function);
+        System.out.println("x count: " + (x != null ? x.length : 0));
+        System.out.println("neurons: " + (neurons != null ? neurons.length : 0));
+        System.out.println("y count: " + (y != null ? y.length : 0));
 
 
         if (includeNeurons && neurons != null) {
@@ -129,5 +129,17 @@ public class Layer {
                 neurons[i].printInfoLine();
             }
         }
+    }
+    /**
+     * SINGLE LINE.
+     * Prints the activation function, count of inputs, neurons, and outputs for a quick overview.
+     */
+    public void printInfoLine() {
+        System.out.println(
+                "-Layer - "+
+                "activation function: " + activation_function + ", " +
+                        "x count: " + (x != null ? x.length : 0) + ", " +
+                        "neurons count: " + (neurons != null ? neurons.length : 0) + ", " +
+                        "y count: " + (y != null ? y.length : 0));
     }
 }

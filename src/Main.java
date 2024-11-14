@@ -47,15 +47,17 @@ public class Main {
         Layer layer2 = new Layer(layer1, 8, "relu");
         Layer layer3 = new Layer(layer2, 24, "softmax");
         Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
-
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
+        network.printInfo();
         //System.out.println(Arrays.toString(network.ForwardPass(DataLoader.loadVectors("../data/fashion_mnist_train_vectors").get(0))));
 
-        layer0.printInfo(false);
-        layer1.printInfo(false);
-        layer2.printInfo(false);
-        layer3.printInfo(false);
+        //layer0.printInfo(false);
+        //layer1.printInfo(false);
+        //layer2.printInfo(false);
+        //layer3.printInfo(false);
+
+
     }
 }
