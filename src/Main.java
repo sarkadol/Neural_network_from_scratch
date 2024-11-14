@@ -47,7 +47,6 @@ public class Main {
         Layer layer2 = new Layer(layer1, 8, "relu");
         Layer layer3 = new Layer(layer2, 10, "softmax");
         Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
-
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
