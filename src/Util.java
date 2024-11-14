@@ -65,7 +65,7 @@ public class Util {
 
     public static float activationFunction(float input, String fun_name){
         switch (fun_name){
-            case "ReLU":
+            case "relu":
                 return ReLU(input);
         }
         throw new IllegalArgumentException("Unknown function: " + fun_name);

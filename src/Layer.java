@@ -91,8 +91,9 @@ public class Layer {
      * @return output
      */
     public float[] computeOutput(float[] input){
-        float[] inner_potentials = new float[neurons.length];
-        for(int i = 0; i < neurons.length; i++){
+        int output_length = getOutputLength();
+        float[] inner_potentials = new float[output_length];
+        for(int i = 0; i < output_length; i++){
             neurons[i].setX(input);
             inner_potentials[i] = neurons[i].getInnerPotential();
         }
@@ -101,8 +102,8 @@ public class Layer {
             output = Util.softmax(inner_potentials);
         }
         else{
-            output = new float[neurons.length];
-            for(int i = 0; i < inner_potentials.length; i++){
+            output = new float[output_length];
+            for(int i = 0; i < output_length; i++){
                 output[i] = Util.activationFunction(inner_potentials[i], activation_function);
             }
         }

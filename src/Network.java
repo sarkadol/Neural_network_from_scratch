@@ -20,7 +20,7 @@ public class Network {
      * @return array representing the network's output (class probabilities)
      */
     public float[] ForwardPass(float[] inputs){
-        for (int i = 0; i < layers.length; i++){
+        for (int i = 1; i < layers.length; i++){    // V tuto chvíli je nepotřebná vstupní vrstva
             inputs = layers[i].computeOutput(inputs);
         }
         return inputs;

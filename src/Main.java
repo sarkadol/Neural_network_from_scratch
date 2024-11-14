@@ -45,13 +45,20 @@ public class Main {
         Layer layer0 = new Layer(28*28);
         Layer layer1 = new Layer(layer0, 16, "relu");
         Layer layer2 = new Layer(layer1, 8, "relu");
-        Layer layer3 = new Layer(layer2, 24, "softmax");
+        Layer layer3 = new Layer(layer2, 10, "softmax");
         Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
 
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
-        //System.out.println(Arrays.toString(network.ForwardPass(DataLoader.loadVectors("../data/fashion_mnist_train_vectors").get(0))));
+        float[] output = network.ForwardPass(DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0));
+        System.out.println("List: " + Arrays.toString(output));
+        System.out.println("List Length: " + output.length);
+        float sum = 0;
+        for (float single_output: output) {
+            sum += single_output;
+        }
+        System.out.println("List sum: " + sum);
 
         layer0.printInfo(false);
         layer1.printInfo(false);
