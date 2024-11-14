@@ -5,10 +5,10 @@ public class Network {
 
     /**
      * Creates a network with layers
-     * @param layers
+     * @param layers Layers of the network
      */
     public Network(Layer[] layers) {
-
+        this.layers = layers;
     }
 
     /**

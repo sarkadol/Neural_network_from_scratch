@@ -99,6 +99,7 @@ public class Layer {
     public float[] computeOutput(float[] input){
         float[] inner_potentials = new float[neurons.length];
         for(int i = 0; i < neurons.length; i++){
+            neurons[i].setX(input);
             inner_potentials[i] = neurons[i].getInnerPotential();
         }
         float[] output;

@@ -23,13 +23,13 @@ public class DataLoader {
      * @return List of int arrays, each array representing an image.
      * @throws IOException if an error occurs during file reading.
      */
-    public static List<int[]> loadVectors(String filePath) throws IOException {
-        List<int[]> images = new ArrayList<>();
+    public static List<float[]> loadVectors(String filePath) throws IOException {
+        List<float[]> images = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
         while ((line = reader.readLine()) != null) {
             String[] pixelStrings = line.split(",");
-            int[] pixels = new int[784];
+            float[] pixels = new float[784];
             for (int i = 0; i < pixelStrings.length; i++) {
                 pixels[i] = Integer.parseInt(pixelStrings[i]);
             }
@@ -62,7 +62,7 @@ public class DataLoader {
      *
      * @param pixels Array of 784 integers representing an image.
      */
-    public static void printData(int[] pixels) {
+    public static void printData(float[] pixels) {
         for (int i = 0; i < 28; i++) {
             for (int j = 0; j < 28; j++) {
                 System.out.printf("%3d ", pixels[i * 28 + j]);
@@ -91,10 +91,10 @@ public class DataLoader {
      * @param images List of int arrays, where each array represents an image.
      * @return List of float arrays, where each array represents a normalized image.
      */
-    public static List<float[]> normalizeVectors(List<int[]> images) {
+    public static List<float[]> normalizeVectors(List<float[]> images) {
         List<float[]> normalizedImages = new ArrayList<>();
 
-        for (int[] image : images) {
+        for (float[] image : images) {
             float[] normalizedImage = new float[784];
             for (int i = 0; i < image.length; i++) {
                 normalizedImage[i] = image[i] / 255.0f; // Normalize by dividing by 255

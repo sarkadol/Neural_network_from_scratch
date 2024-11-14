@@ -1,16 +1,18 @@
 package src;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         try {
 
             if (false) { //just for debugging purposes
                 System.out.println("loading the images...");
 
                 // load the data
-                List<int[]> test_vectors = DataLoader.loadVectors("data/fashion_mnist_test_vectors.csv");
+                List<float[]> test_vectors = DataLoader.loadVectors("data/fashion_mnist_test_vectors.csv");
                 List<Integer> test_labels = DataLoader.loadLabels("data/fashion_mnist_test_labels.csv");
                 //List<int[]> train_vectors = DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv");
                 //List<Integer> train_labels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv");
@@ -48,6 +50,10 @@ public class Main {
         layer2.printInfo(false);
         Layer layer3 = new Layer(layer2, 24, "softmax");
         layer3.printInfo(false);
+
+        Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
+        Network network = new Network(layers);
+        System.out.println(Arrays.toString(network.ForwardPass(DataLoader.loadVectors("../data/fashion_mnist_train_vectors").get(0))));
 
     }
 }
