@@ -32,15 +32,6 @@ public class Main {
                 neuron1.printInfo();
                 neuron1.printInfoLine();
             }
-            //creating the layers
-            Layer layer0 = new Layer(28*28);
-            layer0.printInfo(false);
-            Layer layer1 = new Layer(layer0, 16, "relu");
-            layer1.printInfo(true);
-            Layer layer2 = new Layer(layer1, 8, "relu");
-            layer2.printInfo(false);
-            Layer layer3 = new Layer(layer2, 24, "softmax");
-            layer3.printInfo(true);
 
 
 
@@ -48,5 +39,15 @@ public class Main {
         } catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());
         }
+        //creating the layers
+        Layer layer0 = new Layer(28*28);
+        layer0.printInfo(false);
+        Layer layer1 = new Layer(layer0, 16, "relu");
+        layer1.printInfo(false);
+        Layer layer2 = new Layer(layer1, 8, "relu");
+        layer2.printInfo(false);
+        Layer layer3 = new Layer(layer2, 24, "softmax");
+        layer3.printInfo(false);
+
     }
 }

@@ -19,9 +19,9 @@ public class UtilTest {
         }
 
         float[] pole = {1, 2, 3};
-        float[] result = util.Softmax(pole);
+        //float[] result = util.Softmax(pole);
         System.out.println("softmax 1,2,3");
-        System.out.println(Arrays.toString(result)); //má být cca [0.0900,0.2447,0.6652] pro 1,2,3
+        //System.out.println(Arrays.toString(result)); //má být cca [0.0900,0.2447,0.6652] pro 1,2,3
 
     }
 
