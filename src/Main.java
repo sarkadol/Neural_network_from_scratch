@@ -48,6 +48,14 @@ public class Main {
         layer2.printInfo(false);
         Layer layer3 = new Layer(layer2, 24, "softmax");
         layer3.printInfo(false);
+        System.out.println("layers initialized");
+        layer1.InitializeWeights();
+        layer2.InitializeWeights();
+
+        layer1.printInfo(true);
+        layer2.printInfo(true);
+
+
 
     }
 }
