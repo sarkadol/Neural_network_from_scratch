@@ -113,4 +113,30 @@ public class DataLoader {
         }
     }
 
+
+    /**
+     * Loads 28x28 pixel images from a CSV file where each line contains 784
+     * comma-separated integers representing an image, and normalizes it.
+     *
+     * @param filePath Path to the image data file.
+     * @return List of int arrays, each array representing a normalized image.
+     * @throws IOException if an error occurs during file reading.
+     */
+    public static List<float[]> loadAndNormalizeVectors(String filePath) throws IOException {
+        List<float[]> images = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] pixelStrings = line.split(",");
+            float[] pixels = new float[784];
+            for (int i = 0; i < pixelStrings.length; i++) {
+                //pixels[i] = Integer.parseInt(pixelStrings[i]);
+                pixels[i] = Integer.parseInt(pixelStrings[i]) / 255.0f;
+            }
+            images.add(pixels);
+        }
+        reader.close();
+        return images;
+    }
+
 }

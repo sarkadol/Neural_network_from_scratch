@@ -1,6 +1,7 @@
 package src;
 
 import static src.Util.activationDerivative;
+import static src.Util.crossEntropy;
 
 public class Network {
     public Layer[] layers;
@@ -96,7 +97,7 @@ public class Network {
                 currentGradient = backpropagateHiddenLayer(currentGradient, currentLayer, previousLayer);
             }
         }
-        System.out.println("Backpropagation competed.");
+        System.out.println("Backpropagation competed");
     }
 
     /**

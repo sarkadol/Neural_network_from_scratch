@@ -1,4 +1,5 @@
 package src;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -12,13 +13,10 @@ public class Main {
                 System.out.println("loading the images...");
 
                 // load the data
-                List<float[]> test_vectors = DataLoader.loadVectors("data/fashion_mnist_test_vectors.csv");
+                List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_test_vectors.csv");
                 List<Integer> test_labels = DataLoader.loadLabels("data/fashion_mnist_test_labels.csv");
-                //List<int[]> train_vectors = DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv");
-                //List<Integer> train_labels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv");
-
-                List<float[]> normalized_test_vectors = DataLoader.normalizeVectors(test_vectors);
-                //List<float[]> normalized_train_vectors = DataLoader.normalizeVectors(train_vectors);
+                List<float[]> train_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv");
+                List<Integer> train_labels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv");
                 System.out.println("images loaded...");
 
                 // Display the X-th image and its label
@@ -28,20 +26,15 @@ public class Main {
                 System.out.println(test_labels.get(image)+": "+DataLoader.getLabelName(test_labels.get(image)));
                 //DataLoader.printNormalizedData(normalized_test_vectors.get(image));
 
-
-
                 Neuron neuron1 = new Neuron();
                 neuron1.printInfo();
                 neuron1.printInfoLine();
             }
-
-
-
-
         } catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());
         }
         //creating the layers
+        System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28*28);
         Layer layer1 = new Layer(layer0, 16, "relu");
         Layer layer2 = new Layer(layer1, 8, "relu");
@@ -50,7 +43,8 @@ public class Main {
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
-        if (false) {
+
+        if (true) {
             System.out.println("Loading data...");
             float[] image = DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0);
             float[] output = network.ForwardPass(image);
@@ -63,16 +57,18 @@ public class Main {
                 sum += single_output;
             }
             System.out.println("Predictions sum: " + sum);
-            //network.BackPropagation(0.05F,target,output);
+            network.BackPropagation(0.05F,target,output);
         }
 
-        System.out.println("Loading and normalizing a subset of data...");
-        //List<float[]> trainVectors = loadAndNormalizeData("data/fashion_mnist_train_vectors.csv").subList(0, 5);
-        List<float[]> trainVectors = DataLoader.normalizeVectors(DataLoader.loadVectors("data/fashion_mnist_test_vectors.csv").subList(0, 5));
-        List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, 5);
+        if (false) {
+            System.out.println("Loading and normalizing a subset of data...");
+            List<float[]> trainVectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, 5);
+            List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, 5);
 
-        System.out.println("Training on 5 images for debugging...");
-        trainNetworkDebug(network, trainVectors, trainLabels, 10, 0.05f);
+            System.out.println("Training on 5 images for debugging...");
+            trainNetworkDebug(network, trainVectors, trainLabels, 10, 0.05f);
+
+        }
 
         //layer0.printInfo(false);
         //layer1.printInfo(false);
@@ -80,6 +76,7 @@ public class Main {
         //layer3.printInfo(false);
     }
     private static void trainNetwork(Network network, List<float[]> trainVectors, List<Integer> trainLabels, int epochs, float learningRate) {
+        float[] losses = new float[epochs];
         for (int epoch = 0; epoch < epochs; epoch++) {
             float totalLoss = 0;
             for (int i = 0; i < trainVectors.size(); i++) {
@@ -90,10 +87,13 @@ public class Main {
                 totalLoss += Util.crossEntropy(target, outputs);
             }
             System.out.println("Epoch " + epoch + ": Loss = " + (totalLoss / trainVectors.size()));
+            losses[epoch] = totalLoss / trainVectors.size();
         }
+        System.out.println("losses = " + Arrays.toString(losses));
     }
 
     private static void trainNetworkDebug(Network network, List<float[]> trainVectors, List<Integer> trainLabels, int epochs, float learningRate) {
+        float[] losses = new float[epochs];
         for (int epoch = 0; epoch < epochs; epoch++) {
             float totalLoss = 0;
             for (int i = 0; i < trainVectors.size(); i++) {
@@ -111,7 +111,12 @@ public class Main {
                 System.out.println("Cross-entropy loss: " + Util.crossEntropy(target, outputs));
             }
             System.out.println("Epoch " + epoch + ": Loss = " + (totalLoss / trainVectors.size()));
+            losses[epoch] = totalLoss / trainVectors.size();
+
         }
+        System.out.println("losses in epochs = " + Arrays.toString(losses));
+        //return losses;
+
     }
 
 
