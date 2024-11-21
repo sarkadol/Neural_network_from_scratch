@@ -125,8 +125,8 @@ public class Util {
     public static float crossEntropy(float[] desired_output, float[] real_output){
         float result = 0;
         float[] log_real_output = mapToNaturalLog(real_output);
-
-        return -scalarProduct(log_real_output, desired_output);
+        result = -scalarProduct(log_real_output, desired_output);
+        return result;
     }
 
     /**
@@ -147,5 +147,18 @@ public class Util {
         }
         return vector;
     }
+
+    public static float activationDerivative(float input, String functionName) {
+        switch (functionName.toLowerCase()) {
+            case "relu":
+                return input > 0 ? 1 : 0; // Derivative of ReLU
+            case "softmax":
+                return 1; // Not used for hidden layers in backprop
+            default:
+                throw new IllegalArgumentException("Unknown activation function: " + functionName);
+        }
+    }
+
+
 
 }

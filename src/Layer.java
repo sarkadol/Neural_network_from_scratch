@@ -143,4 +143,34 @@ public class Layer {
                         "neurons count: " + (neurons != null ? neurons.length : 0) + ", " +
                         "y count: " + (y != null ? y.length : 0));
     }
+
+    /**
+     * Updates the weights and biases of neurons using the provided gradients and inputs.
+     *
+     * @param gradients    the gradients for each neuron
+     * @param y       the inputs corresponding to the weights
+     * @param learningRate the rate at which weights and biases are adjusted
+     */
+    public void updateWeights(float[] gradients, float[] y, float learningRate) {
+        // Validate parameters
+        if (gradients == null || y == null) {
+            throw new IllegalArgumentException("Gradients and inputs must not be null.");}
+        if (gradients.length != neurons.length) {
+            throw new IllegalArgumentException("Gradients length must match the number of neurons.");}
+        if (learningRate <= 0) {
+            throw new IllegalArgumentException("Learning rate must be greater than 0.");}
+
+        for (int i = 0; i < neurons.length; i++) { //for each neuron in this layer:
+            float[] weights = neurons[i].getWeights();
+            //update weights
+            for (int j = 0; j < weights.length; j++) { //for each weight of a neuron
+                //weights[j] -= learningRate * gradients[i] * inputs[j];}
+                weights[j] = weights[j] - learningRate * gradients[i] * y[j];}
+
+        // Update bias
+            neurons[i].setBias(neurons[i].getBias() - learningRate * gradients[i]);
+        }
+        System.out.println("Weights updated.");
+    }
+
 }

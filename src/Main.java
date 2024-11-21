@@ -50,18 +50,23 @@ public class Main {
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
-        float[] output = network.ForwardPass(DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0));
-        System.out.println("List: " + Arrays.toString(output));
-        System.out.println("List Length: " + output.length);
+        System.out.println("Loading data...");
+        float[] image = DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0);
+        float[] output = network.ForwardPass(image);
+        float[] target = Util.labelToVector(0);
+        System.out.println("Desired predictions: " + Arrays.toString(target) );
+        System.out.println("Predictions: " + Arrays.toString(output));
+        System.out.println("Predictions Length: " + output.length);
         float sum = 0;
         for (float single_output: output) {
             sum += single_output;
         }
-        System.out.println("List sum: " + sum);
+        System.out.println("Predictions sum: " + sum);
+        network.BackPropagation(0.05F,target,output);
 
-        layer0.printInfo(false);
-        layer1.printInfo(false);
-        layer2.printInfo(false);
-        layer3.printInfo(false);
+        //layer0.printInfo(false);
+        //layer1.printInfo(false);
+        //layer2.printInfo(false);
+        //layer3.printInfo(false);
     }
 }
