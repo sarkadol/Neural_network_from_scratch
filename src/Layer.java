@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class Layer {
     public Neuron[] neurons;
-    String activation_function; //TODO acivation function is just here but not used
+    String activation_function;
     float[] x; //number of inputs
     float[] y; //number of inputs
     /**
@@ -95,7 +95,7 @@ public class Layer {
         float[] inner_potentials = new float[output_length];
         for(int i = 0; i < output_length; i++){
             neurons[i].setX(input);
-            inner_potentials[i] = neurons[i].getInnerPotential();
+            inner_potentials[i] = neurons[i].computeInnerPotential();
         }
         float[] output;
         if (activation_function.equals("softmax")){
@@ -144,31 +144,46 @@ public class Layer {
                         "y count: " + (y != null ? y.length : 0));
     }
 
+    public float[][] outputGradientsToWeightGradients(float[] output_gradients) {
+        if (output_gradients.length != neurons.length) {
+            throw new IllegalArgumentException("Gradients length must match the number of neurons.");}
+        float[][] result = new float[neurons.length][x.length];
+        float weight_independent_part;
+        for (int i = 0; i < neurons.length; i++) { //For each neuron
+            weight_independent_part = output_gradients[i] * Util.activationFunctionDerivative(neurons[i].getInnerPotential(), activation_function);
+            for (int j = 0; j < x.length; j++) {    //For each weight
+                result[i][j] = weight_independent_part * x[j];
+            }
+        }
+        return result;
+    }
+
     /**
      * Updates the weights and biases of neurons using the provided gradients and inputs.
      *
-     * @param gradients    the gradients for each neuron
-     * @param y       the inputs corresponding to the weights
+     * @param weight_gradients    the gradients for each neuron
      * @param learningRate the rate at which weights and biases are adjusted
      */
-    public void updateWeights(float[] gradients, float[] y, float learningRate) {
+    public void updateWeights(float[][] weight_gradients, float learningRate) {
         // Validate parameters
-        if (gradients == null || y == null) {
+        if (weight_gradients == null || y == null) {
             throw new IllegalArgumentException("Gradients and inputs must not be null.");}
-        if (gradients.length != neurons.length) {
-            throw new IllegalArgumentException("Gradients length must match the number of neurons.");}
+        if (weight_gradients[0].length != x.length + 1) {
+            throw new IllegalArgumentException("Gradients width must match the number of weights plus 1 for bias.");}
+        // We can check also the height of gradient matrix, it should be equal to the number of neurons
         if (learningRate <= 0) {
             throw new IllegalArgumentException("Learning rate must be greater than 0.");}
 
         for (int i = 0; i < neurons.length; i++) { //for each neuron in this layer:
             float[] weights = neurons[i].getWeights();
             //update weights
-            for (int j = 0; j < weights.length; j++) { //for each weight of a neuron
+            for (int j = 1; j < weights.length; j++) { //for each weight of a neuron
                 //weights[j] -= learningRate * gradients[i] * inputs[j];}
-                weights[j] = weights[j] - learningRate * gradients[i] * y[j];}
+                weights[j] = weights[j] - learningRate * weight_gradients[i][j];}  // Why is there y
 
         // Update bias
-            neurons[i].setBias(neurons[i].getBias() - learningRate * gradients[i]);
+            neurons[i].setWeights(weights);
+            neurons[i].setBias(neurons[i].getBias() - learningRate * weight_gradients[i][0]);
         }
         System.out.println("Weights updated.");
     }

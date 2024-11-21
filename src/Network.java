@@ -1,9 +1,6 @@
 package src;
 
-import java.util.Arrays;
-
 import static src.Util.activationDerivative;
-import static src.Util.crossEntropy;
 
 public class Network {
     public Layer[] layers;
@@ -33,7 +30,7 @@ public class Network {
         return inputs;
     }
 
-    private float[] computeOutputLayerGradient(float[] predicted, float[] target) {
+    private float[][] computeOutputLayerGradient(float[] predicted, float[] target) {
         float[] gradient = new float[predicted.length];
         for (int i = 0; i < predicted.length; i++) {
             gradient[i] = predicted[i] - target[i];
@@ -41,7 +38,7 @@ public class Network {
         return gradient;
     }
 
-    private float[] backpropagateHiddenLayer(float[] nextLayerGradient, Layer currentLayer, Layer previousLayer) {
+    private float[] backpropagateHiddenLayer(float[][] nextLayerGradient, Layer currentLayer, Layer previousLayer) {
         int currentNeuronCount = currentLayer.neurons.length;
         int previousNeuronCount = previousLayer.neurons.length;
 
@@ -55,7 +52,7 @@ public class Network {
                 currentGradient[i] += weightGradient;
             }
             // Multiply by activation function derivative
-            currentGradient[i] *= activationDerivative(previousLayer.neurons[i].getInnerPotential(), previousLayer.activation_function);
+            currentGradient[i] *= activationDerivative(previousLayer.neurons[i].computeInnerPotential(), previousLayer.activation_function);
         }
         return currentGradient;
     }
@@ -76,11 +73,11 @@ public class Network {
         //System.out.println("cross entropy: "+loss);
 
         // Step 3: Compute gradients for the output layer using softmax + cross-entropy derivative
-        float[] outputLayerGradient = computeOutputLayerGradient(target, outputs);
+        float[][] outputLayerGradient = computeOutputLayerGradient(target, outputs);
         //System.out.println("output layer gradients: "+ Arrays.toString(outputLayerGradient));
 
         // Step 4: Backward pass through hidden layers
-        float[] currentGradient = outputLayerGradient;
+        float[][] currentGradient = outputLayerGradient;
         for (int i = layers.length - 1; i > 0; i--) {
             Layer currentLayer = layers[i];
             Layer previousLayer = layers[i - 1];
@@ -93,7 +90,7 @@ public class Network {
             //System.out.println("Previous layer output size: " + previousLayer.y.length);
             //System.out.println("Neurons in current layer: " + currentLayer.neurons.length);
             //System.out.println("Weights per neuron in current layer: " + currentLayer.neurons[0].getWeights().length);
-            currentLayer.updateWeights(currentGradient, previousLayer.y, learning_rate);
+            currentLayer.updateWeights(currentGradient, learning_rate);
             //currentGradient = backpropagateHiddenLayer(currentGradient, currentLayer, previousLayer);
             if (i > 1) { // Stop backpropagation before reaching the input layer
                 currentGradient = backpropagateHiddenLayer(currentGradient, currentLayer, previousLayer);

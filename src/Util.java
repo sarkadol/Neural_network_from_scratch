@@ -58,10 +58,13 @@ public class Util {
         return product;
     }
 
-
-    /**
-     *
-     */
+    public static float activationFunctionDerivative(float input, String fun_name){
+        switch (fun_name){
+            case "relu":
+                return ReLUDerivative(input);
+        }
+        throw new IllegalArgumentException("Unknown function: " + fun_name);
+    }
 
     public static float activationFunction(float input, String fun_name){
         switch (fun_name){
@@ -101,6 +104,10 @@ public class Util {
      */
     public static float ReLU(float inner_potential){
         return Math.max(0, inner_potential);
+    }
+
+    public static float ReLUDerivative(float inner_potential){
+        return inner_potential > 0 ? 1 : 0;
     }
 
     /**

@@ -6,12 +6,13 @@ public class Neuron {
     float bias;
     float[] weights; //array of weights w1...w_y
     float[] x;//array of input values from previous layer x1...x_y
-    float[] y; //ted atribut, příště metoda
+    float inner_potential = 0;
+    float[] y; //ted atribut, příště metoda; obsolete
 
     public Neuron() {
         this.bias = 0;
         this.weights = null;
-        this.x = null;
+        this.x = null;  // TODO check if this is updated in forward pass
         this.y = null;
     }
 
@@ -25,6 +26,11 @@ public class Neuron {
     public float[] getX() {
         return x;
     }
+
+    public float getInnerPotential() {
+        return inner_potential;
+    }
+
     public float[] getY() {
         return y;
     }
@@ -42,9 +48,10 @@ public class Neuron {
         this.y = y;
     }
 
-    public float getInnerPotential() {
+    public float computeInnerPotential() {
         float innerPotential = bias;
         innerPotential += Util.scalarProduct(weights, x);
+        this.inner_potential = innerPotential;  // Update this neuron's respective attribute
         return innerPotential;
     }
 
