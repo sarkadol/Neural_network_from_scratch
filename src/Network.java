@@ -69,22 +69,22 @@ public class Network {
      * @param outputs list of computed probabilities from forward pass
      */
     public void BackPropagation(float learning_rate, float[] target, float[] outputs){
-        System.out.println("\nBack Propagation");
+        System.out.println("\nBack Propagation...");
 
         // Step 2: Compute the gradient of the loss function at the output layer - see the improvement during training
         float loss = Util.crossEntropy(target, outputs);
-        System.out.println("cross entropy: "+loss);
+        //System.out.println("cross entropy: "+loss);
 
         // Step 3: Compute gradients for the output layer using softmax + cross-entropy derivative
         float[] outputLayerGradient = computeOutputLayerGradient(target, outputs);
-        System.out.println("output layer gradients: "+ Arrays.toString(outputLayerGradient));
+        //System.out.println("output layer gradients: "+ Arrays.toString(outputLayerGradient));
 
         // Step 4: Backward pass through hidden layers
         float[] currentGradient = outputLayerGradient;
         for (int i = layers.length - 1; i > 0; i--) {
             Layer currentLayer = layers[i];
             Layer previousLayer = layers[i - 1];
-            System.out.println("Passing from " + i + " to " + (i-1));
+            //System.out.println("Passing from " + i + " to " + (i-1));
             // Update weights and biases for the current layer
             //System.out.println("Gradients size: " + currentGradient.length);
             //System.out.println("Number of neurons: " + previousLayer.y.length);
