@@ -165,12 +165,14 @@ public class Layer {
             //update weights
             for (int j = 0; j < weights.length; j++) { //for each weight of a neuron
                 //weights[j] -= learningRate * gradients[i] * inputs[j];}
-                weights[j] = weights[j] - learningRate * gradients[i] * y[j];}
-
-        // Update bias
+                weights[j] = weights[j] - learningRate * gradients[i] * y[j];
+            }
+            // update weights
+            neurons[i].setWeights(weights);
+            // Update bias
             neurons[i].setBias(neurons[i].getBias() - learningRate * gradients[i]);
         }
-        System.out.println("Weights updated.");
+        System.out.println("Weights updated");
     }
 
 }

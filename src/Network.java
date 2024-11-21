@@ -33,6 +33,12 @@ public class Network {
         return inputs;
     }
 
+    /**
+     *
+     * @param predicted
+     * @param target
+     * @return
+     */
     private float[] computeOutputLayerGradient(float[] predicted, float[] target) {
         float[] gradient = new float[predicted.length];
         for (int i = 0; i < predicted.length; i++) {
@@ -41,6 +47,13 @@ public class Network {
         return gradient;
     }
 
+    /**
+     *
+     * @param nextLayerGradient
+     * @param currentLayer
+     * @param previousLayer
+     * @return
+     */
     private float[] backpropagateHiddenLayer(float[] nextLayerGradient, Layer currentLayer, Layer previousLayer) {
         int currentNeuronCount = currentLayer.neurons.length;
         int previousNeuronCount = previousLayer.neurons.length;
@@ -99,7 +112,7 @@ public class Network {
                 currentGradient = backpropagateHiddenLayer(currentGradient, currentLayer, previousLayer);
             }
         }
-        System.out.println("Backpropagation competed.");
+        System.out.println("Backpropagation competed");
     }
 
     /**
