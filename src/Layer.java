@@ -35,8 +35,8 @@ public class Layer {
         this.y = new float[input_neurons_number];
     }
 
-    public String getActivation_function(){
-        return this.activation_function;
+    public void setX(float[] x) {
+        this.x = x;
     }
 
     /**
@@ -86,7 +86,8 @@ public class Layer {
     }
 
     /**
-     * Computes the output of this layer, by ...
+     * Computes the output of this layer, by applying the layer's activation function to the neuron's inner potentials
+     * obtained from the input array and the weights
      * @param input array of input floats
      * @return output
      */
@@ -107,6 +108,7 @@ public class Layer {
                 output[i] = Util.activationFunction(inner_potentials[i], activation_function);
             }
         }
+        y = output; // Save respective attribute
         return output;
     }
 
@@ -144,6 +146,13 @@ public class Layer {
                         "y count: " + (y != null ? y.length : 0));
     }
 
+    /**
+     * Converts gradient of outputs of neurons to gradient of their weights; works for layers with a simple activation
+     * function, that takes as an argument only the inner potential of the neuron
+     * @param output_gradients an array of output gradients of each neuron in the layer
+     * @return a matrix of gradients of weights where on each row there are all the weights of a single neuron
+     * in the layer
+     */
     public float[][] outputGradientsToWeightGradients(float[] output_gradients) {
         if (output_gradients.length != neurons.length) {
             throw new IllegalArgumentException("Gradients length must match the number of neurons.");}

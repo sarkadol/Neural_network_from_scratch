@@ -1,7 +1,5 @@
 package src;
 
-import java.util.Arrays;
-
 public class Util {
 
     /**
@@ -58,6 +56,13 @@ public class Util {
         return product;
     }
 
+    /**
+     * Switch for the derivative of a simple activation function that takes only one inner potential as an argument
+     * see {@link Util#activationFunction(float, String)}
+     * @param input the input to the activation function derivative - inner potential
+     * @param fun_name the name of the function, we want to use the derivative of
+     * @return the result of applying the desired activation function derivative to the input
+     */
     public static float activationFunctionDerivative(float input, String fun_name){
         switch (fun_name){
             case "relu":
@@ -66,6 +71,12 @@ public class Util {
         throw new IllegalArgumentException("Unknown function: " + fun_name);
     }
 
+    /**
+     * Switch for the simple activation function that takes only one inner potential as an argument
+     * @param input the input to the activation function - inner potential
+     * @param fun_name the name of the function, we want to use
+     * @return the result of applying the desired activation function to the input
+     */
     public static float activationFunction(float input, String fun_name){
         switch (fun_name){
             case "relu":
@@ -123,7 +134,7 @@ public class Util {
         return resultArray;
     }
 
-    /** TODO Discuss that I want it to be without p
+    /**
      * Calculates the categorical cross entropy loss
      * @param desired_output the ground truth output
      * @param real_output the output of the neural network

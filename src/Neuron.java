@@ -48,6 +48,11 @@ public class Neuron {
         this.y = y;
     }
 
+    /**
+     * Computes the neuron's inner potential from the given input and weights, then it stores the inner potential
+     * for later use
+     * @return the computed inner potential
+     */
     public float computeInnerPotential() {
         float innerPotential = bias;
         innerPotential += Util.scalarProduct(weights, x);

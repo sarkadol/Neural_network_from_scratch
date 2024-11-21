@@ -1,7 +1,6 @@
 package src;
 
 import static src.Util.activationDerivative;
-import static src.Util.crossEntropy;
 
 public class Network {
     public Layer[] layers;
@@ -25,6 +24,7 @@ public class Network {
     public float[] ForwardPass(float[] inputs){
         System.out.println("Forward pass proceeding...");
         for (int i = 1; i < layers.length; i++){    // V tuto chvíli je nepotřebná vstupní vrstva
+            layers[i].setX(inputs); // Save respective attributes
             inputs = layers[i].computeOutput(inputs);
         }
         System.out.println("Forward pass complete.");
@@ -62,7 +62,7 @@ public class Network {
 
     /**
      *
-     * @param learning_rate
+     * @param learning_rate the rate by which the weights change
      * @param target list of desired probabilities given by label
      * @param outputs list of computed probabilities from forward pass
      */
