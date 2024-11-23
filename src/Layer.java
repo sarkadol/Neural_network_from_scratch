@@ -149,6 +149,9 @@ public class Layer {
     /**
      * Converts gradient of outputs of neurons to gradient of their weights; works for layers with a simple activation
      * function, that takes as an argument only the inner potential of the neuron
+     *
+     * (∂E_k / ∂w_ji) = (∂E_k / ∂y_j) * σ'_j(ξ_j) * y_i
+     *
      * @param output_gradients an array of output gradients of each neuron in the layer
      * @return a matrix of gradients of weights where on each row there are all the weights of a single neuron
      * in the layer
@@ -160,14 +163,14 @@ public class Layer {
 
         float[][] weight_gradients = new float[neurons.length][x.length+1];// plus bias
         float weight_independent_part;
-        for (int i = 0; i < neurons.length; i++) { //For each neuron
-            weight_independent_part = output_gradients[i] * Util.activationFunctionDerivative(neurons[i].getInnerPotential(), activation_function);
+        for (int j = 0; j < neurons.length; j++) { //For each neuron
+            weight_independent_part = output_gradients[j] * Util.activationFunctionDerivative(neurons[j].getInnerPotential(), activation_function);
             //TODO this activation function derivative doesnt work with softmax
-            for (int j = 0; j < x.length; j++) {    //For each weight
-                weight_gradients[i][j] = weight_independent_part * x[j];
+            for (int i = 0; i < x.length; i++) {    //For each weight
+                weight_gradients[j][i] = weight_independent_part * x[i];
             }
             // Add bias gradient as the last element
-            weight_gradients[i][x.length] = weight_independent_part;
+            weight_gradients[j][x.length] = weight_independent_part;
         }
         return weight_gradients;
     }
@@ -175,22 +178,18 @@ public class Layer {
 
 
     /**
-     * Updates the weights and biases of neurons using the provided gradients and inputs.
+     * Updates the weights and biases of neurons using the weight gradients.
      *
-     * @param weight_gradients    the gradients for each neuron
+     * @param weight_gradients    the gradients for each neuron including bias gradient
      * @param learningRate the rate at which weights and biases are adjusted
      */
     public void updateWeights(float[][] weight_gradients, float learningRate) {
         // Validate parameters
-        //System.out.println(weight_gradients[0].length);
-        //System.out.println(x.length + 1);
         if (weight_gradients == null || y == null) {
             throw new IllegalArgumentException("Gradients and inputs must not be null.");}
         if (weight_gradients[0].length != x.length + 1) {
             throw new IllegalArgumentException("Gradients width must match the number of weights plus 1 for bias. \n" +
-                            "Gradients width: " + weight_gradients[0].length + ", Expected width: " + (x.length + 1)
-            );}
-        // We can check also the height of gradient matrix, it should be equal to the number of neurons
+                            "Gradients width: " + weight_gradients[0].length + ", Expected width: " + (x.length + 1));}
         if (learningRate <= 0) {
             throw new IllegalArgumentException("Learning rate must be greater than 0.");}
 
@@ -198,10 +197,8 @@ public class Layer {
             float[] weights = neurons[i].getWeights();
             //update weights
             for (int j = 1; j < weights.length; j++) { //for each weight of a neuron except the first one which is bias
-                //weights[j] -= learningRate * gradients[i] * inputs[j];}
                 //change every weight according to its gradient
                 weights[j] = weights[j] - learningRate * weight_gradients[i][j];}
-
             // Update weights
             neurons[i].setWeights(weights);
             // Update bias
