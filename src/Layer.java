@@ -155,19 +155,24 @@ public class Layer {
      */
     public float[][] computeWeightGradients(float[] output_gradients) {
         if (output_gradients.length != neurons.length) {
-            throw new IllegalArgumentException("Gradients length must match the number of neurons.");}
+            throw new IllegalArgumentException("Gradients length must match the number of neurons. \n"+
+                    "Gradients length: " + output_gradients.length + ", Neurons length: " + neurons.length);}
 
-        float[][] weight_gradients = new float[neurons.length][x.length];
+        float[][] weight_gradients = new float[neurons.length][x.length+1];// plus bias
         float weight_independent_part;
         for (int i = 0; i < neurons.length; i++) { //For each neuron
             weight_independent_part = output_gradients[i] * Util.activationFunctionDerivative(neurons[i].getInnerPotential(), activation_function);
-            //TODO this activastion function derivative doesnt work with softmax
+            //TODO this activation function derivative doesnt work with softmax
             for (int j = 0; j < x.length; j++) {    //For each weight
                 weight_gradients[i][j] = weight_independent_part * x[j];
             }
+            // Add bias gradient as the last element
+            weight_gradients[i][x.length] = weight_independent_part;
         }
         return weight_gradients;
     }
+
+
 
     /**
      * Updates the weights and biases of neurons using the provided gradients and inputs.
@@ -177,10 +182,14 @@ public class Layer {
      */
     public void updateWeights(float[][] weight_gradients, float learningRate) {
         // Validate parameters
+        //System.out.println(weight_gradients[0].length);
+        //System.out.println(x.length + 1);
         if (weight_gradients == null || y == null) {
             throw new IllegalArgumentException("Gradients and inputs must not be null.");}
         if (weight_gradients[0].length != x.length + 1) {
-            throw new IllegalArgumentException("Gradients width must match the number of weights plus 1 for bias.");}
+            throw new IllegalArgumentException("Gradients width must match the number of weights plus 1 for bias. \n" +
+                            "Gradients width: " + weight_gradients[0].length + ", Expected width: " + (x.length + 1)
+            );}
         // We can check also the height of gradient matrix, it should be equal to the number of neurons
         if (learningRate <= 0) {
             throw new IllegalArgumentException("Learning rate must be greater than 0.");}

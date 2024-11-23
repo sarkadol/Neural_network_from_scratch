@@ -39,6 +39,27 @@ public class Network {
         return gradient;
     }
 
+    private float[][] computeOutputLayerWeightGradients(float[] target, float[] outputs, float[] previous_layer_outputs) {
+        // Step 1: Compute the gradient of the loss function with respect to the outputs
+        float[] output_layer_gradient = computeOutputLayerGradient(target, outputs);
+
+        // Step 2: Compute weight gradients for the output layer
+        int num_neurons = outputs.length; // Number of neurons in the output layer
+        int num_inputs = previous_layer_outputs.length; // Number of inputs to the output layer
+
+        float[][] weight_gradients = new float[num_neurons][num_inputs + 1]; // +1 for bias gradient
+        for (int i = 0; i < num_neurons; i++) { // For each neuron in the output layer
+            for (int j = 0; j < num_inputs; j++) { // For each weight of that neuron
+                weight_gradients[i][j] = output_layer_gradient[i] * previous_layer_outputs[j];
+            }
+            // Compute the bias gradient as the last element in the row
+            weight_gradients[i][num_inputs] = output_layer_gradient[i];
+        }
+
+        return weight_gradients;
+    }
+
+
     private float[] backpropagateHiddenLayer(float[] nextLayerGradient, Layer currentLayer, Layer previousLayer) {
         int currentNeuronCount = currentLayer.neurons.length;
         int previousNeuronCount = previousLayer.neurons.length;
@@ -67,40 +88,46 @@ public class Network {
      * @param outputs list of computed probabilities from forward pass
      */
     public void BackPropagation(float learning_rate, float[] target, float[] outputs){
-        System.out.println("\nBack Propagation...");
+        System.out.println("\nBackpropagation...");
 
         // Step 2: Compute the gradient of the loss function at the output layer - see the improvement during training
         float loss = Util.crossEntropy(target, outputs);
         //System.out.println("cross entropy: "+loss);
 
         // Step 3: Compute gradients for the output layer using softmax + cross-entropy derivative
-        float[] output_layer_gradient = computeOutputLayerGradient(target, outputs);
-        //System.out.println("output layer gradients: "+ Arrays.toString(output_layer_gradient));
+        Layer outputLayer = layers[layers.length - 1];
+        Layer hiddenLayerBeforeOutput = layers[layers.length - 2];
+        outputLayer.printInfoLine();
+        hiddenLayerBeforeOutput.printInfoLine();
+
+        float[] output_layer_gradients = computeOutputLayerGradient(target, outputs);
+        //System.out.println("output layer gradients: "+ Arrays.toString(output_layer_gradients));
+        float[][] output_layer_weight_gradients = computeOutputLayerWeightGradients(target, outputs, hiddenLayerBeforeOutput.y);
+        outputLayer.updateWeights(output_layer_weight_gradients, learning_rate);
+        System.out.println("Backpropagation of the output layer completed");
 
         // Step 4: Backward pass through hidden layers
-        float[] current_gradient = output_layer_gradient;
-        for (int i = layers.length - 1; i > 0; i--) {
+        float[] current_output_gradient = output_layer_gradients;
+        current_output_gradient = backpropagateHiddenLayer(current_output_gradient, outputLayer, hiddenLayerBeforeOutput);
+
+        for (int i = layers.length - 2; i > 0; i--) {
             Layer currentLayer = layers[i];
             Layer previousLayer = layers[i - 1];
-            System.out.println("Passing from " + i + " to " + (i-1));
-            layers[i].printInfoLine();
-            layers[i-1].printInfoLine();
-            // Update weights and biases for the current layer
-            //System.out.println("Gradients size: " + current_gradient.length);
-            //System.out.println("Number of neurons: " + previousLayer.y.length);
 
-            //System.out.println("Gradients size: " + current_gradient.length);
-            //System.out.println("Previous layer output size: " + previousLayer.y.length);
-            //System.out.println("Neurons in current layer: " + currentLayer.neurons.length);
-            //System.out.println("Weights per neuron in current layer: " + currentLayer.neurons[0].getWeights().length);
-            float[][] current_weight_gradient = currentLayer.computeWeightGradients(current_gradient);
-            currentLayer.updateWeights(current_weight_gradient, learning_rate);
-            //current_gradient = backpropagateHiddenLayer(current_gradient, currentLayer, previousLayer);
+            System.out.println("Passing from " + i + " to " + (i-1));
+            currentLayer.printInfoLine();
+            previousLayer.printInfoLine();
+
+            float[][] current_weight_gradients = currentLayer.computeWeightGradients(current_output_gradient);
+            System.out.println("output gradients "+current_output_gradient.length);
+            System.out.println("weight gradients "+current_weight_gradients.length);
+            currentLayer.updateWeights(current_weight_gradients, learning_rate);
+            //current_output_gradient = backpropagateHiddenLayer(current_output_gradient, currentLayer, previousLayer);
             if (i > 1) { // Stop backpropagation before reaching the input layer
-                current_gradient = backpropagateHiddenLayer(current_gradient, currentLayer, previousLayer);
+                current_output_gradient = backpropagateHiddenLayer(current_output_gradient, currentLayer, previousLayer);
             }
         }
-        System.out.println("Backpropagation competed");
+        System.out.println("Backpropagation completed");
     }
 
     /**
