@@ -153,18 +153,20 @@ public class Layer {
      * @return a matrix of gradients of weights where on each row there are all the weights of a single neuron
      * in the layer
      */
-    public float[][] outputGradientsToWeightGradients(float[] output_gradients) {
+    public float[][] computeWeightGradients(float[] output_gradients) {
         if (output_gradients.length != neurons.length) {
             throw new IllegalArgumentException("Gradients length must match the number of neurons.");}
-        float[][] result = new float[neurons.length][x.length];
+
+        float[][] weight_gradients = new float[neurons.length][x.length];
         float weight_independent_part;
         for (int i = 0; i < neurons.length; i++) { //For each neuron
             weight_independent_part = output_gradients[i] * Util.activationFunctionDerivative(neurons[i].getInnerPotential(), activation_function);
+            //TODO this activastion function derivative doesnt work with softmax
             for (int j = 0; j < x.length; j++) {    //For each weight
-                result[i][j] = weight_independent_part * x[j];
+                weight_gradients[i][j] = weight_independent_part * x[j];
             }
         }
-        return result;
+        return weight_gradients;
     }
 
     /**
@@ -186,15 +188,17 @@ public class Layer {
         for (int i = 0; i < neurons.length; i++) { //for each neuron in this layer:
             float[] weights = neurons[i].getWeights();
             //update weights
-            for (int j = 1; j < weights.length; j++) { //for each weight of a neuron
+            for (int j = 1; j < weights.length; j++) { //for each weight of a neuron except the first one which is bias
                 //weights[j] -= learningRate * gradients[i] * inputs[j];}
-                weights[j] = weights[j] - learningRate * weight_gradients[i][j];}  // Why is there y
+                //change every weight according to its gradient
+                weights[j] = weights[j] - learningRate * weight_gradients[i][j];}
 
-        // Update bias
+            // Update weights
             neurons[i].setWeights(weights);
+            // Update bias
             neurons[i].setBias(neurons[i].getBias() - learningRate * weight_gradients[i][0]);
         }
-        System.out.println("Weights updated");
+        System.out.println("Weights and bias updated");
     }
 
 }

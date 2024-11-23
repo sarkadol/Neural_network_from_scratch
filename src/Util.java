@@ -67,6 +67,8 @@ public class Util {
         switch (fun_name){
             case "relu":
                 return ReLUDerivative(input);
+            //case "softmax":
+                //return SoftmaxDerivative();
         }
         throw new IllegalArgumentException("Unknown function: " + fun_name);
     }
@@ -74,15 +76,15 @@ public class Util {
     /**
      * Switch for the simple activation function that takes only one inner potential as an argument
      * @param input the input to the activation function - inner potential
-     * @param fun_name the name of the function, we want to use
+     * @param function_name the name of the function, we want to use
      * @return the result of applying the desired activation function to the input
      */
-    public static float activationFunction(float input, String fun_name){
-        switch (fun_name){
+    public static float activationFunction(float input, String function_name){
+        switch (function_name){
             case "relu":
                 return ReLU(input);
         }
-        throw new IllegalArgumentException("Unknown function: " + fun_name);
+        throw new IllegalArgumentException("Unknown function: " + function_name);
     }
 
     /**
@@ -119,6 +121,10 @@ public class Util {
 
     public static float ReLUDerivative(float inner_potential){
         return inner_potential > 0 ? 1 : 0;
+    }
+
+    public static float SoftmaxDerivative(float inner_potential){
+        return 0;
     }
 
     /**
