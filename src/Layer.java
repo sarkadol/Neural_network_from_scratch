@@ -1,5 +1,6 @@
 package src;
 
+import java.util.Arrays;
 import java.util.Random;
 
 
@@ -61,22 +62,41 @@ public class Layer {
     }*/
 
     /**
-     * Randomly initializes weights and biases for each neuron in this layer
+     * Randomly initializes weights and biases for each neuron in this layer.
+     * The method uses different initialization strategies depending on the activation function of the layer:
+     * - He Initialization for ReLU activation to prevent exploding/vanishing gradients during training.
+     * - Xavier (Glorot) Initialization for softmax, tanh, or linear activations to maintain variance consistency.
+     *
      */
     public void InitializeWeights(){
         Random random = new Random(); //TODO check if it is correct
-        float range = 0.05f; // Adjust this to control how close to 0 the weights should be
+        boolean useReLU = false;
 
-        for(int i = 0; i < neurons.length; i++){//each neuron i ...= for(Neuron neuron : neurons)
+        if(activation_function.equals("relu")){  // If the activation function is relu, it uses different intialization
+            useReLU = true;}
+
+        float range = 0.05f; // Adjust this to control how close to 0 the weights should be
+        float stddev = 0;
+
+        if (useReLU) {
+            stddev = (float) Math.sqrt(2.0 / x.length); // He Initialization for ReLU
+        } else {
+            range = (float) Math.sqrt(6.0 / (x.length + neurons.length)); // Xavier (Glorot) Initialization for softmax/tanh/linear
+        }
+
+        for(int i = 0; i < neurons.length; i++){//each neuron i
 
             float[] neuron_weights = new float[x.length];// array of weights of one neuron
-            float bias = (random.nextFloat() * 2 - 1) * range;
+            float bias = 0; // Initialize bias to zero (or small constant)
+            //float bias = (random.nextFloat() * 2 - 1) * range;
+
             for(int j = 0; j < x.length; j++){//each input j in particular neuron
-                //random.nextFloat() generates a number between 0 and 1.
-                neuron_weights[j] = (random.nextFloat() * 2 - 1) * range; // Generate weights in the range -0.05 to 0.05
-                //Multiplying by 2 and subtracting 1 shifts the range to [-1,1]
-                //multiplying by range (0.05 in this case) scales it to [-0.05,0.05]
-                //neuron_weights[j] = weights[i][j];
+                // Generate weights based on the chosen method
+                if (useReLU) {
+                    neuron_weights[j] = (float) (random.nextGaussian() * stddev);
+                } else {
+                    neuron_weights[j] = random.nextFloat() * 2 * range - range;
+                }
             }
             neurons[i].setWeights(neuron_weights);
             neurons[i].setBias(bias);
@@ -97,15 +117,22 @@ public class Layer {
         for(int i = 0; i < output_length; i++){
             neurons[i].setX(input);
             inner_potentials[i] = neurons[i].computeInnerPotential();
+            System.out.println("Neuron " + i + " inner potential: " + inner_potentials[i]);
+
         }
         float[] output;
         if (activation_function.equals("softmax")){
+            System.out.println("Inner potentials before softmax: " + Arrays.toString(inner_potentials));
             output = Util.softmax(inner_potentials);
+            System.out.println("Outputs after softmax: " + Arrays.toString(output));
+
         }
         else{
             output = new float[output_length];
             for(int i = 0; i < output_length; i++){
                 output[i] = Util.activationFunction(inner_potentials[i], activation_function);
+                System.out.println("Activation output for neuron " + i + ": " + output[i]);
+
             }
         }
         y = output; // Save respective attribute
