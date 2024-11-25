@@ -148,7 +148,7 @@ public class Network {
         //hiddenLayerBeforeOutput.printInfoLine();
         System.out.println("Passing from output layer (" + (layers.length - 1)+ ") to " + (layers.length - 2));
 
-        float[] output_layer_gradients = computeOutputLayerGradients(target, outputs); //gradient wrt y
+        float[] output_layer_gradients = computeOutputLayerGradients(outputs,target); //gradient wrt y
         float[][] output_layer_weight_gradients = computeOutputLayerWeightGradients(output_layer_gradients, hiddenLayerBeforeOutput.y); //gradient wrt w
 
         // Clip gradients for output layer
