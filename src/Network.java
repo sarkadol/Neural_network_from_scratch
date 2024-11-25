@@ -25,12 +25,12 @@ public class Network {
      */
     public float[] ForwardPass(float[] inputs){
         System.out.println("Forward pass proceeding...");
-        System.out.println("Inputs before forward pass:" + Arrays.toString(inputs));
+        //System.out.println("Inputs before forward pass:" + Arrays.toString(inputs));
         for (int i = 1; i < layers.length; i++){    // V tuto chvíli je nepotřebná vstupní vrstva
             layers[i].setX(inputs); // Save respective attributes
             inputs = layers[i].computeOutput(inputs);
         }
-        System.out.println("Inputs after forward pass:" + Arrays.toString(inputs));
+        //System.out.println("Inputs after forward pass:" + Arrays.toString(inputs));
 
         System.out.println("Forward pass complete.");
         return inputs;
@@ -152,7 +152,7 @@ public class Network {
         float[][] output_layer_weight_gradients = computeOutputLayerWeightGradients(output_layer_gradients, hiddenLayerBeforeOutput.y); //gradient wrt w
 
         // Clip gradients for output layer
-        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, 1.0f); // Example clip value
+        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, 5.0f); // Example clip value
         //TODO how to choose a good clip value? recommended 1-5, but possible up to 20... - HYPERPARAMETER
 
         outputLayer.updateWeights(output_layer_weight_gradients, learning_rate);
@@ -172,7 +172,7 @@ public class Network {
             float[][] current_weight_gradients = currentLayer.computeWeightGradients(current_output_gradient);
 
             // Clip gradients for the current hidden layer
-            current_weight_gradients = clipGradients(current_weight_gradients, 1.0f); // Example clip value
+            current_weight_gradients = clipGradients(current_weight_gradients, 5.0f); // Example clip value
 
             currentLayer.updateWeights(current_weight_gradients, learning_rate);
             // Stop backpropagation before reaching the input layer

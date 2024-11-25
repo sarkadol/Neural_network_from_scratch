@@ -117,21 +117,21 @@ public class Layer {
         for(int i = 0; i < output_length; i++){
             neurons[i].setX(input);
             inner_potentials[i] = neurons[i].computeInnerPotential();
-            System.out.println("Neuron " + i + " inner potential: " + inner_potentials[i]);
+            //System.out.println("Neuron " + i + " inner potential: " + inner_potentials[i]);
 
         }
         float[] output;
         if (activation_function.equals("softmax")){
-            System.out.println("Inner potentials before softmax: " + Arrays.toString(inner_potentials));
+            //System.out.println("Inner potentials before softmax: " + Arrays.toString(inner_potentials));
             output = Util.softmax(inner_potentials);
-            System.out.println("Outputs after softmax: " + Arrays.toString(output));
+            //System.out.println("Outputs after softmax: " + Arrays.toString(output));
 
         }
         else{
             output = new float[output_length];
             for(int i = 0; i < output_length; i++){
                 output[i] = Util.activationFunction(inner_potentials[i], activation_function);
-                System.out.println("Activation output for neuron " + i + ": " + output[i]);
+                //System.out.println("Activation output for neuron " + i + ": " + output[i]);
 
             }
         }
@@ -192,7 +192,6 @@ public class Layer {
         float weight_independent_part;
         for (int j = 0; j < neurons.length; j++) { //For each neuron
             weight_independent_part = output_gradients[j] * Util.activationFunctionDerivative(neurons[j].getInnerPotential(), activation_function);
-            //TODO this activation function derivative doesnt work with softmax
             for (int i = 0; i < x.length; i++) {    //For each weight
                 weight_gradients[j][i] = weight_independent_part * x[i];
             }

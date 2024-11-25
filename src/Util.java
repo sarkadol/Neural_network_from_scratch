@@ -88,7 +88,7 @@ public class Util {
     }
 
     /**
-     * Softmax activation function.
+     * Softmax activation function. Prevents overflowing by subtracting maximum value.
      * Converts a vector of K real numbers into probability distributions of K possible outcomes
      * @param inner_potentials (ksi) vector of inner potentials
      * @return array of probabilities
@@ -98,12 +98,22 @@ public class Util {
         float[] y = new float[n];
         float sum_e = 0;
 
-        // Step 1: Calculate the exponential of each element and sum them up
+        float max_potential = Float.NEGATIVE_INFINITY;
+
+        // Step 1: Find the maximum value in the array to stabilize computations
+        for (float potential : inner_potentials) {
+            if (potential > max_potential) {
+                max_potential = potential;
+            }
+        }
+        System.out.println("max potential "+ max_potential);
+
+        // Step 2: Calculate the exponential of each element and sum them up
         for (int i = 0; i < n; i++) {
-            y[i] = (float) Math.exp(inner_potentials[i]); //e^ksi_i
+            y[i] = (float) Math.exp(inner_potentials[i]- max_potential); //e^ksi_i - max_potential
             sum_e += y[i];
         }
-        // Step 2: Divide each exponential by the sum to get probabilities
+        // Step 3: Divide each exponential by the sum to get probabilities
         for (int i = 0; i < n; i++) {
             y[i] /= sum_e;
         }
@@ -147,9 +157,25 @@ public class Util {
      * @return value of cross entropy error function
      */
     public static float crossEntropy(float[] desired_output, float[] real_output){
+        //log(0) is not defined!
+        //log(1) = 0
+        float epsilon = 1e-8f; // Small constant to avoid log(0)
         float result = 0;
-        float[] log_real_output = mapToNaturalLog(real_output);
+
+        // Step 1: Clip the real_output to avoid 0 or 1 probabilities
+        float[] clipped_real_output = new float[real_output.length];
+        for (int i = 0; i < real_output.length; i++) {
+            clipped_real_output[i] = Math.max(epsilon, Math.min(1 - epsilon, real_output[i]));
+            //Ensure all probabilities are within the range [epsilon,1−epsilon]
+            //if real output is 0, it sets it very close to 0
+            //if real output is 1, it sets it slightly less than one
+        }
+        // Step 2: Compute the logarithm of the clipped probabilities
+        float[] log_real_output = mapToNaturalLog(clipped_real_output);
+
+        // Step 3: Compute the cross-entropy as the negative scalar product
         result = -scalarProduct(log_real_output, desired_output);
+
         return result;
     }
 
