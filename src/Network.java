@@ -123,7 +123,6 @@ public class Network {
         Layer hiddenLayerBeforeOutput = layers[layers.length - 2];
         //outputLayer.printInfoLine();
         //hiddenLayerBeforeOutput.printInfoLine();
-        System.out.println("Passing from output layer (" + (layers.length - 1)+ ") to " + (layers.length - 2));
 
         float[] output_layer_gradients = computeOutputLayerGradients(outputs,target); //gradient wrt y
         float[][] output_layer_weight_gradients = outputLayer.computeOutputLayerWeightGradients(output_layer_gradients); //gradient wrt w
@@ -138,25 +137,24 @@ public class Network {
         // Step 4: Backward pass through hidden layers
         // HIDDEN LAYERS
 
-        float[] current_output_gradient = backpropagateHiddenLayer(output_layer_gradients, outputLayer, hiddenLayerBeforeOutput);
-        for (int i = layers.length - 2; i > 0; i--) {
+        float[] current_output_gradient = output_layer_gradients;
+        for (int i = layers.length - 1; i > 1; i--) {
             Layer currentLayer = layers[i];
             Layer previousLayer = layers[i - 1];
+            float[] previous_output_gradient = backpropagateHiddenLayer(current_output_gradient, currentLayer, previousLayer);
 
             System.out.println("Passing from " + i + " to " + (i-1));
             //currentLayer.printInfoLine();
             //previousLayer.printInfoLine();
 
-            float[][] current_weight_gradients = currentLayer.computeWeightGradients(current_output_gradient);
+            float[][] previous_weight_gradients = previousLayer.computeWeightGradients(previous_output_gradient);
 
             // Clip gradients for the current hidden layer
-            current_weight_gradients = clipGradients(current_weight_gradients, 5.0f); // Example clip value
+            previous_weight_gradients = clipGradients(previous_weight_gradients, 5.0f); // Example clip value
 
-            currentLayer.updateWeights(current_weight_gradients, learning_rate);
-            // Stop backpropagation before reaching the input layer
-            if (i > 1) {
-                current_output_gradient = backpropagateHiddenLayer(current_output_gradient, currentLayer, previousLayer);
-            }
+            previousLayer.updateWeights(previous_weight_gradients, learning_rate);
+
+            current_output_gradient = previous_output_gradient;
         }
         System.out.println("Backpropagation completed");
     }
