@@ -45,34 +45,11 @@ public class Network {
     private float[] computeOutputLayerGradients(float[] predicted, float[] target) {
         float[] gradients = new float[predicted.length];
         for (int i = 0; i < predicted.length; i++) {
-            gradients[i] = predicted[i] - target[i];
+            gradients[i] = predicted[i] - target[i];    // TODO check if it is truly true; it is the same as partial
+                                                        // derivative wrt. outputs and we are computing partial
+                                                        // derivative wrt. inner potentials
         }
         return gradients;
-    }
-
-    /**
-     * Computes the weight gradients of the output layer (including bias gradient)
-     *
-     * For the formula, see the {@link #computeOutputLayerWeightGradients(float[], float[])} computeWeightGradients}
-     *
-     * @param output_layer_gradients array of output layer gradients
-     * @param previous_layer_outputs array of previous layer outputs
-     * @return weight gradients for output layer including bias gradient
-     */
-    private float[][] computeOutputLayerWeightGradients(float[] output_layer_gradients, float[] previous_layer_outputs) {
-        int num_neurons = output_layer_gradients.length; // Number of neurons in the output layer
-        int num_inputs = previous_layer_outputs.length; // Number of inputs to the output layer
-
-        float[][] weight_gradients = new float[num_neurons][num_inputs + 1]; // +1 for bias gradient
-        for (int i = 0; i < num_neurons; i++) { // For each neuron in the output layer
-            for (int j = 0; j < num_inputs; j++) { // For each weight of that neuron
-                weight_gradients[i][j] = output_layer_gradients[i] * previous_layer_outputs[j];
-            }
-            // Compute the bias gradient as the last element in the row
-            weight_gradients[i][num_inputs] = output_layer_gradients[i];
-        }
-
-        return weight_gradients;
     }
 
     /**
@@ -149,7 +126,7 @@ public class Network {
         System.out.println("Passing from output layer (" + (layers.length - 1)+ ") to " + (layers.length - 2));
 
         float[] output_layer_gradients = computeOutputLayerGradients(outputs,target); //gradient wrt y
-        float[][] output_layer_weight_gradients = computeOutputLayerWeightGradients(output_layer_gradients, hiddenLayerBeforeOutput.y); //gradient wrt w
+        float[][] output_layer_weight_gradients = outputLayer.computeOutputLayerWeightGradients(output_layer_gradients); //gradient wrt w
 
         // Clip gradients for output layer
         output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, 5.0f); // Example clip value
@@ -160,6 +137,7 @@ public class Network {
 
         // Step 4: Backward pass through hidden layers
         // HIDDEN LAYERS
+
         float[] current_output_gradient = backpropagateHiddenLayer(output_layer_gradients, outputLayer, hiddenLayerBeforeOutput);
         for (int i = layers.length - 2; i > 0; i--) {
             Layer currentLayer = layers[i];
