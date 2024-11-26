@@ -7,12 +7,12 @@ public class Neuron {
     float[] weights; //array of weights w1...w_y
     float[] x;//array of input values from previous layer x1...x_y
     float inner_potential = 0;
-    float[] y; //ted atribut, příště metoda; obsolete
+    float[] y;
 
     public Neuron() {
         this.bias = 0;
         this.weights = null;
-        this.x = null;  // TODO check if this is updated in forward pass
+        this.x = null;
         this.y = null;
     }
 
@@ -51,6 +51,7 @@ public class Neuron {
     /**
      * Computes the neuron's inner potential from the given input and weights, then it stores the inner potential
      * for later use
+     * Formula: ξ_j = ∑ w_ji . y_i
      * @return the computed inner potential
      */
     public float computeInnerPotential() {
@@ -59,7 +60,6 @@ public class Neuron {
         this.inner_potential = innerPotential;  // Update this neuron's respective attribute
         return innerPotential;
     }
-
 
     /**
      * Prints the neuron's bias, weight values, input values, and output values

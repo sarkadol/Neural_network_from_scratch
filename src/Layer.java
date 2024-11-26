@@ -65,8 +65,10 @@ public class Layer {
      * Randomly initializes weights and biases for each neuron in this layer.
      * The method uses different initialization strategies depending on the activation function of the layer:
      * - He Initialization for ReLU activation to prevent exploding/vanishing gradients during training.
-     * - Xavier (Glorot) Initialization for softmax, tanh, or linear activations to maintain variance consistency.
-     *
+     * - He formula: w_i ∈ 𝒩(0, 2 / n)
+     * - Glorot (Xavier) Initialization for softmax, tanh, or linear activations to maintain variance consistency.
+     * - Glorot fomula: w_i ∼ 𝒩(0, 2 / (m + n)),
+     *   where n is the number of inputs to the layer, m is the number of neurons in the layer above
      */
     public void InitializeWeights(){
         Random random = new Random(); //TODO check if it is correct
@@ -108,69 +110,30 @@ public class Layer {
     /**
      * Computes the output of this layer, by applying the layer's activation function to the neuron's inner potentials
      * obtained from the input array and the weights
+     * Formula: y_j = σ_j(ξ_j)
      * @param input array of input floats
      * @return output
      */
     public float[] computeOutput(float[] input){
         int output_length = getOutputLength();
         float[] inner_potentials = new float[output_length];
-        for(int i = 0; i < output_length; i++){
-            neurons[i].setX(input);
-            inner_potentials[i] = neurons[i].computeInnerPotential();
-            //System.out.println("Neuron " + i + " inner potential: " + inner_potentials[i]);
-
+        for(int j = 0; j < output_length; j++){ //for each neuron j
+            neurons[j].setX(input);
+            inner_potentials[j] = neurons[j].computeInnerPotential();
+            //System.out.println("Neuron " + j + " inner potential: " + inner_potentials[j]);
         }
-        float[] output;
-        if (activation_function.equals("softmax")){
-            //System.out.println("Inner potentials before softmax: " + Arrays.toString(inner_potentials));
-            output = Util.softmax(inner_potentials);
-            //System.out.println("Outputs after softmax: " + Arrays.toString(output));
-
+        float[] outputs;
+        if (activation_function.equals("softmax")){ //softmax is a special case
+            outputs = Util.softmax(inner_potentials);
         }
         else{
-            output = new float[output_length];
-            for(int i = 0; i < output_length; i++){
-                output[i] = Util.activationFunction(inner_potentials[i], activation_function);
-                //System.out.println("Activation output for neuron " + i + ": " + output[i]);
-
+            outputs = new float[output_length];
+            for(int j = 0; j < output_length; j++){ //for each neuron j
+                outputs[j] = Util.activationFunction(inner_potentials[j], activation_function);
             }
         }
-        y = output; // Save respective attribute
-        return output;
-    }
-
-    /**
-     * Prints information about the layer
-     * @param includeNeurons if true, then it prints also property of each neuron in this layer,
-     *                       see {@link Neuron#printInfoLine()}
-     */
-    public void printInfo(boolean includeNeurons) {
-        System.out.println("---Layer Info:");
-        System.out.println("activation function: " + activation_function);
-        System.out.println("x count: " + (x != null ? x.length : 0));
-        System.out.println("neurons: " + (neurons != null ? neurons.length : 0));
-        System.out.println("y count: " + (y != null ? y.length : 0));
-
-
-        if (includeNeurons && neurons != null) {
-            for (int i = 0; i < neurons.length; i++) {
-                //System.out.print("Neuron " + (i + 1) + ": ");
-                System.out.printf("Neuron %-4d ", (i + 1)); // Why different indexing?
-                neurons[i].printInfoLine();
-            }
-        }
-    }
-    /**
-     * SINGLE LINE.
-     * Prints the activation function, count of inputs, neurons, and outputs for a quick overview.
-     */
-    public void printInfoLine() {
-        System.out.println(
-                "-Layer - "+
-                "activation function: " + activation_function + ", " +
-                        "x count: " + (x != null ? x.length : 0) + ", " +
-                        "neurons count: " + (neurons != null ? neurons.length : 0) + ", " +
-                        "y count: " + (y != null ? y.length : 0));
+        y = outputs; // Save neurons' outputs
+        return outputs;
     }
 
     /**
@@ -198,15 +161,16 @@ public class Layer {
             // Add bias gradient as the last element
             weight_gradients[j][x.length] = weight_independent_part;
         }
+        //System.out.println("Weight gradients: " + Arrays.deepToString(weight_gradients));
         return weight_gradients;
     }
-
-
 
     /**
      * Updates the weights and biases of neurons using the weight gradients.
      *
-     * @param weight_gradients    the gradients for each neuron including bias gradient
+     * Formula: Δw_ji = -ε · ∂E / ∂w_ji
+     *
+     * @param weight_gradients the gradients for each neuron including bias gradient
      * @param learningRate the rate at which weights and biases are adjusted
      */
     public void updateWeights(float[][] weight_gradients, float learningRate) {
@@ -225,12 +189,48 @@ public class Layer {
             for (int j = 1; j < weights.length; j++) { //for each weight of a neuron except the first one which is bias
                 //change every weight according to its gradient
                 weights[j] = weights[j] - learningRate * weight_gradients[i][j];}
+
             // Update weights
             neurons[i].setWeights(weights);
             // Update bias
             neurons[i].setBias(neurons[i].getBias() - learningRate * weight_gradients[i][0]);
         }
         System.out.println("Weights and bias updated");
+    }
+
+    /**
+     * Prints information about the layer
+     * @param includeNeurons if true, then it prints also property of each neuron in this layer,
+     *                       see {@link Neuron#printInfoLine()}
+     */
+    public void printInfo(boolean includeNeurons) {
+        System.out.println("---Layer Info:");
+        System.out.println("activation function: " + activation_function);
+        System.out.println("x count: " + (x != null ? x.length : 0));
+        System.out.println("neurons: " + (neurons != null ? neurons.length : 0));
+        System.out.println("y count: " + (y != null ? y.length : 0));
+
+
+        if (includeNeurons && neurons != null) {
+            for (int i = 0; i < neurons.length; i++) {
+                //System.out.print("Neuron " + (i + 1) + ": ");
+                System.out.printf("Neuron %-4d ", (i + 1)); // Why different indexing?
+                neurons[i].printInfoLine();
+            }
+        }
+    }
+
+    /**
+     * SINGLE LINE.
+     * Prints the activation function, count of inputs, neurons, and outputs for a quick overview.
+     */
+    public void printInfoLine() {
+        System.out.println(
+                "-Layer - "+
+                        "activation function: " + activation_function + ", " +
+                        "x count: " + (x != null ? x.length : 0) + ", " +
+                        "neurons count: " + (neurons != null ? neurons.length : 0) + ", " +
+                        "y count: " + (y != null ? y.length : 0));
     }
 
 }

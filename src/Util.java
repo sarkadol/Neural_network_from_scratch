@@ -122,6 +122,7 @@ public class Util {
 
     /**
      * Rectified Linear Unit activation function
+     * Formula σ(ξ) = max(ξ, 0)
      * @param inner_potential weighted sum + bias of a single Neuron
      * @return ReLU
      */
@@ -129,6 +130,13 @@ public class Util {
         return Math.max(0, inner_potential);
     }
 
+    /**
+     * Formula:
+     * f(x) = { 0 if x < 0
+     *          1 if x > 0 }
+     * @param inner_potential
+     * @return derivative of a ReLU function
+     */
     public static float ReLUDerivative(float inner_potential){
         return inner_potential > 0 ? 1 : 0;
     }
