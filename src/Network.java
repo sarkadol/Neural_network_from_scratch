@@ -74,11 +74,13 @@ public class Network {
         //System.out.println("cross entropy: "+loss);
 
         // Step 3: Compute gradients for the output layer using softmax + cross-entropy derivative
-        float[][] outputLayerGradient = computeOutputLayerGradient(target, outputs);
+        float[] outputLayerGradient = computeOutputLayerGradient(target, outputs);
         //System.out.println("output layer gradients: "+ Arrays.toString(outputLayerGradient));
 
         // Step 4: Backward pass through hidden layers
-        float[][] currentGradient = outputLayerGradient;
+        float[] currentOutputGradient = outputLayerGradient;
+        float[][] currentWeightGradient;
+
         for (int i = layers.length - 1; i > 0; i--) {
             Layer currentLayer = layers[i];
             Layer previousLayer = layers[i - 1];

@@ -179,7 +179,7 @@ public class Layer {
             throw new IllegalArgumentException("Gradients and inputs must not be null.");}
         if (weight_gradients[0].length != x.length + 1) {
             throw new IllegalArgumentException("Gradients width must match the number of weights plus 1 for bias.");}
-        // We can check also the height of gradient matrix, it should be equal to the number of neurons
+        // We could also check the height of gradient matrix, it should be equal to the number of neurons
         if (learningRate <= 0) {
             throw new IllegalArgumentException("Learning rate must be greater than 0.");}
 
@@ -187,10 +187,8 @@ public class Layer {
             float[] weights = neurons[i].getWeights();
             //update weights
             for (int j = 1; j < weights.length; j++) { //for each weight of a neuron
-                //weights[j] -= learningRate * gradients[i] * inputs[j];}
-                weights[j] = weights[j] - learningRate * weight_gradients[i][j];}  // Why is there y
+                weights[j] = weights[j] - learningRate * weight_gradients[i][j];}
 
-        // Update bias
             neurons[i].setWeights(weights);
             neurons[i].setBias(neurons[i].getBias() - learningRate * weight_gradients[i][0]);
         }
