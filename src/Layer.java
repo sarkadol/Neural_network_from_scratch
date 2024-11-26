@@ -9,20 +9,22 @@ public class Layer {
     String activation_function;
     float[] x; //number of inputs
     float[] y; //number of inputs
+
     /**
      * creates a hidden/output layer
+     *
      * @param activation_function specifies activation function used in this layer
-     * @param previous_layer the previous layer
-     * @param neurons_number number of neurons in this layer
+     * @param previous_layer      the previous layer
+     * @param neurons_number      number of neurons in this layer
      */
     public Layer(Layer previous_layer, int neurons_number, String activation_function) {
         this.activation_function = activation_function;
         this.neurons = new Neuron[neurons_number]; // Initialize the neurons array
-        for(int i = 0; i < neurons_number; i++) {
+        for (int i = 0; i < neurons_number; i++) {
             //float weights = 0;
             //float bias = 0;
             this.neurons[i] = new Neuron();
-            }
+        }
         int input_length = previous_layer.getOutputLength();
         this.x = new float[input_length]; // number of inputs for this layer
         this.y = new float[this.neurons.length];
@@ -30,6 +32,7 @@ public class Layer {
 
     /**
      * Creates an input layer
+     *
      * @param input_neurons_number number of values e.g. from csv (needed for the next layer for weights)
      */
     public Layer(int input_neurons_number) {
@@ -42,19 +45,28 @@ public class Layer {
 
     /**
      * Returns the length of an input ( = number of neurons in the previous layer)
+     *
      * @return length of an array y (inputs)
      */
-    public int getInputLength(){
-        if (x !=null) {return x.length;}
-        else{return 0;}
+    public int getInputLength() {
+        if (x != null) {
+            return x.length;
+        } else {
+            return 0;
+        }
     }
+
     /**
      * Returns the length of an output ( = number of neurons in the previous layer)
+     *
      * @return length of an array y (outputs)
      */
-    public int getOutputLength(){
-        if (y !=null) {return y.length;}
-        else{return 0;}
+    public int getOutputLength() {
+        if (y != null) {
+            return y.length;
+        } else {
+            return 0;
+        }
     }
     /*
     public Neuron getNeuron(int index){
@@ -68,14 +80,15 @@ public class Layer {
      * - He formula: w_i ∈ 𝒩(0, 2 / n)
      * - Glorot (Xavier) Initialization for softmax, tanh, or linear activations to maintain variance consistency.
      * - Glorot fomula: w_i ∼ 𝒩(0, 2 / (m + n)),
-     *   where n is the number of inputs to the layer, m is the number of neurons in the layer above
+     * where n is the number of inputs to the layer, m is the number of neurons in the layer above
      */
-    public void InitializeWeights(){
+    public void InitializeWeights() {
         Random random = new Random(); //TODO check if it is correct
         boolean useReLU = false;
 
-        if(activation_function.equals("relu")){  // If the activation function is relu, it uses different intialization
-            useReLU = true;}
+        if (activation_function.equals("relu")) {  // If the activation function is relu, it uses different intialization
+            useReLU = true;
+        }
 
         float range = 0.05f; // Adjust this to control how close to 0 the weights should be
         float stddev = 0;
@@ -86,13 +99,13 @@ public class Layer {
             range = (float) Math.sqrt(6.0 / (x.length + neurons.length)); // Xavier (Glorot) Initialization for softmax/tanh/linear
         }
 
-        for(int i = 0; i < neurons.length; i++){//each neuron i
+        for (int i = 0; i < neurons.length; i++) {//each neuron i
 
             float[] neuron_weights = new float[x.length];// array of weights of one neuron
             float bias = 0; // Initialize bias to zero (or small constant)
             //float bias = (random.nextFloat() * 2 - 1) * range;
 
-            for(int j = 0; j < x.length; j++){//each input j in particular neuron
+            for (int j = 0; j < x.length; j++) {//each input j in particular neuron
                 // Generate weights based on the chosen method
                 if (useReLU) {
                     neuron_weights[j] = (float) (random.nextGaussian() * stddev);
@@ -111,24 +124,24 @@ public class Layer {
      * Computes the output of this layer, by applying the layer's activation function to the neuron's inner potentials
      * obtained from the input array and the weights
      * Formula: y_j = σ_j(ξ_j)
+     *
      * @param input array of input floats
      * @return output
      */
-    public float[] computeOutput(float[] input){
+    public float[] computeOutput(float[] input) {
         int output_length = getOutputLength();
         float[] inner_potentials = new float[output_length];
-        for(int j = 0; j < output_length; j++){ //for each neuron j
+        for (int j = 0; j < output_length; j++) { //for each neuron j
             neurons[j].setX(input);
             inner_potentials[j] = neurons[j].computeInnerPotential();
             //System.out.println("Neuron " + j + " inner potential: " + inner_potentials[j]);
         }
         float[] outputs;
-        if (activation_function.equals("softmax")){ //softmax is a special case
+        if (activation_function.equals("softmax")) { //softmax is a special case
             outputs = Util.softmax(inner_potentials);
-        }
-        else{
+        } else {
             outputs = new float[output_length];
-            for(int j = 0; j < output_length; j++){ //for each neuron j
+            for (int j = 0; j < output_length; j++) { //for each neuron j
                 outputs[j] = Util.activationFunction(inner_potentials[j], activation_function);
             }
         }
@@ -139,7 +152,7 @@ public class Layer {
     /**
      * Converts gradient of outputs of neurons to gradient of their weights; works for layers with a simple activation
      * function, that takes as an argument only the inner potential of the neuron
-     *
+     * <p>
      * (∂E_k / ∂w_ji) = (∂E_k / ∂y_j) * σ'_j(ξ_j) * y_i
      *
      * @param output_gradients an array of output gradients of each neuron in the layer
@@ -148,10 +161,11 @@ public class Layer {
      */
     public float[][] computeWeightGradients(float[] output_gradients) {
         if (output_gradients.length != neurons.length) {
-            throw new IllegalArgumentException("Gradients length must match the number of neurons. \n"+
-                    "Gradients length: " + output_gradients.length + ", Neurons length: " + neurons.length);}
+            throw new IllegalArgumentException("Gradients length must match the number of neurons. \n" +
+                    "Gradients length: " + output_gradients.length + ", Neurons length: " + neurons.length);
+        }
 
-        float[][] weight_gradients = new float[neurons.length][x.length+1];// plus bias
+        float[][] weight_gradients = new float[neurons.length][x.length + 1];// plus bias
         float weight_independent_part;
         for (int j = 0; j < neurons.length; j++) { //For each neuron
             weight_independent_part = output_gradients[j] * Util.activationFunctionDerivative(neurons[j].getInnerPotential(), activation_function);
@@ -167,28 +181,32 @@ public class Layer {
 
     /**
      * Updates the weights and biases of neurons using the weight gradients.
-     *
+     * <p>
      * Formula: Δw_ji = -ε · ∂E / ∂w_ji
      *
      * @param weight_gradients the gradients for each neuron including bias gradient
-     * @param learningRate the rate at which weights and biases are adjusted
+     * @param learningRate     the rate at which weights and biases are adjusted
      */
     public void updateWeights(float[][] weight_gradients, float learningRate) {
         // Validate parameters
         if (weight_gradients == null || y == null) {
-            throw new IllegalArgumentException("Gradients and inputs must not be null.");}
+            throw new IllegalArgumentException("Gradients and inputs must not be null.");
+        }
         if (weight_gradients[0].length != x.length + 1) {
             throw new IllegalArgumentException("Gradients width must match the number of weights plus 1 for bias. \n" +
-                            "Gradients width: " + weight_gradients[0].length + ", Expected width: " + (x.length + 1));}
+                    "Gradients width: " + weight_gradients[0].length + ", Expected width: " + (x.length + 1));
+        }
         if (learningRate <= 0) {
-            throw new IllegalArgumentException("Learning rate must be greater than 0.");}
+            throw new IllegalArgumentException("Learning rate must be greater than 0.");
+        }
 
         for (int i = 0; i < neurons.length; i++) { //for each neuron in this layer:
             float[] weights = neurons[i].getWeights();
             //update weights
             for (int j = 1; j < weights.length; j++) { //for each weight of a neuron except the first one which is bias
                 //change every weight according to its gradient
-                weights[j] = weights[j] - learningRate * weight_gradients[i][j];}
+                weights[j] = weights[j] - learningRate * weight_gradients[i][j];
+            }
 
             // Update weights
             neurons[i].setWeights(weights);
@@ -200,6 +218,7 @@ public class Layer {
 
     /**
      * Prints information about the layer
+     *
      * @param includeNeurons if true, then it prints also property of each neuron in this layer,
      *                       see {@link Neuron#printInfoLine()}
      */
@@ -226,7 +245,7 @@ public class Layer {
      */
     public void printInfoLine() {
         System.out.println(
-                "-Layer - "+
+                "-Layer - " +
                         "activation function: " + activation_function + ", " +
                         "x count: " + (x != null ? x.length : 0) + ", " +
                         "neurons count: " + (neurons != null ? neurons.length : 0) + ", " +
@@ -236,13 +255,15 @@ public class Layer {
     /**
      * Converts gradient of outputs of neurons to gradient of their weights; works for layers with a simple activation
      * function, that takes as an argument only the inner potential of the neuron
+     *
      * @param output_gradients an array of output gradients of each neuron in the layer
      * @return a matrix of gradients of weights where on each row there are all the weights of a single neuron
      * in the layer
      */
     public float[][] outputGradientsToWeightGradients(float[] output_gradients) {
         if (output_gradients.length != neurons.length) {
-            throw new IllegalArgumentException("Gradients length must match the number of neurons.");}
+            throw new IllegalArgumentException("Gradients length must match the number of neurons.");
+        }
         float[][] result = new float[neurons.length][x.length];
         float weight_independent_part;
         for (int i = 0; i < neurons.length; i++) { //For each neuron
@@ -253,33 +274,4 @@ public class Layer {
         }
         return result;
     }
-
-    /**
-     * Updates the weights and biases of neurons using the provided gradients and inputs.
-     *
-     * @param weight_gradients    the gradients for each neuron
-     * @param learningRate the rate at which weights and biases are adjusted
-     */
-    public void updateWeights(float[][] weight_gradients, float learningRate) {
-        // Validate parameters
-        if (weight_gradients == null || y == null) {
-            throw new IllegalArgumentException("Gradients and inputs must not be null.");}
-        if (weight_gradients[0].length != x.length + 1) {
-            throw new IllegalArgumentException("Gradients width must match the number of weights plus 1 for bias.");}
-        // We could also check the height of gradient matrix, it should be equal to the number of neurons
-        if (learningRate <= 0) {
-            throw new IllegalArgumentException("Learning rate must be greater than 0.");}
-
-        for (int i = 0; i < neurons.length; i++) { //for each neuron in this layer:
-            float[] weights = neurons[i].getWeights();
-            //update weights
-            for (int j = 1; j < weights.length; j++) { //for each weight of a neuron
-                weights[j] = weights[j] - learningRate * weight_gradients[i][j];}
-
-            neurons[i].setWeights(weights);
-            neurons[i].setBias(neurons[i].getBias() - learningRate * weight_gradients[i][0]);
-        }
-        System.out.println("Weights updated");
-    }
-
 }
