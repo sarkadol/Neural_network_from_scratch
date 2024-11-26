@@ -57,16 +57,17 @@ public class Main {
                 sum += single_output;
             }
             System.out.println("Predictions sum: " + sum);
-            network.BackPropagation(0.05F,target,output);
+            network.BackPropagation(0.01F,target,output);
         }
 
         if (false) {
+            int number_if_images = 10;
             System.out.println("Loading and normalizing a subset of data...");
-            List<float[]> trainVectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, 5);
-            List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, 5);
+            List<float[]> trainVectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, number_if_images);
+            List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_if_images);
 
             System.out.println("Training on 5 images for debugging...");
-            trainNetworkDebug(network, trainVectors, trainLabels, 10, 0.05f);
+            trainNetworkDebug(network, trainVectors, trainLabels, 10, 0.01f);
 
         }
 
