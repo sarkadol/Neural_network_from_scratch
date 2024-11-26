@@ -60,28 +60,29 @@ public class Network {
      * σ'_r(ξ_r) is the derivative of the activation function with respect to ξ_r.
      * w_rj represents the weight connecting nodes r and j.
      *
-     * @param nextLayerGradient gradient for the next layer neuron
+     * @param currentGradients gradient for the next layer neuron
      * @param currentLayer Layer object of current layer
      * @param previousLayer Layer just before the current layer
      * @return
      */
-    private float[] backpropagateHiddenLayer(float[] nextLayerGradient, Layer currentLayer, Layer previousLayer) {
+    // TODO čudné
+    private float[] backpropagateHiddenLayer(float[] currentGradients, Layer currentLayer, Layer previousLayer) {
         int currentNeuronCount = currentLayer.neurons.length;
         int previousNeuronCount = previousLayer.neurons.length;
 
-        float[] currentGradient = new float[previousNeuronCount]; // Gradient for previous layer
+        float[] previousGradients = new float[previousNeuronCount]; // Gradient for previous layer
 
         for (int j = 0; j < previousNeuronCount; j++) {
-            currentGradient[j] = 0; // Initialize gradient
+            previousGradients[j] = 0; // Initialize gradient
             for (int r = 0; r < currentNeuronCount; r++) {
                 // Backpropagate gradient from current layer
-                float weightGradient = nextLayerGradient[r] * currentLayer.neurons[r].weights[j];
-                currentGradient[j] += weightGradient;
+                float weightGradient = currentGradients[r] * currentLayer.neurons[r].weights[j];
+                previousGradients[j] += weightGradient;
             }
             // Multiply by activation function derivative
-            currentGradient[j] *= activationDerivative(previousLayer.neurons[j].computeInnerPotential(), previousLayer.activation_function);
+            previousGradients[j] *= activationDerivative(previousLayer.neurons[j].computeInnerPotential(), previousLayer.activation_function);
         }
-        return currentGradient;
+        return previousGradients;
     }
 
     /**
