@@ -104,59 +104,61 @@ public class Network {
 
 
     /**
-     * BACKPROPAGATION.
-     * First, it handles the output layer separately and then it loops over the hidden layers.
+     * BACKPROPAGATION and WEIGHTS UPDATE
+     * First, it handles the output layer separately, and then it loops over the hidden layers.
+     * At each layer:
+     * 1) output gradients are computed,
+     * 2) weight gradients are computed and
+     * 3) weights are updated.
      * @param learning_rate the rate by which the weights change
      * @param target list of desired probabilities given by label
      * @param outputs list of computed probabilities from forward pass
      */
     public void train(float learning_rate, float[] target, float[] outputs){
-        System.out.println("\nBackpropagation...");
+        System.out.println("\nTraining...");
 
-        // Step 2: Compute the gradient of the loss function at the output layer - see the improvement during training
         float loss = Util.crossEntropy(target, outputs);
         //System.out.println("cross entropy: "+loss);
 
-        // Step 3: Compute gradients for the output layer using softmax + cross-entropy derivative
-        // OUTPUT LAYER separately
+        // ---------------OUTPUT LAYER -------------------
         Layer outputLayer = layers[layers.length - 1];
-        Layer hiddenLayerBeforeOutput = layers[layers.length - 2];
-        //outputLayer.printInfoLine();
-        //hiddenLayerBeforeOutput.printInfoLine();
 
+        // 1) output gradients
         float[] output_layer_gradients = computeOutputLayerGradients(outputs,target); //gradient wrt y
-        float[][] output_layer_weight_gradients = outputLayer.computeOutputLayerWeightGradients(output_layer_gradients); //gradient wrt w
 
+        // 2) weight gradients
+        float[][] output_layer_weight_gradients = outputLayer.computeOutputLayerWeightGradients(output_layer_gradients); //gradient wrt w
         // Clip gradients for output layer
         output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, 5.0f); // Example clip value
         //TODO how to choose a good clip value? recommended 1-5, but possible up to 20... - HYPERPARAMETER
 
+        // 3) weight update
         outputLayer.updateWeights(output_layer_weight_gradients, learning_rate);
-        System.out.println("Backpropagation of the output layer completed");
+        System.out.println("Training of the output layer completed");
 
-        // Step 4: Backward pass through hidden layers
-        // HIDDEN LAYERS
+        // -----------------HIDDEN LAYERS----------------------
 
-        float[] current_output_gradient = output_layer_gradients;
+        float[] current_output_gradient = output_layer_gradients; //move from output layer
+
         for (int i = layers.length - 1; i > 1; i--) {
             Layer currentLayer = layers[i];
             Layer previousLayer = layers[i - 1];
+            System.out.println("Passing from " + i + " to " + (i-1));
+
+            // 1) output gradients
             float[] previous_output_gradient = backpropagateHiddenLayer(current_output_gradient, currentLayer, previousLayer);
 
-            System.out.println("Passing from " + i + " to " + (i-1));
-            //currentLayer.printInfoLine();
-            //previousLayer.printInfoLine();
-
+            // 2) weight gradients
             float[][] previous_weight_gradients = previousLayer.computeWeightGradients(previous_output_gradient);
-
             // Clip gradients for the current hidden layer
             previous_weight_gradients = clipGradients(previous_weight_gradients, 5.0f); // Example clip value
 
+            // 3) weight update
             previousLayer.updateWeights(previous_weight_gradients, learning_rate);
 
-            current_output_gradient = previous_output_gradient;
+            current_output_gradient = previous_output_gradient; //move to another layer
         }
-        System.out.println("Backpropagation completed");
+        System.out.println("Training completed");
     }
 
 
