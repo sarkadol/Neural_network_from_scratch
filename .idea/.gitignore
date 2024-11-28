@@ -1,6 +1,6 @@
 # Default ignored files
 /shelf/
-/workspace.xml
+/.idea/workspace.xml
 /pv021_project.iml
 # Editor-based HTTP Client requests
 /httpRequests/
