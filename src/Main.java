@@ -59,7 +59,7 @@ public class Main {
                 sum += single_output;
             }
             System.out.println("Predictions sum: " + sum);
-            network.train(target, output, new Hyperparameters(50, 0.01f, 5.0f, 64));
+            network.train(target, output, new Hyperparameters(40, 0.1f, 20,5.0f, 64));
         }
 
         if (true) {
@@ -69,22 +69,24 @@ public class Main {
             List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
 
             //System.out.println("Training on 5 images for debugging...");
-            Hyperparameters hyperparameters = new Hyperparameters(10, 0.01f, 5.0f, 64);
+            Hyperparameters hyperparameters = new Hyperparameters(60, 0.1f, 500,5.0f, 64);
             long startTime = System.currentTimeMillis();
-            network.trainNetwork(trainVectors, trainLabels, hyperparameters, false);
+            network.trainNetwork(trainVectors, trainLabels, hyperparameters, true);
             long endTime = System.currentTimeMillis();
             //System.out.println("Label of image: "+network.predict(DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0)));
 
-            List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_test_vectors.csv");
-            long startTimePrediction = System.currentTimeMillis();
-            int[] predicted_labels = network.predictAll(test_vectors);
-            long endTimePrediction = System.currentTimeMillis();
+            if (false) {        //PREDICTING
+                List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_test_vectors.csv");
+                long startTimePrediction = System.currentTimeMillis();
+                int[] predicted_labels = network.predictAll(test_vectors);
+                long endTimePrediction = System.currentTimeMillis();
 
-            System.out.println("\nPredicted labels:\n"+Arrays.toString(predicted_labels));
-            DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv");
+                System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
+                DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv");
 
+                System.out.println("Predicting "+(endTimePrediction - startTimePrediction) + " milliseconds");
+            }
             System.out.println("Training: "+ (endTime - startTime) + " milliseconds");
-            System.out.println("Predicting "+(endTimePrediction - startTimePrediction) + " milliseconds");
         }
     }
 

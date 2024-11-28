@@ -25,12 +25,12 @@ public class Network {
      * @return array representing the network's output (class probabilities)
      */
     public float[] forwardPass(float[] inputs){
-        System.out.println("Forward pass proceeding...");
+        //System.out.println("Forward pass proceeding...");
         for (int i = 1; i < layers.length; i++){    // V tuto chvíli je nepotřebná vstupní vrstva
             layers[i].setX(inputs); // Save respective attributes
             inputs = layers[i].computeOutput(inputs);
         }
-        System.out.println("Forward pass complete.");
+        //System.out.println("Forward pass complete.");
         return inputs;
     }
 
@@ -47,16 +47,16 @@ public class Network {
         if(inputs.length != layers[0].getOutputLength()){
             throw new IllegalArgumentException("Input length does not match first layer's length.");
         }
-        System.out.println("\nPredicting...");
+        //System.out.println("\nPredicting...");
         float[] outputs = forwardPass(inputs);
-        System.out.println("Outputs: "+Arrays.toString(outputs));
+        //System.out.println("Outputs: "+Arrays.toString(outputs));
         int label = 0;
         for (int i = 1; i < outputs.length; i++) {
             if (outputs[i] > outputs[label]) { //if values are the same, it predicts the first one
                 label = i; // Update if the current output is larger
             }
         }
-        System.out.println("Predicting complete.");
+        //System.out.println("Predicting complete.");
         return label;
     }
 
@@ -206,17 +206,18 @@ public class Network {
 
 
     public void trainNetwork(List<float[]> trainVectors, List<Integer> trainLabels,
-                             Hyperparameters hyperparameters,   // Hyperparameters
+                             Hyperparameters hp,   // Hyperparameters
                              boolean verbose) {
-        int epochs = hyperparameters.getEpochs();
+        int epochs = hp.getEpochs();
         float[] losses = new float[epochs];
+        float[] learning_rates = new float[epochs];
         for (int epoch = 0; epoch < epochs; epoch++) {
             float totalLoss = 0;
             for (int i = 0; i < trainVectors.size(); i++) {
                 float[] inputs = trainVectors.get(i);
                 float[] target = Util.labelToVector(trainLabels.get(i));
                 float[] outputs = forwardPass(inputs);
-                train(target, outputs, hyperparameters);
+                train(target, outputs, hp);
                 totalLoss += Util.crossEntropy(target, outputs);
 
                 if (verbose) {
@@ -225,13 +226,18 @@ public class Network {
                     System.out.println("Target: " + Arrays.toString(target));
                     System.out.println("Outputs: " + Arrays.toString(outputs));
                     System.out.println("Cross-entropy loss: " + Util.crossEntropy(target, outputs));
+                    System.out.println("Learning rate: " + hp.getLearningRate());
                 }
             }
+            hp.setLearningRate(hp.getLearningRate() * (float)Math.pow(0.1, epoch / hp.getDecayRate())); //slightly decrease the learning rate - exponential scheduling
+            //ϵ(t) = ϵ0 · 0.1^(t/s) -> slide 118 from NEW_continuously_updated_slides.pdf
 
             System.out.println("Epoch " + epoch + ": Loss = " + (totalLoss / trainVectors.size()));
+            learning_rates[epoch] = hp.getLearningRate();
             losses[epoch] = totalLoss / trainVectors.size();
         }
         System.out.println("losses = " + Arrays.toString(losses));
+        System.out.println("learning rates = " + Arrays.toString(learning_rates));
     }
 
 

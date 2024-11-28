@@ -5,12 +5,24 @@ public class Hyperparameters {
     private float learningRate;
     private float clipValue;
     private int batchSize;
+    private float decayRate;
 
-    public Hyperparameters(int epochs, float learningRate, float clipValue, int batchSize) {
+    /**
+     * Constructs a Hyperparameters object with the specified values for epochs, learning rate, decay rate,
+     * gradient clipping value, and batch size.
+     *
+     * @param epochs        the total number of training epochs (iterations over the entire dataset)
+     * @param learningRate  the initial learning rate for the optimizer, typically a small positive value (e.g., 0.1 or 0.01)
+     * @param decayRate     the rate at which the learning rate decays, controlling how quickly it decreases over time
+     * @param clipValue     the maximum value for gradient clipping; gradients larger than this value will be scaled down
+     * @param batchSize     the size of each batch for training; determines how many samples are used per training step
+     */
+    public Hyperparameters(int epochs, float learningRate, float decayRate, float clipValue, int batchSize) {
         this.epochs = epochs;
         this.learningRate = learningRate;
         this.clipValue = clipValue;
         this.batchSize = batchSize;
+        this.decayRate = decayRate;
     }
 
     public int getEpochs() {
@@ -24,5 +36,26 @@ public class Hyperparameters {
     }
     public int getBatchSize() {
         return batchSize;
+    }
+    public float getDecayRate() {return decayRate;}
+
+    public void setEpochs(int epochs) {
+        this.epochs = epochs;
+    }
+
+    public void setLearningRate(float learningRate) {
+        this.learningRate = learningRate;
+    }
+
+    public void setClipValue(float clipValue) {
+        this.clipValue = clipValue;
+    }
+
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public void setDecayRate(float decayRate) {
+        this.decayRate = decayRate;
     }
 }

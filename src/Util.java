@@ -106,7 +106,7 @@ public class Util {
                 max_potential = potential;
             }
         }
-        System.out.println("max potential "+ max_potential);
+        //System.out.println("max potential "+ max_potential);
 
         // Step 2: Calculate the exponential of each element and sum them up
         for (int i = 0; i < n; i++) {
