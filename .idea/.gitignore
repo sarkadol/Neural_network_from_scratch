@@ -7,4 +7,5 @@
 /dataSources/
 /dataSources.local.xml
 /data/*.csv
+/.idea/
 /.idea/pv021_project.iml
