@@ -44,7 +44,11 @@ public class DataLoader {
     }
 
 
-
+    /**
+     * Writes and array to given csv file.
+     * @param array
+     * @param filePath
+     */
     public static void writeArrayToCSV(int[] array, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             // Iterate through the array and write each element to a new line
@@ -52,7 +56,7 @@ public class DataLoader {
                 writer.write(Integer.toString(value)); // Convert the integer to a string
                 writer.newLine(); // Add a newline character
             }
-            System.out.println("Array successfully written to " + filePath);
+            System.out.println("Results written to " + filePath);
         } catch (IOException e) {
             System.err.println("Error writing array to CSV: " + e.getMessage());
         }
