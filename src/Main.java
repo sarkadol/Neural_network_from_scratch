@@ -57,7 +57,7 @@ public class Main {
                 sum += single_output;
             }
             System.out.println("Predictions sum: " + sum);
-            network.BackPropagation(0.01F,target,output);
+            network.train(0.01F,target,output);
         }
 
         if (true) {
@@ -84,7 +84,7 @@ public class Main {
                 float[] inputs = trainVectors.get(i);
                 float[] target = Util.labelToVector(trainLabels.get(i));
                 float[] outputs = network.ForwardPass(inputs);
-                network.BackPropagation(learningRate, target, outputs);
+                network.train(learningRate, target, outputs);
                 totalLoss += Util.crossEntropy(target, outputs);
             }
             System.out.println("Epoch " + epoch + ": Loss = " + (totalLoss / trainVectors.size()));
@@ -101,7 +101,7 @@ public class Main {
                 float[] inputs = trainVectors.get(i);
                 float[] target = Util.labelToVector(trainLabels.get(i));
                 float[] outputs = network.ForwardPass(inputs);
-                network.BackPropagation(learningRate, target, outputs);
+                network.train(learningRate, target, outputs);
                 totalLoss += Util.crossEntropy(target, outputs);
 
                 // Debugging outputs

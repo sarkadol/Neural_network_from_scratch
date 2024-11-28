@@ -1,7 +1,5 @@
 package src;
 
-import java.util.Arrays;
-
 import static src.Util.activationDerivative;
 
 public class Network {
@@ -109,7 +107,7 @@ public class Network {
      * @param target list of desired probabilities given by label
      * @param outputs list of computed probabilities from forward pass
      */
-    public void BackPropagation(float learning_rate, float[] target, float[] outputs){
+    public void train(float learning_rate, float[] target, float[] outputs){
         System.out.println("\nBackpropagation...");
 
         // Step 2: Compute the gradient of the loss function at the output layer - see the improvement during training
