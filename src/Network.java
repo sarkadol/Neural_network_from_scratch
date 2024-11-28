@@ -24,17 +24,40 @@ public class Network {
      * @param inputs float array representing the input features for a single image
      * @return array representing the network's output (class probabilities)
      */
-    public float[] ForwardPass(float[] inputs){
+    public float[] forwardPass(float[] inputs){
         System.out.println("Forward pass proceeding...");
-        //System.out.println("Inputs before forward pass:" + Arrays.toString(inputs));
         for (int i = 1; i < layers.length; i++){    // V tuto chvíli je nepotřebná vstupní vrstva
             layers[i].setX(inputs); // Save respective attributes
             inputs = layers[i].computeOutput(inputs);
         }
-        //System.out.println("Inputs after forward pass:" + Arrays.toString(inputs));
-
         System.out.println("Forward pass complete.");
         return inputs;
+    }
+
+    /**
+     * Trained network returns the most probable label of an image.
+     * @param inputs one image
+     * @return the most probable label of an image
+     */
+    public int predict(float[] inputs){
+        //Fashion MNIST has 10 labels 0-9:
+        //"T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
+        //"Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"
+
+        if(inputs.length != layers[0].getOutputLength()){
+            throw new IllegalArgumentException("Input length does not match first layer's length.");
+        }
+        System.out.println("\nPredicting...");
+        float[] outputs = forwardPass(inputs);
+        //System.out.println("Outputs: "+Arrays.toString(outputs));
+        int label = 0;
+        for (int i = 0; i < outputs.length; i++) {
+            if (outputs[i] > outputs[label]) {
+                label = i; // Update if the current output is larger
+            }
+        }
+        System.out.println("Predicting complete.");
+        return label;
     }
 
     /**
@@ -169,7 +192,7 @@ public class Network {
             for (int i = 0; i < trainVectors.size(); i++) {
                 float[] inputs = trainVectors.get(i);
                 float[] target = Util.labelToVector(trainLabels.get(i));
-                float[] outputs = ForwardPass(inputs);
+                float[] outputs = forwardPass(inputs);
                 train(learningRate, target, outputs);
                 totalLoss += Util.crossEntropy(target, outputs);
 

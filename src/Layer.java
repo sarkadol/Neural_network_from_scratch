@@ -7,8 +7,8 @@ import java.util.Random;
 public class Layer {
     public Neuron[] neurons;
     String activation_function;
-    float[] x; //number of inputs
-    float[] y; //number of inputs
+    float[] x; //inputs
+    float[] y; //outputs
 
     /**
      * creates a hidden/output layer
@@ -68,6 +68,11 @@ public class Layer {
             return 0;
         }
     }
+
+    public float[] getYs(){
+        return y;
+    }
+
     /*
     public Neuron getNeuron(int index){
         return null;

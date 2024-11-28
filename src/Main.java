@@ -47,7 +47,7 @@ public class Main {
         if (false) {
             System.out.println("Loading data...");
             float[] image = DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0);
-            float[] output = network.ForwardPass(image);
+            float[] output = network.forwardPass(image);
             float[] target = Util.labelToVector(0);
             System.out.println("Desired predictions: " + Arrays.toString(target) );
             System.out.println("Predictions: " + Arrays.toString(output));
@@ -67,8 +67,8 @@ public class Main {
             List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
 
             System.out.println("Training on 5 images for debugging...");
-            network.trainNetwork(trainVectors, trainLabels, 50, 0.01f, false);
-
+            network.trainNetwork(trainVectors, trainLabels, 5, 0.01f, false);
+            System.out.println("Label of image: "+network.predict(DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0)));
         }
     }
 
@@ -76,7 +76,7 @@ public class Main {
     private static void evaluateNetwork(Network network, List<float[]> testVectors, List<Integer> testLabels) {
         int correct = 0;
         for (int i = 0; i < testVectors.size(); i++) {
-            float[] outputs = network.ForwardPass(testVectors.get(i));
+            float[] outputs = network.forwardPass(testVectors.get(i));
             //if (Util.argmax(outputs) == testLabels.get(i)) {
              //   correct++;
             //}
