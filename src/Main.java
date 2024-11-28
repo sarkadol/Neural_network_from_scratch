@@ -61,63 +61,15 @@ public class Main {
         }
 
         if (true) {
-            int number_if_images = 10;
+            int number_of_images = 10;
             System.out.println("Loading and normalizing a subset of data...");
-            List<float[]> trainVectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, number_if_images);
-            List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_if_images);
+            List<float[]> trainVectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, number_of_images);
+            List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
 
             System.out.println("Training on 5 images for debugging...");
-            trainNetworkDebug(network, trainVectors, trainLabels, 50, 0.01f);
+            network.trainNetwork(trainVectors, trainLabels, 50, 0.01f, false);
 
         }
-
-        //layer0.printInfo(false);
-        //layer1.printInfo(false);
-        //layer2.printInfo(false);
-        //layer3.printInfo(false);
-    }
-    private static void trainNetwork(Network network, List<float[]> trainVectors, List<Integer> trainLabels, int epochs, float learningRate) {
-        float[] losses = new float[epochs];
-        for (int epoch = 0; epoch < epochs; epoch++) {
-            float totalLoss = 0;
-            for (int i = 0; i < trainVectors.size(); i++) {
-                float[] inputs = trainVectors.get(i);
-                float[] target = Util.labelToVector(trainLabels.get(i));
-                float[] outputs = network.ForwardPass(inputs);
-                network.train(learningRate, target, outputs);
-                totalLoss += Util.crossEntropy(target, outputs);
-            }
-            System.out.println("Epoch " + epoch + ": Loss = " + (totalLoss / trainVectors.size()));
-            losses[epoch] = totalLoss / trainVectors.size();
-        }
-        System.out.println("losses = " + Arrays.toString(losses));
-    }
-
-    private static void trainNetworkDebug(Network network, List<float[]> trainVectors, List<Integer> trainLabels, int epochs, float learningRate) {
-        float[] losses = new float[epochs];
-        for (int epoch = 0; epoch < epochs; epoch++) {
-            float totalLoss = 0;
-            for (int i = 0; i < trainVectors.size(); i++) {
-                float[] inputs = trainVectors.get(i);
-                float[] target = Util.labelToVector(trainLabels.get(i));
-                float[] outputs = network.ForwardPass(inputs);
-                network.train(learningRate, target, outputs);
-                totalLoss += Util.crossEntropy(target, outputs);
-
-                // Debugging outputs
-                System.out.println("\n--- Debug Info ---");
-                System.out.println("Epoch: " + epoch + ", Image: " + i);
-                System.out.println("Target: " + Arrays.toString(target));
-                System.out.println("Outputs: " + Arrays.toString(outputs));
-                System.out.println("Cross-entropy loss: " + Util.crossEntropy(target, outputs));
-            }
-            System.out.println("Epoch " + epoch + ": Loss = " + (totalLoss / trainVectors.size()));
-            losses[epoch] = totalLoss / trainVectors.size();
-
-        }
-        System.out.println("losses in epochs = " + Arrays.toString(losses));
-        //return losses;
-
     }
 
 

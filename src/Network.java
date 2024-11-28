@@ -1,5 +1,8 @@
 package src;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static src.Util.activationDerivative;
 
 public class Network {
@@ -155,6 +158,34 @@ public class Network {
         }
         System.out.println("Backpropagation completed");
     }
+
+
+    public void trainNetwork(List<float[]> trainVectors, List<Integer> trainLabels, int epochs, float learningRate, boolean verbose) {
+        float[] losses = new float[epochs];
+        for (int epoch = 0; epoch < epochs; epoch++) {
+            float totalLoss = 0;
+            for (int i = 0; i < trainVectors.size(); i++) {
+                float[] inputs = trainVectors.get(i);
+                float[] target = Util.labelToVector(trainLabels.get(i));
+                float[] outputs = ForwardPass(inputs);
+                train(learningRate, target, outputs);
+                totalLoss += Util.crossEntropy(target, outputs);
+
+                if (verbose) {
+                    System.out.println("\n--- Debug Info ---");
+                    System.out.println("Epoch: " + epoch + ", Image: " + i);
+                    System.out.println("Target: " + Arrays.toString(target));
+                    System.out.println("Outputs: " + Arrays.toString(outputs));
+                    System.out.println("Cross-entropy loss: " + Util.crossEntropy(target, outputs));
+                }
+            }
+
+            System.out.println("Epoch " + epoch + ": Loss = " + (totalLoss / trainVectors.size()));
+            losses[epoch] = totalLoss / trainVectors.size();
+        }
+        System.out.println("losses = " + Arrays.toString(losses));
+    }
+
 
     /**
      * Initializes weights and biases for all layers in the network, excluding the input layer.
