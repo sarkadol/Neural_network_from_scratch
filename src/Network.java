@@ -60,6 +60,14 @@ public class Network {
         return label;
     }
 
+    public int[] predictAll(List<float[]> vectors){
+        int[] labels = new int[vectors.size()];
+        for(int i = 0; i < vectors.size(); i++){
+            labels[i]=predict(vectors.get(i));
+        }
+        return labels;
+    }
+
     /**
      * Computes gradients of the output layer. (How should the y of output layer change)
      * @param predicted array of predicted probabilities

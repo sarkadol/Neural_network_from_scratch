@@ -3,6 +3,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  * The {@code DataLoader} class provides utility methods for loading image data
  * and labels from files in CSV format and for printing images to the console.
@@ -38,6 +42,22 @@ public class DataLoader {
         reader.close();
         return images;
     }
+
+
+
+    public static void writeArrayToCSV(int[] array, String filePath) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            // Iterate through the array and write each element to a new line
+            for (int value : array) {
+                writer.write(Integer.toString(value)); // Convert the integer to a string
+                writer.newLine(); // Add a newline character
+            }
+            System.out.println("Array successfully written to " + filePath);
+        } catch (IOException e) {
+            System.err.println("Error writing array to CSV: " + e.getMessage());
+        }
+    }
+
 
     /**
      * Loads labels from a file where each line contains a single integer label.
