@@ -61,10 +61,10 @@ public class Network {
      * σ'_r(ξ_r) is the derivative of the activation function with respect to ξ_r.
      * w_rj represents the weight connecting nodes r and j.
      *
-     * @param currentGradients gradient for the next layer neuron
+     * @param currentGradients gradients of outputs for the current layer
      * @param currentLayer Layer object of current layer
      * @param previousLayer Layer just before the current layer
-     * @return
+     * @return gradients of outputs for previous layer
      */
     private float[] backpropagateHiddenLayer(float[] currentGradients, Layer currentLayer, Layer previousLayer) {
         int currentNeuronCount = currentLayer.neurons.length;

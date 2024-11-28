@@ -7,13 +7,11 @@ public class Neuron {
     float[] weights; //array of weights w1...w_y
     float[] x;//array of input values from previous layer x1...x_y
     float inner_potential = 0;
-    float[] y;
 
     public Neuron() {
         this.bias = 0;
         this.weights = null;
         this.x = null;
-        this.y = null;
     }
 
     //getters and setters
@@ -31,10 +29,6 @@ public class Neuron {
         return inner_potential;
     }
 
-    public float[] getY() {
-        return y;
-    }
-
     public void setBias(float bias) {
         this.bias = bias;
     }
@@ -43,9 +37,6 @@ public class Neuron {
     }
     public void setX(float[] x) {
         this.x = x;
-    }
-    public void setY(float[] y) {
-        this.y = y;
     }
 
     /**
@@ -70,7 +61,6 @@ public class Neuron {
         System.out.println("Bias: " + bias);
         System.out.println("Weights: "+ Arrays.toString(weights));
         System.out.println("X: "+ Arrays.toString(x));
-        System.out.println("Y: "+ Arrays.toString(y));
     }
     /**
      * SINGLE LINE.
@@ -82,7 +72,6 @@ public class Neuron {
                 "Neuron "+
                 "Bias: " + bias + ", " +
                 "Weights count: " + (weights != null ? weights.length : 0) + ", " +
-                "Inputs count: " + (x != null ? x.length : 0) + ", " +
-                "Outputs count: " + (y != null ? y.length : 0));
+                "Inputs count: " + (x != null ? x.length : 0));
     }
 }
