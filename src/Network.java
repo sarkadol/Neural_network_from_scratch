@@ -53,7 +53,7 @@ public class Network {
     }
 
     /**
-     * Backpropagation of hidden layer:
+     * Backpropagation of a hidden layer:
      * (∂E_k / ∂y_j) = Σ_(r ∈ j→) [(∂E_k / ∂y_r) * σ'_r(ξ_r) * w_rj]
      *
      * r ∈ j→ indicates that r is in the set of nodes connected to j. (arch from j to r)
@@ -65,7 +65,6 @@ public class Network {
      * @param previousLayer Layer just before the current layer
      * @return
      */
-    // TODO čudné
     private float[] backpropagateHiddenLayer(float[] currentGradients, Layer currentLayer, Layer previousLayer) {
         int currentNeuronCount = currentLayer.neurons.length;
         int previousNeuronCount = previousLayer.neurons.length;
@@ -101,7 +100,6 @@ public class Network {
         }
         return gradients;
     }
-
 
 
     /**

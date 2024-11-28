@@ -44,7 +44,7 @@ public class Main {
 
         Network network = new Network(layers);
 
-        if (true) {
+        if (false) {
             System.out.println("Loading data...");
             float[] image = DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0);
             float[] output = network.ForwardPass(image);
@@ -60,14 +60,14 @@ public class Main {
             network.BackPropagation(0.01F,target,output);
         }
 
-        if (false) {
+        if (true) {
             int number_if_images = 10;
             System.out.println("Loading and normalizing a subset of data...");
             List<float[]> trainVectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, number_if_images);
             List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_if_images);
 
             System.out.println("Training on 5 images for debugging...");
-            trainNetworkDebug(network, trainVectors, trainLabels, 10, 0.01f);
+            trainNetworkDebug(network, trainVectors, trainLabels, 50, 0.01f);
 
         }
 
