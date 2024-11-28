@@ -62,7 +62,7 @@ public class Main {
                 sum += single_output;
             }
             System.out.println("Predictions sum: " + sum);
-            network.train(0.01F,target,output);
+            network.train(target, output, new Hyperparameters(50, 0.01f, 5.0f, 64));
         }
 
         if (false) {
@@ -71,13 +71,10 @@ public class Main {
             List<float[]> trainVectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, number_of_images);
             List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
 
-            //System.out.println("Training on 5 images for debugging...");
-            network.trainNetwork(trainVectors, trainLabels, 50, 0.01f, false);
-
-            //System.out.println("Label of image: "+network.predict(DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0)));
-
-
-
+            System.out.println("Training on 5 images for debugging...");
+            Hyperparameters hyperparameters = new Hyperparameters(50, 0.01f, 5.0f, 64);
+            network.trainNetwork(trainVectors, trainLabels, hyperparameters, false);
+            System.out.println("Label of image: "+network.predict(DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0)));
         }
     }
 

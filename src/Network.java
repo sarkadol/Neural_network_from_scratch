@@ -141,11 +141,11 @@ public class Network {
      * 1) output gradients are computed,
      * 2) weight gradients are computed and
      * 3) weights are updated.
-     * @param learning_rate the rate by which the weights change
      * @param target list of desired probabilities given by label
      * @param outputs list of computed probabilities from forward pass
+     * @param hyperparameters hyperparameters - learning rate and clip value used
      */
-    public void train(float learning_rate, float[] target, float[] outputs){
+    public void train(float[] target, float[] outputs, Hyperparameters hyperparameters) {
         System.out.println("\nTraining...");
 
         float loss = Util.crossEntropy(target, outputs);
@@ -160,11 +160,11 @@ public class Network {
         // 2) weight gradients
         float[][] output_layer_weight_gradients = outputLayer.computeOutputLayerWeightGradients(output_layer_gradients); //gradient wrt w
         // Clip gradients for output layer
-        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, 5.0f); // Example clip value
+        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, hyperparameters.getClipValue()); // Example clip value
         //TODO how to choose a good clip value? recommended 1-5, but possible up to 20... - HYPERPARAMETER
 
         // 3) weight update
-        outputLayer.updateWeights(output_layer_weight_gradients, learning_rate);
+        outputLayer.updateWeights(output_layer_weight_gradients, hyperparameters.getLearningRate());
         System.out.println("Training of the output layer completed");
 
         // -----------------HIDDEN LAYERS----------------------
@@ -185,7 +185,7 @@ public class Network {
             previous_weight_gradients = clipGradients(previous_weight_gradients, 5.0f); // Example clip value
 
             // 3) weight update
-            previousLayer.updateWeights(previous_weight_gradients, learning_rate);
+            previousLayer.updateWeights(previous_weight_gradients, hyperparameters.getLearningRate());
 
             current_output_gradient = previous_output_gradient; //move to another layer
         }
@@ -193,7 +193,22 @@ public class Network {
     }
 
 
-    public void trainNetwork(List<float[]> trainVectors, List<Integer> trainLabels, int epochs, float learningRate, boolean verbose) {
+    public List<List<float[]>> divideToBatches(List<float[]> trainVectors) {
+        return null;
+    }
+
+
+    public void trainBatch(List<float[]> trainVectors, List<Integer> trainLabels,
+                           Hyperparameters hyperparameters,
+                           boolean verbose) {
+
+    }
+
+
+    public void trainNetwork(List<float[]> trainVectors, List<Integer> trainLabels,
+                             Hyperparameters hyperparameters,   // Hyperparameters
+                             boolean verbose) {
+        int epochs = hyperparameters.getEpochs();
         float[] losses = new float[epochs];
         for (int epoch = 0; epoch < epochs; epoch++) {
             float totalLoss = 0;
@@ -201,7 +216,7 @@ public class Network {
                 float[] inputs = trainVectors.get(i);
                 float[] target = Util.labelToVector(trainLabels.get(i));
                 float[] outputs = forwardPass(inputs);
-                train(learningRate, target, outputs);
+                train(target, outputs, hyperparameters);
                 totalLoss += Util.crossEntropy(target, outputs);
 
                 if (verbose) {
