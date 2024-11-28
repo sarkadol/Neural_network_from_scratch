@@ -49,10 +49,10 @@ public class Network {
         }
         System.out.println("\nPredicting...");
         float[] outputs = forwardPass(inputs);
-        //System.out.println("Outputs: "+Arrays.toString(outputs));
+        System.out.println("Outputs: "+Arrays.toString(outputs));
         int label = 0;
-        for (int i = 0; i < outputs.length; i++) {
-            if (outputs[i] > outputs[label]) {
+        for (int i = 1; i < outputs.length; i++) {
+            if (outputs[i] > outputs[label]) { //if values are the same, it predicts the first one
                 label = i; // Update if the current output is larger
             }
         }
