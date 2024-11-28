@@ -63,7 +63,7 @@ public class Main {
         }
 
         if (true) {
-            int number_of_images = 100;
+            int number_of_images = 10; //max 60000
             System.out.println("Loading and normalizing a subset of data...");
             //training set of 60,000 examples
             //test set of 10,000 examples
@@ -71,7 +71,7 @@ public class Main {
             List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
 
             //System.out.println("Training on 5 images for debugging...");
-            Hyperparameters hyperparameters = new Hyperparameters(60, 0.01f, 500,5.0f, 64);
+            Hyperparameters hyperparameters = new Hyperparameters(60, 0.01f, 50,5.0f, 64);
             long startTime = System.currentTimeMillis();
             network.trainNetwork(trainVectors, trainLabels, hyperparameters, false);
             long endTime = System.currentTimeMillis();

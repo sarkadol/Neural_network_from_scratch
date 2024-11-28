@@ -164,11 +164,14 @@ public class DataLoader {
         return images;
     }
 
-    public static void writeToFileForPython(float[] losses, float[] learningRates) {
+    public static void writeToFileForPython(float[] losses, float[] learningRates, int train_vector_count,int batch_size,float decay_rate) {
 
-        try (FileWriter writer = new FileWriter("losses_and_learning_rates.txt")) {
+        try (FileWriter writer = new FileWriter("Java_to_Python.txt")) {
             writer.write("losses = " + Arrays.toString(losses) + "\n");
             writer.write("learning_rates = " + Arrays.toString(learningRates) + "\n");
+            writer.write("train_vector_count = " + train_vector_count + "\n");
+            writer.write("batch_size = " + batch_size + "\n");
+            writer.write("decay_rate = " + decay_rate + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }

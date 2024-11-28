@@ -229,8 +229,10 @@ public class Network {
                     System.out.println("Learning rate: " + hp.getLearningRate());
                 }
             }
-            //hp.setLearningRate(hp.getLearningRate() * (float)Math.pow(0.1, epoch / hp.getDecayRate())); //slightly decrease the learning rate - exponential scheduling
-            //ϵ(t) = ϵ0 · 0.1^(t/s) -> slide 118 from NEW_continuously_updated_slides.pdf
+            if(false){//if we want to use the exponential learning rate - maybe to hyperparameter
+                hp.setLearningRate(hp.getLearningRate() * (float)Math.pow(0.1, epoch / hp.getDecayRate())); //slightly decrease the learning rate - exponential scheduling
+                //ϵ(t) = ϵ0 · 0.1^(t/s) -> slide 118 from NEW_continuously_updated_slides.pdf
+            }
 
             System.out.println("Epoch " + epoch + ": Loss = " + (totalLoss / trainVectors.size()));
             learning_rates[epoch] = hp.getLearningRate();
@@ -239,7 +241,8 @@ public class Network {
         System.out.println("losses = " + Arrays.toString(losses));
         System.out.println("learning_rates = " + Arrays.toString(learning_rates));
 
-        DataLoader.writeToFileForPython(losses,learning_rates); //pass this to file which is read by python to plot the changes during epochs
+        //pass this to file which is read by Python to plot the changes during epochs
+        DataLoader.writeToFileForPython(losses,learning_rates,trainVectors.size(),hp.getBatchSize(),hp.getDecayRate());
     }
 
 
