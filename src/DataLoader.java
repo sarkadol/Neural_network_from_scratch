@@ -1,6 +1,7 @@
 package src;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import java.io.BufferedWriter;
@@ -161,6 +162,17 @@ public class DataLoader {
         }
         reader.close();
         return images;
+    }
+
+    public static void writeToFileForPython(float[] losses, float[] learningRates) {
+
+        try (FileWriter writer = new FileWriter("losses_and_learning_rates.txt")) {
+            writer.write("losses = " + Arrays.toString(losses) + "\n");
+            writer.write("learning_rates = " + Arrays.toString(learningRates) + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Data written to file.");
     }
 
 }

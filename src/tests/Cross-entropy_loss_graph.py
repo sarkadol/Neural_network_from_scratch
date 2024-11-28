@@ -1,25 +1,42 @@
 import matplotlib.pyplot as plt
 
 # Your data
-# need to paste the output array here ->
-values = [0.1, 0.09954055, 0.098627955, 0.09727473, 0.09549926, 0.093325436, 0.090782054, 0.087902255, 0.08472275, 0.08128306, 0.07762472, 0.07379043, 0.06982325, 0.06576579, 0.061659504, 0.057543997, 0.05345644, 0.049431074, 0.04549881, 0.04168694, 0.038018942, 0.034514375, 0.031188896, 0.028054336, 0.025118863, 0.02238721, 0.019860948, 0.017538803, 0.015417003, 0.013489627, 0.011748974, 0.010185913, 0.008790224, 0.007550921, 0.006456541, 0.0054954076, 0.00465586, 0.0039264485, 0.0032960966, 0.0027542282, 0.0022908673, 0.0018967055, 0.0015631473, 0.0012823303, 0.0010471283, 8.5113785E-4, 6.8865216E-4, 5.546256E-4, 4.4463115E-4, 3.548133E-4, 2.818382E-4, 2.2284345E-4, 1.7538799E-4, 1.3740415E-4, 1.07151885E-4, 8.317635E-5, 6.4268745E-5, 4.9431048E-5, 3.7844242E-5, 2.8840303E-5]
 
-# Create the plot
-plt.figure(figsize=(10, 6))  # Set the figure size
-plt.plot(values, marker='o', linestyle='-', color='blue', label='Values')  # Line plot with markers
+with open("../../losses_and_learning_rates.txt", "r") as file:
+    lines = file.readlines()
 
-# Add labels, title, and legend
-#plt.title('Cross-entropy losses during epochs', fontsize=16)
-plt.title('Learning rate losses during epochs', fontsize=16)
+# Parse losses and learning_rates
+losses = eval(lines[0].split('=')[1].strip())
+learning_rates = eval(lines[1].split('=')[1].strip())
 
-plt.xlabel('Epoch', fontsize=12)
-#plt.ylabel('Cross entropy loss ', fontsize=12)
-plt.ylabel('Learning rate ', fontsize=12)
+print("Losses:", losses)
+print("Learning Rates:", learning_rates)
 
-plt.legend(fontsize=10)
+# need to paste the output arrays here ->
+#losses = [2.303363, 2.2959313, 2.2846365, 2.2814102, 2.2799768, 2.2650354, 2.240415, 2.2378201, 2.2033048, 2.176597, 2.1402047, 2.1119206, 2.0638845, 1.993593, 1.9360859, 1.8867111, 1.8016211, 1.7550396, 1.7313391, 1.6593345, 1.69958, 1.6353155, 1.5815704, 1.527669, 1.4967921, 1.4323189, 1.3679982, 1.3370432, 1.3548478, 1.2330565, 1.2144641, 1.1890142, 1.1389239, 1.1490458, 1.0713606, 1.0455558, 1.0139507, 0.9780038, 0.9860202, 0.9355294, 0.9172052, 0.89120543, 0.8664216, 0.84784824, 0.8237543, 0.8053271, 0.8347564, 0.76479304, 0.76079434, 0.79507935, 0.74129754, 0.7643122, 0.7256332, 0.75541997, 0.70544916, 0.7349442, 0.8238748, 0.69558585, 0.77246845, 0.8770758]
+# = [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
 
-# Add grid for better readability
-plt.grid(True, linestyle='--', alpha=0.7)
+# Create a figure with two subplots (stacked vertically)
+fig, axs = plt.subplots(2, 1, figsize=(8, 8))  # 2 rows, 1 column
 
-# Display the plot
+# Plot the losses in the first subplot
+axs[0].plot(losses, marker='o', linestyle='-', color='blue', label='Cross-Entropy loss')
+axs[0].set_title('Cross-Entropy loss during epochs', fontsize=16)
+axs[0].set_xlabel('Epoch', fontsize=12)
+axs[0].set_ylabel('Cross-Entropy loss', fontsize=12)
+axs[0].legend(fontsize=10)
+axs[0].grid(True, linestyle='--', alpha=0.7)
+
+# Plot the learning rates in the second subplot
+axs[1].plot(learning_rates, marker='o', linestyle='-', color='red', label='Learning rate')
+axs[1].set_title('Learning rate during epochs', fontsize=16)
+axs[1].set_xlabel('Epoch', fontsize=12)
+axs[1].set_ylabel('Learning Rate', fontsize=12)
+axs[1].legend(fontsize=10)
+axs[1].grid(True, linestyle='--', alpha=0.7)
+
+# Adjust layout for better readability
+plt.tight_layout()
+
+# Display the plots
 plt.show()

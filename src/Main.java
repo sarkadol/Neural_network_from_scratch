@@ -63,15 +63,17 @@ public class Main {
         }
 
         if (true) {
-            int number_of_images = 10;
+            int number_of_images = 100;
             System.out.println("Loading and normalizing a subset of data...");
+            //training set of 60,000 examples
+            //test set of 10,000 examples
             List<float[]> trainVectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, number_of_images);
             List<Integer> trainLabels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
 
             //System.out.println("Training on 5 images for debugging...");
-            Hyperparameters hyperparameters = new Hyperparameters(60, 0.1f, 500,5.0f, 64);
+            Hyperparameters hyperparameters = new Hyperparameters(60, 0.01f, 500,5.0f, 64);
             long startTime = System.currentTimeMillis();
-            network.trainNetwork(trainVectors, trainLabels, hyperparameters, true);
+            network.trainNetwork(trainVectors, trainLabels, hyperparameters, false);
             long endTime = System.currentTimeMillis();
             //System.out.println("Label of image: "+network.predict(DataLoader.loadVectors("data/fashion_mnist_train_vectors.csv").get(0)));
 
