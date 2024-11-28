@@ -56,7 +56,7 @@ public class Network {
      * Backpropagation of hidden layer:
      * (∂E_k / ∂y_j) = Σ_(r ∈ j→) [(∂E_k / ∂y_r) * σ'_r(ξ_r) * w_rj]
      *
-     * r ∈ j→ indicates that r is in the set of nodes connected to j.
+     * r ∈ j→ indicates that r is in the set of nodes connected to j. (arch from j to r)
      * σ'_r(ξ_r) is the derivative of the activation function with respect to ξ_r.
      * w_rj represents the weight connecting nodes r and j.
      *
@@ -76,11 +76,11 @@ public class Network {
             previousGradients[j] = 0; // Initialize gradient
             for (int r = 0; r < currentNeuronCount; r++) {
                 // Backpropagate gradient from current layer
-                float weightGradient = currentGradients[r] * currentLayer.neurons[r].weights[j];
-                previousGradients[j] += weightGradient;
+                previousGradients[j] +=
+                        currentGradients[r] *
+                        currentLayer.neurons[r].weights[j] *
+                        activationDerivative(currentLayer.neurons[r].getInnerPotential(), currentLayer.activation_function);
             }
-            // Multiply by activation function derivative
-            previousGradients[j] *= activationDerivative(previousLayer.neurons[j].computeInnerPotential(), previousLayer.activation_function);
         }
         return previousGradients;
     }
