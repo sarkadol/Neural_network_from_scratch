@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
 
-# Your data
-
 with open("../../Java_to_Python.txt", "r") as file:
     lines = file.readlines()
 
@@ -12,9 +10,6 @@ train_vector_count = eval(lines[2].split('=')[1].strip())
 batch_size = eval(lines[3].split('=')[1].strip())
 decay_rate = eval(lines[4].split('=')[1].strip())
 layers = eval(lines[5].split('=')[1].strip())
-
-#print("Losses:", losses)
-#print("Learning Rates:", learning_rates)
 
 # Create a figure with two subplots (stacked vertically)
 fig, axs = plt.subplots(2, 1, figsize=(8, 8))  # 2 rows, 1 column
@@ -35,10 +30,9 @@ axs[1].set_ylabel('Learning Rate', fontsize=12)
 axs[1].legend(fontsize=10)
 axs[1].grid(True, linestyle='--', alpha=0.7)
 
-
 def evaluate():
     """
-    Copied from official evaluator, just the arguments are static.
+    Copied from the official evaluator, just the arguments (filenames) are static.
     :return:
     """
     with open('../../NEW_test_predictions.csv','r') as rf:
@@ -68,7 +62,6 @@ fig.text(0.02, 0.01, hyperparameter_text, ha='left', va='bottom', fontsize=12, m
 
 # Adjust layout for better readability
 plt.tight_layout(rect=[0, 0.09, 1, 1])  # Leave space for the hyperparameter text
-
 
 # Display the plots
 plt.show()

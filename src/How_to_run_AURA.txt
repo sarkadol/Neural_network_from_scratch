@@ -1,0 +1,2 @@
+ssh xdoleza1@aisa.fi.muni.cz
+ssh xdoleza1@aura.fi.muni.cz
