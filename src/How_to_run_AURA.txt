@@ -1,2 +1,17 @@
 ssh xdoleza1@aisa.fi.muni.cz
 ssh xdoleza1@aura.fi.muni.cz
+
+spuštění na AISE:
+1) zip na Windows
+2) přesunout to aisy    scp pv021_project.zip xdoleza1@aisa.fi.muni.cz:~
+3) unzip v aise         unzip pv021_project.zip
+...
+
+Sarky pocitac:
+
+Git bash:
+cd /Desktop/FI MUNI/Neural Networks/pv021_project
+./run.sh
+
+
+

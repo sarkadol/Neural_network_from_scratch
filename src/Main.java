@@ -31,19 +31,20 @@ public class Main {
             List<Integer> train_labels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
             System.out.println("Loading completed");
 
-            Hyperparameters hyperparameters = new Hyperparameters(40, 0.01f, 50,5.0f, 64);
+            Hyperparameters hyperparameters = new Hyperparameters(20, 0.01f, 50,5.0f, 64);
 
             long startTime = System.currentTimeMillis();
             network.trainNetwork(train_vectors, train_labels, hyperparameters, false);
             long endTime = System.currentTimeMillis();
 
             if (true) {        //PREDICTING
+                System.out.println("Predicting...");
                 List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_test_vectors.csv");
                 long startTimePrediction = System.currentTimeMillis();
                 int[] predicted_labels = network.predictAll(test_vectors);
                 long endTimePrediction = System.currentTimeMillis();
 
-                System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
+                //System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
                 DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv");
 
                 System.out.println("Predicting "+(endTimePrediction - startTimePrediction) + " milliseconds");

@@ -64,4 +64,15 @@ fig.text(0.02, 0.01, hyperparameter_text, ha='left', va='bottom', fontsize=12, m
 plt.tight_layout(rect=[0, 0.09, 1, 1])  # Leave space for the hyperparameter text
 
 # Display the plots
-plt.show()
+#plt.show()
+
+print(f""" PYTHON\n
+Hyperparameters:
+- Batch size: {batch_size}
+- Decay rate: {decay_rate}
+- Training images: {train_vector_count}
+- Epochs: {len(losses)}
+- Initial learning rate: {learning_rates[0]}
+- Layers: {layers}
+ACCURACY: {evaluate()}
+""")

@@ -3,6 +3,7 @@ package src;
 import java.util.Arrays;
 import java.util.List;
 
+
 import static src.Util.activationDerivative;
 
 public class Network {
@@ -238,8 +239,8 @@ public class Network {
         }
         System.out.println("\nTraining completed");
 
-        System.out.println("losses = " + Arrays.toString(losses));
-        System.out.println("learning_rates = " + Arrays.toString(learning_rates));
+        //System.out.println("losses = " + Arrays.toString(losses));
+        //System.out.println("learning_rates = " + Arrays.toString(learning_rates));
 
         //pass this to file which is read by Python to plot the changes during epochs
         DataLoader.writeToFileForPython(losses,learning_rates,trainVectors.size(),hp.getBatchSize(),hp.getDecayRate(),Arrays.toString(getLayersLength()));
