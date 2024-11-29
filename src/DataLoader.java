@@ -164,7 +164,7 @@ public class DataLoader {
         return images;
     }
 
-    public static void writeToFileForPython(float[] losses, float[] learningRates, int train_vector_count,int batch_size,float decay_rate) {
+    public static void writeToFileForPython(float[] losses, float[] learningRates, int train_vector_count, int batch_size, float decay_rate, String layers) {
 
         try (FileWriter writer = new FileWriter("Java_to_Python.txt")) {
             writer.write("losses = " + Arrays.toString(losses) + "\n");
@@ -172,10 +172,11 @@ public class DataLoader {
             writer.write("train_vector_count = " + train_vector_count + "\n");
             writer.write("batch_size = " + batch_size + "\n");
             writer.write("decay_rate = " + decay_rate + "\n");
+            writer.write("layers = " + layers + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Data written to file.");
+        System.out.println("Data written to file for Python graph evaluation.");
     }
 
 }

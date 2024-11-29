@@ -244,7 +244,6 @@ public class Layer {
             // Update bias
             neurons[i].setBias(neurons[i].getBias() - learningRate * weight_gradients[i][0]);
         }
-        System.out.println("Weights and bias updated");
     }
 
     /**

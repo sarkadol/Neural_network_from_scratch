@@ -146,7 +146,6 @@ public class Network {
      * @param hyperparameters hyperparameters - learning rate and clip value used
      */
     public void train(float[] target, float[] outputs, Hyperparameters hyperparameters) {
-        System.out.println("\nTraining...");
 
         float loss = Util.crossEntropy(target, outputs);
         //System.out.println("cross entropy: "+loss);
@@ -165,7 +164,6 @@ public class Network {
 
         // 3) weight update
         outputLayer.updateWeights(output_layer_weight_gradients, hyperparameters.getLearningRate());
-        System.out.println("Training of the output layer completed");
 
         // -----------------HIDDEN LAYERS----------------------
 
@@ -174,7 +172,6 @@ public class Network {
         for (int i = layers.length - 1; i > 1; i--) {
             Layer currentLayer = layers[i];
             Layer previousLayer = layers[i - 1];
-            System.out.println("Passing from " + i + " to " + (i-1));
 
             // 1) output gradients
             float[] previous_output_gradient = backpropagateHiddenLayer(current_output_gradient, currentLayer, previousLayer);
@@ -189,7 +186,6 @@ public class Network {
 
             current_output_gradient = previous_output_gradient; //move to another layer
         }
-        System.out.println("Training completed");
     }
 
 
@@ -208,6 +204,8 @@ public class Network {
     public void trainNetwork(List<float[]> trainVectors, List<Integer> trainLabels,
                              Hyperparameters hp,   // Hyperparameters
                              boolean verbose) {
+        System.out.println("\nTraining...");
+
         int epochs = hp.getEpochs();
         float[] losses = new float[epochs];
         float[] learning_rates = new float[epochs];
@@ -238,11 +236,13 @@ public class Network {
             learning_rates[epoch] = hp.getLearningRate();
             losses[epoch] = totalLoss / trainVectors.size();
         }
+        System.out.println("\nTraining completed");
+
         System.out.println("losses = " + Arrays.toString(losses));
         System.out.println("learning_rates = " + Arrays.toString(learning_rates));
 
         //pass this to file which is read by Python to plot the changes during epochs
-        DataLoader.writeToFileForPython(losses,learning_rates,trainVectors.size(),hp.getBatchSize(),hp.getDecayRate());
+        DataLoader.writeToFileForPython(losses,learning_rates,trainVectors.size(),hp.getBatchSize(),hp.getDecayRate(),Arrays.toString(getLayersLength()));
     }
 
 
@@ -265,5 +265,17 @@ public class Network {
             layer.printInfoLine();
         }
 
+    }
+
+    /**
+     * Iterates over each layer in a network and its length (number of neurons)
+     * @return array of layers lengths, e. g. [784, 16, 8, 10]
+     */
+    public int[] getLayersLength(){
+        int[] lengths = new int[layers.length];
+        for(int i=0;i<layers.length;i++){
+            lengths[i] = layers[i].getOutputLength();
+        }
+        return lengths;
     }
 }

@@ -11,6 +11,7 @@ learning_rates = eval(lines[1].split('=')[1].strip())
 train_vector_count = eval(lines[2].split('=')[1].strip())
 batch_size = eval(lines[3].split('=')[1].strip())
 decay_rate = eval(lines[4].split('=')[1].strip())
+layers = eval(lines[5].split('=')[1].strip())
 
 #print("Losses:", losses)
 #print("Learning Rates:", learning_rates)
@@ -42,6 +43,7 @@ Hyperparameters:
 - Training images: {train_vector_count}
 - Epochs: {len(losses)}
 - Initial learning rate: {learning_rates[0]}
+- Layers: {layers}
 """
 
 # Add the text box to the figure
