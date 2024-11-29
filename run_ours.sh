@@ -9,6 +9,8 @@ echo "#########################"
 echo "COMPILING JAVA PROJECT..."
 echo "#########################"
 javac -d out -sourcepath src $(find src -name "*.java")
+#java -cp out -XX:+TieredCompilation -XX:+AggressiveOpts -XX:+UseParallelGC src.Main
+
 
 if [ $? -ne 0 ]; then
   echo "Compilation failed!"
@@ -16,7 +18,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "#########################"
-echo "   RUNNING JAVA CODE    "
+echo "    RUNNING JAVA CODE    "
 echo "#########################"
 java -cp out src.Main
 
@@ -26,5 +28,15 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "#########################"
-echo "  FINISHED SUCCESSFULLY "
+echo " RUNNING PYTHON SCRIPT  "
+echo "#########################"
+python src/tests/Print_results.py
+
+if [ $? -ne 0 ]; then
+  echo "Python script execution failed!"
+  exit 1
+fi
+
+echo "#########################"
+echo "  FINISHED SUCCESSFULLY  "
 echo "#########################"
