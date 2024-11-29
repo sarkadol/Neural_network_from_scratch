@@ -35,6 +35,20 @@ axs[1].set_ylabel('Learning Rate', fontsize=12)
 axs[1].legend(fontsize=10)
 axs[1].grid(True, linestyle='--', alpha=0.7)
 
+
+def evaluate():
+    """
+    Copied from official evaluator, just the arguments are static.
+    :return:
+    """
+    with open('../../NEW_test_predictions.csv','r') as rf:
+        pred = rf.read().split()
+    with open('../../data/fashion_mnist_test_labels.csv','r') as rf:
+        truth = rf.read().split()
+    assert len(pred) == len(truth)
+    hits = sum([p == t for p, t in zip(pred, truth)])
+    return hits/len(truth)
+
 # Add a text box for hyperparameters
 hyperparameter_text = f"""
 Hyperparameters:
@@ -44,6 +58,8 @@ Hyperparameters:
 - Epochs: {len(losses)}
 - Initial learning rate: {learning_rates[0]}
 - Layers: {layers}
+
+ACCURACY: {evaluate()}
 """
 
 # Add the text box to the figure
@@ -52,6 +68,7 @@ fig.text(0.02, 0.01, hyperparameter_text, ha='left', va='bottom', fontsize=12, m
 
 # Adjust layout for better readability
 plt.tight_layout(rect=[0, 0.09, 1, 1])  # Leave space for the hyperparameter text
+
 
 # Display the plots
 plt.show()

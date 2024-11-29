@@ -14,8 +14,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28*28);
-        Layer layer1 = new Layer(layer0, 256, "relu");
-        Layer layer2 = new Layer(layer1, 128, "relu");
+        Layer layer1 = new Layer(layer0, 128, "relu");
+        Layer layer2 = new Layer(layer1, 16, "relu");
         Layer layer3 = new Layer(layer2, 10, "softmax");
         Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
         System.out.println("Layers initialized");
@@ -37,7 +37,7 @@ public class Main {
             network.trainNetwork(train_vectors, train_labels, hyperparameters, false);
             long endTime = System.currentTimeMillis();
 
-            if (false) {        //PREDICTING
+            if (true) {        //PREDICTING
                 List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_test_vectors.csv");
                 long startTimePrediction = System.currentTimeMillis();
                 int[] predicted_labels = network.predictAll(test_vectors);
