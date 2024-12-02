@@ -120,7 +120,7 @@ public class Network {
     /**
      * Clips the gradients to prevent exploding.
      * −clipValue ≤ gradients[i][j] ≤ clipValue
-     * (see the slide "Issues in gradient descent – too fast descent")
+     * (see the slide 108 "Issues in gradient descent – too fast descent")
      * @param gradients 2D array f gradients
      * @param clipValue treshold value
      * @return

@@ -15,19 +15,20 @@ public class Hyperparameters {
      * gradient clipping value, and batch size.
      *
      * @param epochs        the total number of training epochs (iterations over the entire dataset)
-     * @param learningRate  the initial learning rate for the optimizer, typically a small positive value (e.g., 0.1 or 0.01)
-     * @param decayRate     the rate at which the learning rate decays, controlling how quickly it decreases over time
-     * @param clipValue     the maximum value for gradient clipping; gradients larger than this value will be scaled down
-     * @param batchSize     the size of each batch for training; determines how many samples are used per training step
-     * @param momentum
+     * @param learning_rate  the initial learning rate for the optimizer, typically a small positive value (e.g., 0.1 or 0.01)
+     * @param decay_rate     the rate at which the learning rate decays, controlling how quickly it decreases over time
+     * @param clip_value     the maximum value for gradient clipping; gradients larger than this value will be scaled down
+     * @param batch_size     the size of each batch for training; determines how many samples are used per training step
+     * @param momentum      a value between 0 and 1 (e.g., 0.9); that speeds up convergence and reduces oscillations
+     *                      by incorporating a fraction of the previous weight . Momentum = 0 means no usage of momentum
      * @param weightDecayRate
      */
-    public Hyperparameters(int epochs, float learningRate, float decayRate, float clipValue, int batchSize, float momentum, float weightDecayRate) {
+    public Hyperparameters(int epochs, float learning_rate, float decay_rate, float clip_value, int batch_size, float momentum, float weightDecayRate) {
         this.epochs = epochs;
-        this.learningRate = learningRate;
-        this.clipValue = clipValue;
-        this.batchSize = batchSize;
-        this.decayRate = decayRate;
+        this.learningRate = learning_rate;
+        this.clipValue = clip_value;
+        this.batchSize = batch_size;
+        this.decayRate = decay_rate;
         this.momentum = momentum;
         this.weightDecay = weightDecayRate;
     }

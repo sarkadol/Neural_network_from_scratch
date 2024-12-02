@@ -158,7 +158,7 @@ public class Layer {
     /**
      * Computes the weight gradients of the output layer (including bias gradient)
      *
-     * For the formula, see the {@link #computeOutputLayerWeightGradients(float[], float[],)} computeWeightGradients}
+     * For the formula, see the {@link #computeWeightGradients(float[])}
      *
      * @param output_layer_gradients array of output layer gradients
      * @return weight gradients for output layer including bias gradient
@@ -175,7 +175,6 @@ public class Layer {
             // Compute the bias gradient as the last element in the row
             weight_gradients[i][num_inputs] = output_layer_gradients[i];
         }
-
         return weight_gradients;
     }
 
@@ -214,10 +213,11 @@ public class Layer {
      * Updates the weights and biases of neurons using the weight gradients.
      * <p>
      * Formula: Δw_ji(t) = -ε · ∂E / ∂w_ji + α · Δw_ji(t-1)
+     * (see the slide 274 "SGD with momentum")
      *
-     * @param weight_gradients  ∂E / ∂w_ji gradients for each neuron including bias gradient
-     * @param learningRate     ε the rate at which weights and biases are adjusted
-     * @param momentum         α momentum hyperparameter
+     * @param weight_gradients ∂E / ∂w_ji - gradients for each neuron including bias gradient
+     * @param learningRate     ε - the rate at which weights and biases are adjusted
+     * @param momentum         α - momentum at which weights and biases are adjusted
      */
     public void updateWeights(float[][] weight_gradients, float learningRate, float momentum) {
         // Validate parameters
@@ -231,14 +231,14 @@ public class Layer {
 
         for (int i = 0; i < neurons.length; i++) { //for each neuron in this layer:
             float[] weights = neurons[i].getWeights();
-            // Initialize prevWeightUpdate if not already done
-            if (neurons[i].getPrevWeightUpdate() == null) {
-                neurons[i].setPrevWeightUpdate(new float[weights.length]); // Initialize to zeros
+
+            if (neurons[i].getPrevWeightUpdate() == null) { // Initialize prevWeightUpdate if not already done
+                neurons[i].setPrevWeightUpdate(new float[weights.length]); // all 0 instead of null
             }
             float[] prevWeightUpdate = neurons[i].getPrevWeightUpdate();
 
-            //update weights
-            for (int j = 0; j < weights.length; j++) { //for each weight of a neuron except the first one which is bias
+            //update weights and bias of a neuron
+            for (int j = 0; j < weights.length; j++) {
                 //change every weight according to its gradient
                 //hyperparameter learning rate
                 //hyperparameter momentum
@@ -246,7 +246,7 @@ public class Layer {
                 if(j==0){ // Update the bias
                     neurons[i].setBias(neurons[i].getBias() + currentUpdate);
                 }
-                else{   // Update weights
+                else{   // Update weights array
                     weights[j] += currentUpdate;
                 }
                 prevWeightUpdate[j] = currentUpdate; // Store the current update as the new "previous update"
