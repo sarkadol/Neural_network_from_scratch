@@ -217,32 +217,43 @@ public class Layer {
      *
      * @param weight_gradients the gradients for each neuron including bias gradient
      * @param learningRate     the rate at which weights and biases are adjusted
+     * @param momentum         momentum hyperparameter
      */
-    public void updateWeights(float[][] weight_gradients, float learningRate) {
+    public void updateWeights(float[][] weight_gradients, float learningRate, float momentum) {
         // Validate parameters
         if (weight_gradients == null || y == null) {
-            throw new IllegalArgumentException("Gradients and inputs must not be null.");
-        }
+            throw new IllegalArgumentException("Gradients and inputs must not be null.");}
         if (weight_gradients[0].length != x.length + 1) {
             throw new IllegalArgumentException("Gradients width must match the number of weights plus 1 for bias. \n" +
-                    "Gradients width: " + weight_gradients[0].length + ", Expected width: " + (x.length + 1));
-        }
+                    "Gradients width: " + weight_gradients[0].length + ", Expected width: " + (x.length + 1));}
         if (learningRate <= 0) {
-            throw new IllegalArgumentException("Learning rate must be greater than 0.");
-        }
+            throw new IllegalArgumentException("Learning rate must be greater than 0.");}
 
         for (int i = 0; i < neurons.length; i++) { //for each neuron in this layer:
             float[] weights = neurons[i].getWeights();
+            // Initialize prevWeightUpdate if not already done
+            if (neurons[i].getPrevWeightUpdate() == null) {
+                neurons[i].setPrevWeightUpdate(new float[weights.length]); // Initialize to zeros
+            }
+            float[] prevWeightUpdate = neurons[i].getPrevWeightUpdate();
+
             //update weights
             for (int j = 1; j < weights.length; j++) { //for each weight of a neuron except the first one which is bias
                 //change every weight according to its gradient
-                weights[j] = weights[j] - learningRate * weight_gradients[i][j];
+                //hyperparameter learning rate
+                //hyperparameter momentum
+                float currentUpdate = -learningRate * weight_gradients[i][j] + momentum * prevWeightUpdate[j];
+                weights[j] += currentUpdate;
+                prevWeightUpdate[j] = currentUpdate; // Store the current update as the new "previous update"
             }
+            // Update bias
+            float currentBiasUpdate = -learningRate * weight_gradients[i][0] + momentum * prevWeightUpdate[0];
+            neurons[i].setBias(neurons[i].getBias() + currentBiasUpdate); // Update the bias
+            prevWeightUpdate[0] = currentBiasUpdate; // Store the current bias update as "previous"
 
             // Update weights
             neurons[i].setWeights(weights);
-            // Update bias
-            neurons[i].setBias(neurons[i].getBias() - learningRate * weight_gradients[i][0]);
+            neurons[i].setPrevWeightUpdate(prevWeightUpdate); //for momentum
         }
     }
 

@@ -10,7 +10,7 @@ spuštění na AISE:
 Sarky pocitac:
 
 Git bash:
-cd /Desktop/FI MUNI/Neural Networks/pv021_project
+cd Desktop/FI\ MUNI/Neural\ Networks/pv021_project
 ./run.sh
 
 

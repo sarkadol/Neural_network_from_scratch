@@ -7,6 +7,8 @@ public class Neuron {
     float[] weights; //array of weights w1...w_y
     float[] x;//array of input values from previous layer x1...x_y
     float inner_potential = 0;
+    private float[] prevWeightUpdate; // Previous weight updates for momentum
+
 
     public Neuron() {
         this.bias = 0;
@@ -23,6 +25,14 @@ public class Neuron {
     }
     public float[] getX() {
         return x;
+    }
+
+    public float[] getPrevWeightUpdate() {
+        return prevWeightUpdate;
+    }
+
+    public void setPrevWeightUpdate(float[] prevWeightUpdate) {
+        this.prevWeightUpdate = prevWeightUpdate;
     }
 
     public float getInnerPotential() {

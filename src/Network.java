@@ -164,7 +164,7 @@ public class Network {
         //TODO how to choose a good clip value? recommended 1-5, but possible up to 20... - HYPERPARAMETER
 
         // 3) weight update
-        outputLayer.updateWeights(output_layer_weight_gradients, hyperparameters.getLearningRate());
+        outputLayer.updateWeights(output_layer_weight_gradients, hyperparameters.getLearningRate(), hyperparameters.getMomentum());
 
         // -----------------HIDDEN LAYERS----------------------
 
@@ -183,7 +183,7 @@ public class Network {
             previous_weight_gradients = clipGradients(previous_weight_gradients, 5.0f); // Example clip value
 
             // 3) weight update
-            previousLayer.updateWeights(previous_weight_gradients, hyperparameters.getLearningRate());
+            previousLayer.updateWeights(previous_weight_gradients, hyperparameters.getLearningRate(), hyperparameters.getMomentum());
 
             current_output_gradient = previous_output_gradient; //move to another layer
         }

@@ -31,7 +31,14 @@ public class Main {
             List<Integer> train_labels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
             System.out.println("Loading completed");
 
-            Hyperparameters hyperparameters = new Hyperparameters(20, 0.01f, 50,5.0f, 64);
+            Hyperparameters hyperparameters = new Hyperparameters(
+                    20,
+                    0.01f,
+                    50,
+                    5.0f,
+                    64,
+                    0.9F,
+                    0.0005F);
 
             long startTime = System.currentTimeMillis();
             network.trainNetwork(train_vectors, train_labels, hyperparameters, false);
