@@ -25,7 +25,7 @@ public class Main {
         Network network = new Network(layers);
 
         if (true) {
-            int number_of_images = 100; //max 60000
+            int number_of_images = 1000; //max 60000
             System.out.println("Loading and normalizing a subset of data...");
             //training set of 60,000 examples
             //test set of 10,000 examples
@@ -34,16 +34,16 @@ public class Main {
             System.out.println("Loading completed");
 
             Hyperparameters hyperparameters = new Hyperparameters(
-                    20,
+                    40,
                     0.01f,
                     64,
-                    0,
+                    true,
+                    500,
                     5.0f,
                     0.5F,
                     0.01F);
             //momentum 0 = momentum not used
-            //weight decay rate 0 = momentum not used
-            //learning decay rate POSITIVE_INFINITY = not used
+            //weight decay rate 0 = not used
 
             long startTime = System.currentTimeMillis();
             network.trainNetwork(train_vectors, train_labels, hyperparameters, false);
