@@ -168,12 +168,12 @@ public class Layer {
         int num_inputs = x.length; // Number of inputs to the output layer
 
         float[][] weight_gradients = new float[num_neurons][num_inputs + 1]; // +1 for bias gradient
-        for (int i = 0; i < num_neurons; i++) { // For each neuron in the output layer
-            for (int j = 0; j < num_inputs; j++) { // For each weight of that neuron
-                weight_gradients[i][j] = output_layer_gradients[i] * x[j];
+        for (int j = 0; j < num_neurons; j++) { // For each neuron in the output layer
+            for (int i = 1; i < num_inputs+1; i++) { // For each weight of that neuron (skipping bias)
+                weight_gradients[j][i] = output_layer_gradients[j] * x[i-1];
             }
             // Compute the bias gradient as the last element in the row
-            weight_gradients[i][num_inputs] = output_layer_gradients[i];
+            weight_gradients[j][0] = output_layer_gradients[j];
         }
         return weight_gradients;
     }
@@ -199,11 +199,11 @@ public class Layer {
         float weight_independent_part;
         for (int j = 0; j < neurons.length; j++) { //For each neuron
             weight_independent_part = output_gradients[j] * Util.activationFunctionDerivative(neurons[j].getInnerPotential(), activation_function);
-            for (int i = 0; i < x.length; i++) {    //For each weight
-                weight_gradients[j][i] = weight_independent_part * x[i];
+            for (int i = 1; i < x.length+1; i++) {    //For each weight (skipping bias)
+                weight_gradients[j][i] = weight_independent_part * x[i-1];
             }
             // Add bias gradient as the last element
-            weight_gradients[j][x.length] = weight_independent_part;
+            weight_gradients[j][0] = weight_independent_part;
         }
         //System.out.println("Weight gradients: " + Arrays.deepToString(weight_gradients));
         return weight_gradients;
@@ -234,24 +234,24 @@ public class Layer {
             float[] weights = neurons[i].getWeights();
 
             if (neurons[i].getPrevWeightUpdate() == null) { // Initialize prevWeightUpdate if not already done
-                neurons[i].setPrevWeightUpdate(new float[weights.length]); // all 0 instead of null
+                neurons[i].setPrevWeightUpdate(new float[weights.length+1]); // all 0 instead of null
             }
             float[] prevWeightUpdate = neurons[i].getPrevWeightUpdate();
+            // Update bias
+            float biasGradient = weight_gradients[i][0];
+            float biasRegularization = 0; // No regularization applied to the bias
+            float biasUpdate = -learningRate * (biasGradient + biasRegularization) + momentum * prevWeightUpdate[0];
+            neurons[i].setBias(neurons[i].getBias() + biasUpdate);
+            prevWeightUpdate[0] = biasUpdate; // Store the update for momentum
 
             //update weights and bias of a neuron
-            for (int j = 0; j < weights.length; j++) {
+            for (int j = 1; j < weights.length+1; j++) {
                 //change every weight according to its gradient
                 //hyperparameter learning rate
                 //hyperparameter momentum
                 //hyperparameter weight decay
-                float regularizationTerm = 2 * weight_decay * weights[j];
-                float currentUpdate = -learningRate * (weight_gradients[i][j] + regularizationTerm) + momentum * prevWeightUpdate[j];
-                if(j==0){ // Update the bias
-                    neurons[i].setBias(neurons[i].getBias() + currentUpdate);
-                }
-                else{   // Update weights array
-                    weights[j] += currentUpdate;
-                }
+                float regularizationTerm = 2 * weight_decay * weights[j-1];
+                float currentUpdate = -learningRate * (weight_gradients[i][j-1] + regularizationTerm) + momentum * prevWeightUpdate[j-1];
                 prevWeightUpdate[j] = currentUpdate; // Store the current update as the new "previous update"
             }
             // Update weights
@@ -294,28 +294,5 @@ public class Layer {
                         "x count: " + (x != null ? x.length : 0) + ", " +
                         "neurons count: " + (neurons != null ? neurons.length : 0) + ", " +
                         "y count: " + (y != null ? y.length : 0));
-    }
-
-    /**
-     * Converts gradient of outputs of neurons to gradient of their weights; works for layers with a simple activation
-     * function, that takes as an argument only the inner potential of the neuron
-     *
-     * @param output_gradients an array of output gradients of each neuron in the layer
-     * @return a matrix of gradients of weights where on each row there are all the weights of a single neuron
-     * in the layer
-     */
-    public float[][] outputGradientsToWeightGradients(float[] output_gradients) {
-        if (output_gradients.length != neurons.length) {
-            throw new IllegalArgumentException("Gradients length must match the number of neurons.");
-        }
-        float[][] result = new float[neurons.length][x.length];
-        float weight_independent_part;
-        for (int i = 0; i < neurons.length; i++) { //For each neuron
-            weight_independent_part = output_gradients[i] * Util.activationFunctionDerivative(neurons[i].getInnerPotential(), activation_function);
-            for (int j = 0; j < x.length; j++) {    //For each weight
-                result[i][j] = weight_independent_part * x[j];
-            }
-        }
-        return result;
     }
 }
