@@ -1,5 +1,9 @@
 package src;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class Util {
 
     /**
@@ -218,5 +222,15 @@ public class Util {
     }
 
 
-
+    public static <T> List<List<T>> divideToBatches(List<T> list, int batchSize) {
+        int currentBatchStart = 0;
+        int listLength = list.size();
+        int numberOfBatches = listLength / batchSize + (listLength % batchSize == 0 ? 0 : 1);
+        List<List<T>> batches = new ArrayList<>(numberOfBatches);
+        for (int i = 0; i < numberOfBatches; i++) {
+            batches.add(i, list.subList(currentBatchStart, Math.min(currentBatchStart + batchSize, listLength)));
+            currentBatchStart += batchSize;
+        }
+        return batches;
+    }
 }

@@ -190,11 +190,6 @@ public class Network {
     }
 
 
-    public List<List<float[]>> divideToBatches(List<float[]> trainVectors) {
-        return null;
-    }
-
-
     public void trainBatch(List<float[]> trainVectors, List<Integer> trainLabels,
                            Hyperparameters hyperparameters,
                            boolean verbose) {
