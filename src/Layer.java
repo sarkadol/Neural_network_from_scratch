@@ -218,6 +218,7 @@ public class Layer {
      * @param weight_gradients ∂E / ∂w_ji - gradients for each neuron including bias gradient
      * @param learningRate     ε - the rate at which weights and biases are adjusted
      * @param momentum         α - momentum at which weights and biases are adjusted
+     * @param weight_decay     additive weight decay
      */
     public void updateWeights(float[][] weight_gradients, float learningRate, float momentum, float weight_decay) {
         // Validate parameters

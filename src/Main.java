@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.Float.POSITIVE_INFINITY;
+
 public class Main {
     /**
      * This main method creates a neural network, trains it and then predicts the labels
@@ -23,7 +25,7 @@ public class Main {
         Network network = new Network(layers);
 
         if (true) {
-            int number_of_images = 10; //max 60000
+            int number_of_images = 100; //max 60000
             System.out.println("Loading and normalizing a subset of data...");
             //training set of 60,000 examples
             //test set of 10,000 examples
@@ -34,13 +36,14 @@ public class Main {
             Hyperparameters hyperparameters = new Hyperparameters(
                     20,
                     0.01f,
-                    50,
-                    5.0f,
                     64,
+                    0,
+                    5.0f,
                     0.5F,
                     0.01F);
             //momentum 0 = momentum not used
             //weight decay rate 0 = momentum not used
+            //learning decay rate POSITIVE_INFINITY = not used
 
             long startTime = System.currentTimeMillis();
             network.trainNetwork(train_vectors, train_labels, hyperparameters, false);
