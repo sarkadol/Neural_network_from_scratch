@@ -38,8 +38,9 @@ public class Main {
                     5.0f,
                     64,
                     0.5F,
-                    0.0005F);
+                    0.01F);
             //momentum 0 = momentum not used
+            //weight decay rate 0 = momentum not used
 
             long startTime = System.currentTimeMillis();
             network.trainNetwork(train_vectors, train_labels, hyperparameters, false);

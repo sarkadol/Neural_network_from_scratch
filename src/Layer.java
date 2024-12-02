@@ -219,7 +219,7 @@ public class Layer {
      * @param learningRate     ε - the rate at which weights and biases are adjusted
      * @param momentum         α - momentum at which weights and biases are adjusted
      */
-    public void updateWeights(float[][] weight_gradients, float learningRate, float momentum) {
+    public void updateWeights(float[][] weight_gradients, float learningRate, float momentum, float weight_decay) {
         // Validate parameters
         if (weight_gradients == null || y == null) {
             throw new IllegalArgumentException("Gradients and inputs must not be null.");}
@@ -242,7 +242,9 @@ public class Layer {
                 //change every weight according to its gradient
                 //hyperparameter learning rate
                 //hyperparameter momentum
-                float currentUpdate = -learningRate * weight_gradients[i][j] + momentum * prevWeightUpdate[j];
+                //hyperparameter weight decay
+                float regularizationTerm = 2 * weight_decay * weights[j];
+                float currentUpdate = -learningRate * (weight_gradients[i][j] + regularizationTerm) + momentum * prevWeightUpdate[j];
                 if(j==0){ // Update the bias
                     neurons[i].setBias(neurons[i].getBias() + currentUpdate);
                 }

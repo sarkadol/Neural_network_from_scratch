@@ -21,16 +21,16 @@ public class Hyperparameters {
      * @param batch_size     the size of each batch for training; determines how many samples are used per training step
      * @param momentum      a value between 0 and 1 (e.g., 0.9); that speeds up convergence and reduces oscillations
      *                      by incorporating a fraction of the previous weight . Momentum = 0 means no usage of momentum
-     * @param weightDecayRate
+     * @param weight_decay
      */
-    public Hyperparameters(int epochs, float learning_rate, float decay_rate, float clip_value, int batch_size, float momentum, float weightDecayRate) {
+    public Hyperparameters(int epochs, float learning_rate, float decay_rate, float clip_value, int batch_size, float momentum, float weight_decay) {
         this.epochs = epochs;
         this.learningRate = learning_rate;
         this.clipValue = clip_value;
         this.batchSize = batch_size;
         this.decayRate = decay_rate;
         this.momentum = momentum;
-        this.weightDecay = weightDecayRate;
+        this.weightDecay = weight_decay;
     }
 
     public int getEpochs() {
@@ -81,7 +81,7 @@ public class Hyperparameters {
     }
 
 
-    public void setWeightDecay(float weightDecay) {
-        this.weightDecay = weightDecay;
+    public void setWeightDecay(float weight_decay) {
+        this.weightDecay = weight_decay;
     }
 }
