@@ -34,7 +34,7 @@ public class Main {
             System.out.println("Loading completed");
 
             Hyperparameters hyperparameters = new Hyperparameters(
-                    40,
+                    100,
                     0.01f,
                     64,
                     true,

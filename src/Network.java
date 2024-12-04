@@ -1,6 +1,8 @@
 package src;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -190,47 +192,135 @@ public class Network {
     }
 
 
-    public void trainBatch(List<float[]> trainVectors, List<Integer> trainLabels,
-                           Hyperparameters hyperparameters,
-                           boolean verbose) {
+    public List<float[][]> computeWeightGradients(float[] target, float[] outputs, Hyperparameters hyperparameters) {
 
+        float loss = Util.crossEntropy(target, outputs);
+        //System.out.println("cross entropy: "+loss);
+
+        int numberOfLayers = layers.length;
+        List<float[][]> weightGradients = new ArrayList<>(numberOfLayers - 1);
+
+        // ---------------OUTPUT LAYER -------------------
+        Layer outputLayer = layers[numberOfLayers - 1];
+
+        // 1) output gradients
+        float[] output_layer_gradients = computeOutputLayerGradients(outputs,target); //gradient wrt y
+
+        // 2) weight gradients
+        float[][] output_layer_weight_gradients = outputLayer.computeOutputLayerWeightGradients(output_layer_gradients); //gradient wrt w
+        // Clip gradients for output layer
+        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, hyperparameters.getClipValue()); // Example clip value
+        //TODO how to choose a good clip value? recommended 1-5, but possible up to 20... - HYPERPARAMETER
+
+        // 3) weight update
+        weightGradients.add(output_layer_weight_gradients);
+
+        // -----------------HIDDEN LAYERS----------------------
+
+        float[] current_output_gradient = output_layer_gradients; //move from output layer
+
+        for (int i = numberOfLayers - 1; i > 1; i--) {
+            Layer currentLayer = layers[i];
+            Layer previousLayer = layers[i - 1];
+
+            // 1) output gradients
+            float[] previous_output_gradient = backpropagateHiddenLayer(current_output_gradient, currentLayer, previousLayer);
+
+            // 2) weight gradients
+            float[][] previous_weight_gradients = previousLayer.computeWeightGradients(previous_output_gradient);
+            // Clip gradients for the current hidden layer
+            previous_weight_gradients = clipGradients(previous_weight_gradients, 5.0f); // Example clip value
+
+            weightGradients.add(previous_weight_gradients);
+
+            current_output_gradient = previous_output_gradient; //move to another layer
+        }
+        Collections.reverse(weightGradients);
+        return weightGradients;
     }
 
+
+    public float trainBatch(List<float[]> trainVectors, List<Integer> trainLabels,
+                           Hyperparameters hp,
+                           boolean verbose) {
+        List<float[][]> weightGradientsPerLayer = new ArrayList<>(layers.length - 1);
+        for (int i = 0; i < layers.length - 1; i++) {
+            weightGradientsPerLayer.add(layers[i + 1].initializeWeightGradients());
+        }
+        float totalLoss = 0;
+        for (int i = 0; i < trainVectors.size(); i++) {
+            float[] inputs = trainVectors.get(i);
+            float[] target = Util.labelToVector(trainLabels.get(i));
+            float[] outputs = forwardPass(inputs);
+
+            List<float[][]> currentWeightGradientsPerLayer = computeWeightGradients(target, outputs, hp);
+            for (int j = 0; j < layers.length - 1; j++) {
+                weightGradientsPerLayer.set(
+                        j,
+                        layers[j + 1].addWeightGradients(
+                                currentWeightGradientsPerLayer.get(j),
+                                weightGradientsPerLayer.get(j)));
+            }
+
+            totalLoss += Util.crossEntropy(target, outputs);
+
+            if (verbose) {
+                System.out.println("\n--- Debug Info ---");
+                System.out.println("Image: " + i);
+                System.out.println("Target: " + Arrays.toString(target));
+                System.out.println("Outputs: " + Arrays.toString(outputs));
+                System.out.println("Cross-entropy loss: " + Util.crossEntropy(target, outputs));
+                System.out.println("Learning rate: " + hp.getLearningRate());
+            }
+        }
+        /* if(false){//if we want to use the exponential learning rate - maybe to hyperparameter
+            hp.setLearningRate(hp.getLearningRate() * (float)Math.pow(0.1, epoch / hp.getDecayRate())); //slightly decrease the learning rate - exponential scheduling
+            //ϵ(t) = ϵ0 · 0.1^(t/s) -> slide 118 from NEW_continuously_updated_slides.pdf
+        } */
+
+        for (int i = 0; i < layers.length - 1; i++) {
+            layers[i + 1].updateWeights(
+                    weightGradientsPerLayer.get(i),
+                    hp.getLearningRate(),
+                    hp.getMomentum(),
+                    hp.getWeightDecay()
+                    );
+        }
+        return totalLoss / trainVectors.size();
+    }
 
     public void trainNetwork(List<float[]> trainVectors, List<Integer> trainLabels,
                              Hyperparameters hp,   // Hyperparameters
                              boolean verbose) {
         System.out.println("\nTraining...");
 
+        Dataset dataset = new Dataset(trainVectors, trainLabels);
+        int batchSize = hp.getBatchSize();
         int epochs = hp.getEpochs();
         float[] losses = new float[epochs];
         float[] learning_rates = new float[epochs];
         for (int epoch = 0; epoch < epochs; epoch++) {
-            float totalLoss = 0;
-            for (int i = 0; i < trainVectors.size(); i++) {
-                float[] inputs = trainVectors.get(i);
-                float[] target = Util.labelToVector(trainLabels.get(i));
-                float[] outputs = forwardPass(inputs);
-                train(target, outputs, hp);
-                totalLoss += Util.crossEntropy(target, outputs);
+            dataset.shuffle();
+            List<List<float[]>> vectorBatches = Util.divideToBatches(dataset.getVectors(), batchSize);
+            List<List<Integer>> labelBatches = Util.divideToBatches(dataset.getLabels(), batchSize);
 
-                if (verbose) {
-                    System.out.println("\n--- Debug Info ---");
-                    System.out.println("Epoch: " + epoch + ", Image: " + i);
-                    System.out.println("Target: " + Arrays.toString(target));
-                    System.out.println("Outputs: " + Arrays.toString(outputs));
-                    System.out.println("Cross-entropy loss: " + Util.crossEntropy(target, outputs));
-                    System.out.println("Learning rate: " + hp.getLearningRate());
-                }
+            float totalLoss = 0;
+            int numberOfBatches = vectorBatches.size();
+            if (vectorBatches.size() != labelBatches.size()) {
+                throw new RuntimeException("Number of batches does not match number of labels");
             }
+            for (int i = 0; i < numberOfBatches; i++) {
+                totalLoss += trainBatch(vectorBatches.get(i), labelBatches.get(i), hp, verbose);
+            }
+
             if(hp.useLearningDecayRate()){//if we want to use the exponential learning rate
                 hp.setLearningRate(hp.getLearningRate() * (float)Math.pow(0.1, epoch / hp.getLearningDecayRate())); //slightly decrease the learning rate - exponential scheduling
                 //ϵ(t) = ϵ0 · 0.1^(t/s) -> slide 118 from NEW_continuously_updated_slides.pdf
             }
-
-            System.out.println("Epoch " + epoch + ": Loss = " + (totalLoss / trainVectors.size()));
+            losses[epoch] = totalLoss / numberOfBatches;    // The last batch may be smaller, so it is not the same
+                                                            // as dividing the total overall loss by the number
+                                                            // of samples, but it does not matter
             learning_rates[epoch] = hp.getLearningRate();
-            losses[epoch] = totalLoss / trainVectors.size();
         }
         System.out.println("\nTraining completed");
 

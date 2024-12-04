@@ -160,7 +160,7 @@ public class Layer {
      *
      * For the formula, see the {@link #computeWeightGradients(float[])}
      *
-     * @param output_layer_gradients array of output layer gradients
+     * @param output_layer_gradients array of output layer inner potential gradients
      * @return weight gradients for output layer including bias gradient
      */
     public float[][] computeOutputLayerWeightGradients(float[] output_layer_gradients) {
@@ -177,6 +177,23 @@ public class Layer {
         }
         return weight_gradients;
     }
+
+
+
+    public float[][] initializeWeightGradients() {
+        return new float[neurons.length][x.length + 1];
+    }
+
+
+    public float[][] addWeightGradients(float[][] weight_gradients, float[][] total_weight_gradients) {
+        for (int i = 0; i < total_weight_gradients.length; i++) {
+            for (int j = 0; j < total_weight_gradients[i].length; j++) {
+                total_weight_gradients[i][j] += weight_gradients[i][j];
+            }
+        }
+        return total_weight_gradients;
+    }
+
 
 
     /**
