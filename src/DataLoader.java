@@ -7,6 +7,7 @@ import java.util.List;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 /**
  * The {@code DataLoader} class provides utility methods for loading image data
@@ -165,7 +166,7 @@ public class DataLoader {
     }
 
     public static void writeToFileForPython(float[] losses, float[] learningRates, int train_vector_count, String layers, Hyperparameters hp) {
-
+        writeToCsvForComparison(losses, learningRates, train_vector_count, layers, hp);
         try (FileWriter writer = new FileWriter("Java_to_Python.txt")) {
             writer.write("losses = " + Arrays.toString(losses) + "\n");
             writer.write("learning_rates = " + Arrays.toString(learningRates) + "\n");
@@ -181,5 +182,49 @@ public class DataLoader {
         }
         System.out.println("Data written to file for Python graph evaluation.");
     }
+    public static void writeToCsvForComparison(float[] losses, float[] learningRates, int train_vector_count, String layers, Hyperparameters hp) {
+
+        try (FileWriter writer = new FileWriter("all_tries.csv",true)) {
+            // Prepare the data in a single row with semicolons as delimiters
+            String dataRow = String.join(";",
+                    Integer.toString(train_vector_count),
+                    layers,
+                    Integer.toString(hp.getBatchSize()),
+                    Float.toString(hp.getWeightDecay()),
+                    Float.toString(hp.getMomentum()),
+                    Float.toString(hp.getLearningDecayRate()),
+                    Float.toString(hp.getClipValue()),
+                    Float.toString(evaluate("NEW_test_predictions.csv","data/fashion_mnist_test_labels.csv"))
+            );
+
+            writer.write(dataRow + "\n"); // Write the data to the file
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Data written to CSV file for comparison.");
+    }
+    // Evaluate accuracy
+    private static float evaluate(String predictionsPath, String truthPath) throws IOException {
+        List<String> predictions = readFileAsList(predictionsPath);
+        List<String> truth = readFileAsList(truthPath);
+        if (predictions.size() != truth.size()) {
+            throw new IllegalArgumentException("Predictions and truth sizes do not match!");
+        }
+
+        int hits = 0;
+        for (int i = 0; i < predictions.size(); i++) {
+            if (predictions.get(i).equals(truth.get(i))) {
+                hits++;
+            }
+        }
+        return (float) hits / predictions.size();
+    }
+    // Read file as a list of strings
+    private static List<String> readFileAsList(String filePath) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            return br.lines().collect(Collectors.toList());
+        }
+    }
+
 
 }

@@ -1,0 +1,2 @@
+train_vector_count;layers;batch_size;decay_rate;momentum;learning_decay_rate;clip_value;ACCURACY
+10;[784, 128, 16, 10];64;0.01;0.8;500.0;5.0;0.101
