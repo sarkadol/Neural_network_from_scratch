@@ -9,9 +9,9 @@ public class HyperparameterTester {
     public static void main(String[] args) throws IOException {
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28 * 28);
-        Layer layer1 = new Layer(layer0, 256, "relu");
-        Layer layer2 = new Layer(layer1, 128, "relu");
-        Layer layer3 = new Layer(layer2, 16, "relu");
+        Layer layer1 = new Layer(layer0, 512, "relu");
+        Layer layer2 = new Layer(layer1, 512, "relu");
+        Layer layer3 = new Layer(layer2, 512, "relu");
         Layer layer4 = new Layer(layer3, 10, "softmax");
         Layer[] layers = new Layer[]{layer0, layer1, layer2, layer3,layer4};
         System.out.println("Layers initialized");
@@ -48,13 +48,13 @@ public class HyperparameterTester {
 
     public void runTests(int number_of_images) {
         // Define ranges for hyperparameters
-        int[] batchSizes = {20,10};
+        int[] batchSizes = {32,20};
         float[] learningRates = {0.01f};
         float[] momentums = {0.8f};
         float[] weightDecays = {0.01f};
         float[] learningDecayRates = {500};
         float[] clipValues = {5f};
-        int[] epochs = {20,60,80};
+        int[] epochs = {10};
 
         // Calculate the total number of combinations
         int totalRuns = batchSizes.length * learningRates.length * momentums.length * epochs.length*weightDecays.length * learningDecayRates.length * clipValues.length * 5; // 5 is for repeated runs
