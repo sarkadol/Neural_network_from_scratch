@@ -9,10 +9,11 @@ public class HyperparameterTester {
     public static void main(String[] args) throws IOException {
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28 * 28);
-        Layer layer1 = new Layer(layer0, 128, "relu");
-        Layer layer2 = new Layer(layer1, 16, "relu");
-        Layer layer3 = new Layer(layer2, 10, "softmax");
-        Layer[] layers = new Layer[]{layer0, layer1, layer2, layer3};
+        Layer layer1 = new Layer(layer0, 256, "relu");
+        Layer layer2 = new Layer(layer1, 128, "relu");
+        Layer layer3 = new Layer(layer2, 16, "relu");
+        Layer layer4 = new Layer(layer3, 10, "softmax");
+        Layer[] layers = new Layer[]{layer0, layer1, layer2, layer3,layer4};
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
@@ -47,12 +48,19 @@ public class HyperparameterTester {
 
     public void runTests(int number_of_images) {
         // Define ranges for hyperparameters
-        int[] batchSizes = {32, 64, 128};
-        float[] learningRates = {0.01f,0.1f};
-        float[] momentums = {0.0f, 0.8f, 0.9f};
-        float[] weightDecays = {0.01f, 0.0f};
-        float[] learningDecayRates = {500, 1000};
-        float[] clipValues = {5f, 1.0f};
+        int[] batchSizes = {20,10};
+        float[] learningRates = {0.01f};
+        float[] momentums = {0.8f};
+        float[] weightDecays = {0.01f};
+        float[] learningDecayRates = {500};
+        float[] clipValues = {5f};
+        int[] epochs = {20,60,80};
+
+        // Calculate the total number of combinations
+        int totalRuns = batchSizes.length * learningRates.length * momentums.length * epochs.length*weightDecays.length * learningDecayRates.length * clipValues.length * 5; // 5 is for repeated runs
+        int currentRun = 0;
+        // Print total runs to be executed
+        System.out.println("Total training runs to be executed: " + totalRuns);
 
         // Automate testing with a grid search
         for (int batchSize : batchSizes) {
@@ -61,40 +69,42 @@ public class HyperparameterTester {
                     for (float weightDecay : weightDecays) {
                         for (float learningDecayRate : learningDecayRates) {
                             for (float clipValue : clipValues) {
-                                for (int i=0; i<5; i++) {
-                                    Hyperparameters hp = new Hyperparameters(
-                                            60,
-                                            learningRate,
-                                            batchSize,
-                                            true,
-                                            learningDecayRate,
-                                            clipValue,
-                                            momentum,
-                                            weightDecay
-                                    );
-                                    //System.out.println("Testing hyperparameters: " + hp);
-                                    try {
-                                        long startTime = System.currentTimeMillis();
-                                        network.trainNetwork(trainVectors, trainLabels, hp, false);
-                                        long endTime = System.currentTimeMillis();
-                                        System.out.println("Predicting...");
-                                        List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_test_vectors.csv");
-                                        long startTimePrediction = System.currentTimeMillis();
-                                        int[] predicted_labels = network.predictAll(test_vectors);
-                                        long endTimePrediction = System.currentTimeMillis();
+                                for (int epoch : epochs) {
+                                    for (int i=0; i<5; i++) {
+                                        currentRun++;
+                                        System.out.println("RUN "+currentRun+" out of "+ totalRuns);
+                                        Hyperparameters hp = new Hyperparameters(
+                                                epoch,
+                                                learningRate,
+                                                batchSize,
+                                                true,
+                                                learningDecayRate,
+                                                clipValue,
+                                                momentum,
+                                                weightDecay
+                                        );
+                                        //System.out.println("Testing hyperparameters: " + hp);
+                                        try {
+                                            long startTime = System.currentTimeMillis();
+                                            network.trainNetwork(trainVectors, trainLabels, hp, false);
+                                            long endTime = System.currentTimeMillis();
+                                            System.out.println("Predicting...");
+                                            List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_test_vectors.csv");
+                                            long startTimePrediction = System.currentTimeMillis();
+                                            int[] predicted_labels = network.predictAll(test_vectors);
+                                            long endTimePrediction = System.currentTimeMillis();
+                                            long totalTime = endTimePrediction - startTimePrediction +(endTime - startTime);
 
-                                        //System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
-                                        DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv");
-                                        DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hp);
+                                            //System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
+                                            DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv");
+                                            DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hp,totalTime);
 
-                                        System.out.println("Predicting "+(endTimePrediction - startTimePrediction) + " milliseconds");
-                                        System.out.println("Training: "+ (endTime - startTime) + " milliseconds");
-
-
-
-                                    } catch (Exception e) {
-                                        System.err.println("Error testing hyperparameters: " + hp);
-                                        e.printStackTrace();
+                                            System.out.println("Predicting "+(endTimePrediction - startTimePrediction) + " milliseconds");
+                                            System.out.println("Training: "+ (endTime - startTime) + " milliseconds");
+                                        } catch (Exception e) {
+                                            System.err.println("Error testing hyperparameters: " + hp);
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
                             }
@@ -103,15 +113,5 @@ public class HyperparameterTester {
                 }
             }
         }
-    }
-
-    private float evaluateNetworkAccuracy(int[] predictedLabels, List<Integer> trueLabels) {
-        int correct = 0;
-        for (int i = 0; i < predictedLabels.length; i++) {
-            if (predictedLabels[i] == trueLabels.get(i)) {
-                correct++;
-            }
-        }
-        return (correct / (float) predictedLabels.length) * 100;
     }
 }

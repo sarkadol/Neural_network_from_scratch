@@ -25,7 +25,7 @@ public class Main {
         Network network = new Network(layers);
 
         if (true) {
-            int number_of_images = 1000; //max 60000
+            int number_of_images = 10; //max 60000
             System.out.println("Loading and normalizing a subset of data...");
             //training set of 60,000 examples
             //test set of 10,000 examples
@@ -34,13 +34,13 @@ public class Main {
             System.out.println("Loading completed");
 
             Hyperparameters hyperparameters = new Hyperparameters(
-                    100,
+                    10,
                     0.01f,
                     64,
                     true,
                     500,
                     5.0f,
-                    0.5F,
+                    0.8F,
                     0.01F);
             //momentum 0 = momentum not used
             //weight decay rate 0 = not used
@@ -56,9 +56,11 @@ public class Main {
                 int[] predicted_labels = network.predictAll(test_vectors);
                 long endTimePrediction = System.currentTimeMillis();
 
+                long totalTime = endTime - startTime+endTimePrediction - startTimePrediction;
+
                 //System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
                 DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv");
-                DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters);
+                DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime);
 
                 System.out.println("Predicting "+(endTimePrediction - startTimePrediction) + " milliseconds");
             }

@@ -181,7 +181,7 @@ public class DataLoader {
         }
         System.out.println("Data written to file for Python graph evaluation.");
     }
-    public static void writeToCsvForComparison(int train_vector_count, String layers, Hyperparameters hp) {
+    public static void writeToCsvForComparison(int train_vector_count, String layers, Hyperparameters hp,long totalTime) {
 
         try (FileWriter writer = new FileWriter("all_tries.csv",true)) {
             // Prepare the data in a single row with semicolons as delimiters
@@ -193,7 +193,9 @@ public class DataLoader {
                     Float.toString(hp.getMomentum()),
                     Float.toString(hp.getLearningDecayRate()),
                     Float.toString(hp.getClipValue()),
-                    Float.toString(evaluate("NEW_test_predictions.csv","data/fashion_mnist_test_labels.csv"))
+                    Float.toString(evaluate("NEW_test_predictions.csv","data/fashion_mnist_test_labels.csv")),
+                    Long.toString(totalTime),
+                    Integer.toString(hp.getEpochs())
             );
 
             writer.write(dataRow + "\n"); // Write the data to the file
