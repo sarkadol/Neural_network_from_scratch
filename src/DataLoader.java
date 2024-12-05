@@ -166,7 +166,6 @@ public class DataLoader {
     }
 
     public static void writeToFileForPython(float[] losses, float[] learningRates, int train_vector_count, String layers, Hyperparameters hp) {
-        writeToCsvForComparison(losses, learningRates, train_vector_count, layers, hp);
         try (FileWriter writer = new FileWriter("Java_to_Python.txt")) {
             writer.write("losses = " + Arrays.toString(losses) + "\n");
             writer.write("learning_rates = " + Arrays.toString(learningRates) + "\n");
@@ -182,7 +181,7 @@ public class DataLoader {
         }
         System.out.println("Data written to file for Python graph evaluation.");
     }
-    public static void writeToCsvForComparison(float[] losses, float[] learningRates, int train_vector_count, String layers, Hyperparameters hp) {
+    public static void writeToCsvForComparison(int train_vector_count, String layers, Hyperparameters hp) {
 
         try (FileWriter writer = new FileWriter("all_tries.csv",true)) {
             // Prepare the data in a single row with semicolons as delimiters
@@ -203,10 +202,12 @@ public class DataLoader {
         }
         System.out.println("Data written to CSV file for comparison.");
     }
+
     // Evaluate accuracy
     private static float evaluate(String predictionsPath, String truthPath) throws IOException {
         List<String> predictions = readFileAsList(predictionsPath);
         List<String> truth = readFileAsList(truthPath);
+
         if (predictions.size() != truth.size()) {
             throw new IllegalArgumentException("Predictions and truth sizes do not match!");
         }
@@ -217,6 +218,7 @@ public class DataLoader {
                 hits++;
             }
         }
+
         return (float) hits / predictions.size();
     }
     // Read file as a list of strings

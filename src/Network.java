@@ -299,6 +299,9 @@ public class Network {
         int epochs = hp.getEpochs();
         float[] losses = new float[epochs];
         float[] learning_rates = new float[epochs];
+
+        long trainingStartTime = System.currentTimeMillis(); // Record the start time
+
         for (int epoch = 0; epoch < epochs; epoch++) {
             dataset.shuffle();
             List<List<float[]>> vectorBatches = Util.divideToBatches(dataset.getVectors(), batchSize);
@@ -321,6 +324,10 @@ public class Network {
                                                             // as dividing the total overall loss by the number
                                                             // of samples, but it does not matter
             learning_rates[epoch] = hp.getLearningRate();
+            // Calculate and print the time elapsed since the training started
+            long elapsedMillis = System.currentTimeMillis() - trainingStartTime;
+            //System.out.println("Epoch " + epoch + " completed in " + (elapsedMillis / 1000.0) + " seconds.");
+            System.out.println(String.format("Epoch %-3d completed in %6.2f seconds.", epoch, elapsedMillis / 1000.0));
         }
         System.out.println("\nTraining completed");
 

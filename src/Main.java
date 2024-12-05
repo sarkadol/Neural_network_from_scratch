@@ -58,6 +58,7 @@ public class Main {
 
                 //System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
                 DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv");
+                DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters);
 
                 System.out.println("Predicting "+(endTimePrediction - startTimePrediction) + " milliseconds");
             }
