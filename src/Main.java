@@ -17,9 +17,11 @@ public class Main {
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28*28);
         Layer layer1 = new Layer(layer0, 128, "relu");
-        Layer layer2 = new Layer(layer1, 16, "relu");
-        Layer layer3 = new Layer(layer2, 10, "softmax");
-        Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
+        Layer layer2 = new Layer(layer1, 128, "relu");
+        Layer layer3 = new Layer(layer2, 128, "relu");
+        Layer layer4 = new Layer(layer3, 128, "relu");
+        Layer layer5 = new Layer(layer4, 10, "softmax");
+        Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3, layer4, layer5};
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
@@ -49,8 +51,22 @@ public class Main {
             network.trainNetwork(train_vectors, train_labels, hyperparameters, false);
             long endTime = System.currentTimeMillis();
 
-            if (true) {        //PREDICTING
-                System.out.println("Predicting...");
+            if (true) {        //PREDICTING TRAIN DATASET
+                System.out.println("Predicting train dataset of 60,000 images...");
+                List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv");
+                long startTimePrediction = System.currentTimeMillis();
+                int[] predicted_labels = network.predictAll(test_vectors);
+                long endTimePrediction = System.currentTimeMillis();
+
+                long totalTime = endTime - startTime+endTimePrediction - startTimePrediction;
+
+                DataLoader.writeArrayToCSV(predicted_labels,"train_predictions.csv"); //for evaluation (see README)
+                DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime);
+
+                System.out.println("Predicting train dataset in "+(endTimePrediction - startTimePrediction) + " milliseconds");
+            }
+            if (true) {        //PREDICTING TEST DATASET
+                System.out.println("Predicting test dataset of 10,000 images...");
                 List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_test_vectors.csv");
                 long startTimePrediction = System.currentTimeMillis();
                 int[] predicted_labels = network.predictAll(test_vectors);
@@ -59,12 +75,13 @@ public class Main {
                 long totalTime = endTime - startTime+endTimePrediction - startTimePrediction;
 
                 //System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
-                DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv");
+                DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv"); //for us
+                DataLoader.writeArrayToCSV(predicted_labels,"test_predictions.csv"); //for evaluation (see README)
                 DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime);
 
-                System.out.println("Predicting "+(endTimePrediction - startTimePrediction) + " milliseconds");
+                System.out.println("Predicting test in "+(endTimePrediction - startTimePrediction) + " milliseconds");
             }
-            System.out.println("Training: "+ (endTime - startTime) + " milliseconds");
+            System.out.println("\nTraining: "+ (endTime - startTime) + " milliseconds");
         }
     }
 

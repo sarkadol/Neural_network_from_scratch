@@ -179,7 +179,7 @@ public class DataLoader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Data written to file for Python graph evaluation.");
+        //System.out.println("Data written to file for Python graph evaluation.");
     }
     public static void writeToCsvForComparison(int train_vector_count, String layers, Hyperparameters hp,long totalTime) {
 
@@ -202,7 +202,7 @@ public class DataLoader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Data written to CSV file for comparison.");
+        //System.out.println("Data written to CSV file for comparison.");
     }
 
     // Evaluate accuracy
