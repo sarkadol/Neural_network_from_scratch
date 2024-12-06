@@ -348,7 +348,7 @@ public class Network {
         for (int i = 1; i < layers.length; i++){//skip 0th because it has no weights nor bias
             layers[i].InitializeWeights();
         }
-        System.out.println("Initialization complete");
+        System.out.println("Weights initialized");
     }
 
     /**
@@ -359,7 +359,6 @@ public class Network {
         for (Layer layer : layers){
             layer.printInfoLine();
         }
-
     }
 
     /**

@@ -122,7 +122,7 @@ public class Layer {
             neurons[i].setBias(bias);
             //neurons[i].printInfo();
         }
-        System.out.println("Weights initialized");
+        //System.out.println("Weights initialized");
     }
 
     /**
