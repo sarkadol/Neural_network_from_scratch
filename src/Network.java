@@ -326,10 +326,12 @@ public class Network {
             learning_rates[epoch] = hp.getLearningRate();
             // Calculate and print the time elapsed since the training started
             long elapsedMillis = System.currentTimeMillis() - trainingStartTime;
-            //System.out.println("Epoch " + epoch + " completed in " + (elapsedMillis / 1000.0) + " seconds.");
-            System.out.println(String.format("Epoch %-3d completed in %6.2f seconds.", epoch, elapsedMillis / 1000.0));
+            long minutes = (elapsedMillis / 1000) / 60;
+            long seconds = (elapsedMillis / 1000) % 60;
+
+            System.out.println(String.format("Epoch %-3d completed in %02d:%02d.", epoch, minutes, seconds));
         }
-        System.out.println("\nTraining completed");
+        System.out.println("\nTraining completed\n");
 
         //System.out.println("losses = " + Arrays.toString(losses));
         //System.out.println("learning_rates = " + Arrays.toString(learning_rates));

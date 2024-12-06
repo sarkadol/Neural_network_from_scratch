@@ -14,6 +14,7 @@ public class Main {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+        long total_start_time = System.currentTimeMillis();
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28*28);
         Layer layer1 = new Layer(layer0, 128, "relu");
@@ -27,7 +28,7 @@ public class Main {
         Network network = new Network(layers);
 
         if (true) {
-            int number_of_images = 10; //max 60000
+            int number_of_images = 1000; //max 60000
             System.out.println("Loading and normalizing a subset of data...");
             //training set of 60,000 examples
             //test set of 10,000 examples
@@ -38,7 +39,7 @@ public class Main {
             Hyperparameters hyperparameters = new Hyperparameters(
                     10,
                     0.01f,
-                    64,
+                    20,
                     true,
                     500,
                     5.0f,
@@ -83,17 +84,17 @@ public class Main {
             }
             System.out.println("\nTraining: "+ (endTime - startTime) + " milliseconds");
         }
-    }
+        long total_end_time = System.currentTimeMillis();
+        long total_time = total_end_time-total_start_time;
+        // Convert total_time to minutes, seconds, and milliseconds
+        long minutes = (total_time / 1000) / 60;
+        long seconds = (total_time / 1000) % 60;
+        long milliseconds = total_time % 1000;
 
-    private static void evaluateNetwork(Network network, List<float[]> testVectors, List<Integer> testLabels) {
-        int correct = 0;
-        for (int i = 0; i < testVectors.size(); i++) {
-            float[] outputs = network.forwardPass(testVectors.get(i));
-            //if (Util.argmax(outputs) == testLabels.get(i)) {
-             //   correct++;
-            //}
-        }
-        System.out.println("Accuracy: " + (correct / (float) testVectors.size()) * 100 + "%");
-    }
+        // Format and print the result
+        System.out.printf("\nProject completed in %02d:%02d:%03d\n", minutes, seconds, milliseconds);
+        System.out.println("Šárka Blaško, 567774");
+        System.out.println("Kryštof Zamazal, 514304");
 
+    }
 }
