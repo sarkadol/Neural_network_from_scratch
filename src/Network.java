@@ -292,7 +292,9 @@ public class Network {
     public void trainNetwork(List<float[]> trainVectors, List<Integer> trainLabels,
                              Hyperparameters hp,   // Hyperparameters
                              boolean verbose) {
-        System.out.println("\nTraining...");
+        System.out.println("\nTraining "+hp.getEpochs()+" epochs...");
+
+        final long MAX_EPOCH_TIME = 10 * 60 * 1000; // 10 minutes in milliseconds
 
         Dataset dataset = new Dataset(trainVectors, trainLabels);
         int batchSize = hp.getBatchSize();
@@ -314,6 +316,11 @@ public class Network {
             }
             for (int i = 0; i < numberOfBatches; i++) {
                 totalLoss += trainBatch(vectorBatches.get(i), labelBatches.get(i), hp, verbose);
+
+                if ((System.currentTimeMillis()-trainingStartTime) > MAX_EPOCH_TIME) {
+                    System.out.println("\nEpoch " + epoch + " exceeded 10 minutes in total. Training stopped, returning current model state.");
+                    return;
+                }
             }
 
             if(hp.useLearningDecayRate()){//if we want to use the exponential learning rate

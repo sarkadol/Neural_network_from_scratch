@@ -9,16 +9,16 @@ public class HyperparameterTester {
     public static void main(String[] args) throws IOException {
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28 * 28);
-        Layer layer1 = new Layer(layer0, 512, "relu");
+        Layer layer1 = new Layer(layer0, 1024, "relu");
         Layer layer2 = new Layer(layer1, 512, "relu");
-        Layer layer3 = new Layer(layer2, 512, "relu");
+        Layer layer3 = new Layer(layer2, 256, "relu");
         Layer layer4 = new Layer(layer3, 10, "softmax");
         Layer[] layers = new Layer[]{layer0, layer1, layer2, layer3,layer4};
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
 
-        int number_of_images = 1000; // max 60000
+        int number_of_images = 60000; // max 60000
         System.out.println("Loading and normalizing a subset of data...");
         List<float[]> train_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, number_of_images);
         List<Integer> train_labels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
@@ -48,7 +48,7 @@ public class HyperparameterTester {
 
     public void runTests(int number_of_images) {
         // Define ranges for hyperparameters
-        int[] batchSizes = {32,20};
+        int[] batchSizes = {64,32,20};
         float[] learningRates = {0.01f};
         float[] momentums = {0.8f};
         float[] weightDecays = {0.01f};

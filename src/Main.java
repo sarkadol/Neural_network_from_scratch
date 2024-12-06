@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.Float.POSITIVE_INFINITY;
-
 public class Main {
     /**
      * This main method creates a neural network, trains it and then predicts the labels
@@ -27,7 +25,7 @@ public class Main {
 
         Network network = new Network(layers);
 
-        int number_of_images = 10; //max 60000
+        int number_of_images = 1000; //max 60000
         System.out.println("Loading and normalizing a subset of data...");
         //training set of 60,000 examples
         //test set of 10,000 examples
@@ -36,7 +34,7 @@ public class Main {
         System.out.println("Loading completed");
 
         Hyperparameters hyperparameters = new Hyperparameters(
-                10,
+                100,
                 0.01f,
                 20,
                 true,
@@ -44,12 +42,18 @@ public class Main {
                 5.0f,
                 0.8F,
                 0.01F);
-        //momentum 0 = momentum not used
-        //weight decay rate 0 = not used
 
         long startTime = System.currentTimeMillis();
+
         network.trainNetwork(train_vectors, train_labels, hyperparameters, false);
+
         long endTime = System.currentTimeMillis();
+        long elapsedMillis = endTime - startTime;
+        long minutes = (elapsedMillis / 1000) / 60;
+        long seconds = (elapsedMillis / 1000) % 60;
+        long millis = elapsedMillis % 1000;
+
+        System.out.println(String.format("Training time: %02d:%02d:%03d", minutes, seconds, millis));
 
         if (false) {        //PREDICTING TRAIN DATASET
             System.out.println("Predicting train dataset of 60,000 images...");
@@ -74,24 +78,22 @@ public class Main {
 
             long totalTime = endTime - startTime+endTimePrediction - startTimePrediction;
 
-            //System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
             DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv"); //for us
             DataLoader.writeArrayToCSV(predicted_labels,"test_predictions.csv"); //for evaluation (see README)
             DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime);
 
-            System.out.println("Predicting test in "+(endTimePrediction - startTimePrediction) + " milliseconds");
+            System.out.println("Predicting test dataset in "+(endTimePrediction - startTimePrediction) + " milliseconds");
         }
-        System.out.println("\nTraining: "+ (endTime - startTime) + " milliseconds");
 
         long total_end_time = System.currentTimeMillis();
         long total_time = total_end_time-total_start_time;
         // Convert total_time to minutes, seconds, and milliseconds
-        long minutes = (total_time / 1000) / 60;
-        long seconds = (total_time / 1000) % 60;
-        long milliseconds = total_time % 1000;
+        minutes = (total_time / 1000) / 60;
+        seconds = (total_time / 1000) % 60;
+        millis = total_time % 1000;
 
         // Format and print the result
-        System.out.printf("\nProject completed in %02d:%02d:%03d\n", minutes, seconds, milliseconds);
+        System.out.printf("\nProject completed in %02d:%02d:%03d\n", minutes, seconds, millis);
         System.out.println("Šárka Blaško, 567774");
         System.out.println("Kryštof Zamazal, 514304");
 
