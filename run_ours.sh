@@ -30,7 +30,7 @@ fi
 echo "#########################"
 echo " RUNNING PYTHON SCRIPT  "
 echo "#########################"
-python src/tests/Print_results.py
+python src/helpers/Print_results.py
 
 if [ $? -ne 0 ]; then
   echo "Python script execution failed!"

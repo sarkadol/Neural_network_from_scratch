@@ -1,4 +1,6 @@
-package src;
+package src.helpers;
+
+import src.DataLoader;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,6 @@
-package src;
+package src.helpers;
+
+import src.Hyperparameters;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,6 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Just for us for debugging purposes and tuning of parameters
+ */
 public class Helper {
 
     public static void writeToFileForPython(float[] losses, float[] learningRates, int train_vector_count, String layers, Hyperparameters hp) {

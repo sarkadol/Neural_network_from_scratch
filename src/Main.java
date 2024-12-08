@@ -1,5 +1,7 @@
 package src;
 
+import src.helpers.Helper;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +27,7 @@ public class Main {
 
         Network network = new Network(layers);
 
-        int number_of_images = 1000; //max 60000
+        int number_of_images = 10; //max 60000
         System.out.println("Loading and normalizing a subset of data...");
         //training set of 60,000 examples
         //test set of 10,000 examples

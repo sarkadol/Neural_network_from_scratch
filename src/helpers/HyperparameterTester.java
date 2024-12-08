@@ -1,4 +1,6 @@
-package src;
+package src.helpers;
+
+import src.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -18,7 +20,7 @@ public class HyperparameterTester {
 
         Network network = new Network(layers);
 
-        int number_of_images = 60000; // max 60000
+        int number_of_images = 10; // max 60000
         System.out.println("Loading and normalizing a subset of data...");
         List<float[]> train_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, number_of_images);
         List<Integer> train_labels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
@@ -48,7 +50,7 @@ public class HyperparameterTester {
 
     public void runTests(int number_of_images) {
         // Define ranges for hyperparameters
-        int[] batchSizes = {64,32,20};
+        int[] batchSizes = {20};
         float[] learningRates = {0.01f};
         float[] momentums = {0.8f};
         float[] weightDecays = {0.01f};
