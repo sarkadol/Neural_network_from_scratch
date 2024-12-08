@@ -160,20 +160,20 @@ public class Layer {
      *
      * For the formula, see the {@link #computeWeightGradients(float[])}
      *
-     * @param output_layer_gradients array of output layer inner potential gradients
+     * @param output_layer_inner_potential_gradients array of output layer inner potential gradients
      * @return weight gradients for output layer including bias gradient
      */
-    public float[][] computeOutputLayerWeightGradients(float[] output_layer_gradients) {
-        int num_neurons = output_layer_gradients.length; // Number of neurons in the output layer
+    public float[][] computeOutputLayerWeightGradients(float[] output_layer_inner_potential_gradients) {
+        int num_neurons = output_layer_inner_potential_gradients.length; // Number of neurons in the output layer
         int num_inputs = x.length; // Number of inputs to the output layer
 
         float[][] weight_gradients = new float[num_neurons][num_inputs + 1]; // +1 for bias gradient
         for (int j = 0; j < num_neurons; j++) { // For each neuron in the output layer
             for (int i = 1; i < num_inputs+1; i++) { // For each weight of that neuron (skipping bias)
-                weight_gradients[j][i] = output_layer_gradients[j] * x[i-1];
+                weight_gradients[j][i] = output_layer_inner_potential_gradients[j] * x[i-1];
             }
             // Compute the bias gradient as the last element in the row
-            weight_gradients[j][0] = output_layer_gradients[j];
+            weight_gradients[j][0] = output_layer_inner_potential_gradients[j];
         }
         return weight_gradients;
     }

@@ -122,6 +122,52 @@ public class Network {
     }
 
     /**
+     * Computes a vector that is then fed into the softmax function to produce a part in the computation
+     * of the VLayer output gradients
+     * @return the vector that is then fed into the softmax
+     */
+    private float[] computeOutputLayerSoftmaxVector() {
+        Layer VLayer = layers[layers.length - 2];
+        Layer outputLayer = layers[layers.length - 1];
+        int neuronsNumberV = VLayer.neurons.length;
+        int neuronsNumberY = outputLayer.neurons.length;
+        float[] resultVector = new float[neuronsNumberY];
+        for (int j = 0; j < neuronsNumberY; j++) {
+            resultVector[j] = 0;
+            for (int l = 0; l < neuronsNumberV; l++) {
+                resultVector[j] += outputLayer.neurons[j].weights[l] * VLayer.y[l];
+            }
+        }
+        return resultVector;
+    }
+
+
+    public float[] computeVLayerOutputGradients(float[] targets) {
+        Layer VLayer = layers[layers.length - 2];
+        Layer outputLayer = layers[layers.length - 1];
+        int neuronsNumberV = VLayer.neurons.length;
+        int neuronsNumberY = outputLayer.neurons.length;
+        float[] gradients = new float[neuronsNumberV];
+        float[] outputLayerSoftmax = Util.softmax(computeOutputLayerSoftmaxVector());   // σ(v→)
+        for (int l = 0; l < neuronsNumberV; l++) {
+
+            float innerSum = 0;     //Σ_j∈Y(w_jl · σ(v→)_j) it is used later, but does not depend on any other index than l
+            for (int j = 0; j < neuronsNumberY; j++) {
+                innerSum += outputLayer.neurons[j].weights[l] * outputLayerSoftmax[j];
+            }
+
+            gradients[l] = 0;
+            for (int i = 0; i < neuronsNumberY; i++) {
+
+                gradients[l] += targets[i] * (outputLayer.neurons[i].weights[l] - innerSum);    // di · (wil − innerSum); innerSum is described in the above comment
+            }
+            gradients[l] *= -1;
+        }
+        return gradients;
+    }
+
+
+    /**
      * Clips the gradients to prevent exploding.
      * −clipValue ≤ gradients[i][j] ≤ clipValue
      * (see the slide 108 "Issues in gradient descent – too fast descent")
@@ -150,6 +196,8 @@ public class Network {
      * @param outputs list of computed probabilities from forward pass
      * @param hyperparameters hyperparameters - learning rate and clip value used
      */
+    /*
+    no longer used, instead the function computeWeightGradients below is used
     public void train(float[] target, float[] outputs, Hyperparameters hyperparameters) {
 
         float loss = Util.crossEntropy(target, outputs);
@@ -192,11 +240,22 @@ public class Network {
             current_output_gradient = previous_output_gradient; //move to another layer
         }
     }
+    */
 
-
+    /**
+     * BACKPROPAGATION and COMPUTING WEIGHT GRADIENTS
+     * First, it handles the output layer separately, and then it loops over the hidden layers.
+     * At each layer:
+     * 1) output gradients are computed,
+     * 2) weight gradients are computed
+     * @param target list of desired probabilities given by label
+     * @param outputs list of computed probabilities from forward pass
+     * @param hyperparameters hyperparameters - clip value used
+     * @return list of weight gradients for every layer
+     */
     public List<float[][]> computeWeightGradients(float[] target, float[] outputs, Hyperparameters hyperparameters) {
 
-        float loss = Util.crossEntropy(target, outputs);
+        //float loss = Util.crossEntropy(target, outputs);
         //System.out.println("cross entropy: "+loss);
 
         int numberOfLayers = layers.length;
@@ -205,37 +264,51 @@ public class Network {
         // ---------------OUTPUT LAYER -------------------
         Layer outputLayer = layers[numberOfLayers - 1];
 
-        // 1) output gradients
-        float[] output_layer_gradients = computeOutputLayerGradients(outputs,target); //gradient wrt y
+        // 1) output gradients (actually inner potential gradients here)
+        float[] output_layer_gradients = computeOutputLayerGradients(outputs,target); //gradient wrt ξ, maybe also wrt. y, we do not need wrt. y to compute weight gradient here
 
         // 2) weight gradients
         float[][] output_layer_weight_gradients = outputLayer.computeOutputLayerWeightGradients(output_layer_gradients); //gradient wrt w
         // Clip gradients for output layer
-        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, hyperparameters.getClipValue()); // Example clip value
+        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, hyperparameters.getClipValue());
         //TODO how to choose a good clip value? recommended 1-5, but possible up to 20... - HYPERPARAMETER
 
-        // 3) weight update
         weightGradients.add(output_layer_weight_gradients);
+        float[] VLayerOutputGradients = null;
+        if (hyperparameters.isGradients_new_method()) {
+            // process also the layer immediately below the output layer - VLayer
+            // -----------------UPPERMOST HIDDEN LAYER-------------
+            // 1) output gradients
+            VLayerOutputGradients = computeVLayerOutputGradients(target);
+            // 2) weight gradients
+            float[][] VLayerWeightGradients = layers[numberOfLayers - 2].computeWeightGradients(VLayerOutputGradients);
+            weightGradients.add(VLayerWeightGradients);
+        }
+
 
         // -----------------HIDDEN LAYERS----------------------
-
-        float[] current_output_gradient = output_layer_gradients; //move from output layer
-
-        for (int i = numberOfLayers - 1; i > 1; i--) {
+        float[] currentOutputGradients;
+        if (hyperparameters.isGradients_new_method()) {
+            currentOutputGradients = VLayerOutputGradients; // TODO PLACEHOLDER
+        } else {
+            currentOutputGradients = output_layer_gradients; //move from output layer
+        }
+        for (int i = numberOfLayers - (hyperparameters.isGradients_new_method() ? 2 : 1); i > 1; i--) {   // if we use
+            // the new method for computing the gradients, we start one layer lower
             Layer currentLayer = layers[i];
             Layer previousLayer = layers[i - 1];
 
             // 1) output gradients
-            float[] previous_output_gradient = backpropagateHiddenLayer(current_output_gradient, currentLayer, previousLayer);
+            float[] previous_output_gradient = backpropagateHiddenLayer(currentOutputGradients, currentLayer, previousLayer);
 
             // 2) weight gradients
             float[][] previous_weight_gradients = previousLayer.computeWeightGradients(previous_output_gradient);
             // Clip gradients for the current hidden layer
-            previous_weight_gradients = clipGradients(previous_weight_gradients, 5.0f); // Example clip value
+            previous_weight_gradients = clipGradients(previous_weight_gradients, hyperparameters.getClipValue()); // Example clip value
 
             weightGradients.add(previous_weight_gradients);
 
-            current_output_gradient = previous_output_gradient; //move to another layer
+            currentOutputGradients = previous_output_gradient; //move to another layer
         }
         Collections.reverse(weightGradients);
         return weightGradients;
@@ -326,7 +399,8 @@ public class Network {
             }
 
             if(hp.useLearningDecayRate()){//if we want to use the exponential learning rate
-                hp.setLearningRate(hp.getLearningRate() * (float)Math.pow(0.1, epoch / hp.getLearningDecayRate())); //slightly decrease the learning rate - exponential scheduling
+                hp.setLearningRate(hp.getLearningRate() * (float)Math.pow(0.1, epoch
+                        / hp.getLearningDecayRate())); //slightly decrease the learning rate - exponential scheduling
                 //ϵ(t) = ϵ0 · 0.1^(t/s) -> slide 118 from NEW_continuously_updated_slides.pdf
             }
             losses[epoch] = totalLoss / numberOfBatches;    // The last batch may be smaller, so it is not the same

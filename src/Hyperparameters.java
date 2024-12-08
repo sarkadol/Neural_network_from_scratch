@@ -9,6 +9,7 @@ public class Hyperparameters {
     private float momentum;
     private float weightDecay;
     private boolean use_learning_decay_rate;
+    private boolean gradients_new_method;
 
 
     /**
@@ -24,7 +25,7 @@ public class Hyperparameters {
      *                      by incorporating a fraction of the previous weight . Momentum = 0 means no usage of momentum
      * @param weight_decay  if 0, not used.
      */
-    public Hyperparameters(int epochs, float learning_rate, int batch_size,boolean use_learning_decay_rate, float learning_decay_rate, float clip_value, float momentum, float weight_decay) {
+    public Hyperparameters(int epochs, float learning_rate, int batch_size, boolean use_learning_decay_rate, float learning_decay_rate, float clip_value, float momentum, float weight_decay, boolean gradients_new_method) {
         this.epochs = epochs;
         this.learningRate = learning_rate;
         this.batchSize = batch_size;
@@ -34,6 +35,7 @@ public class Hyperparameters {
         this.learningDecayRate = learning_decay_rate;
         this.momentum = momentum;
         this.weightDecay = weight_decay;
+        this.gradients_new_method = gradients_new_method;
     }
 
     /**
@@ -43,7 +45,7 @@ public class Hyperparameters {
      * @param batchSize
      */
     public Hyperparameters(int epochs, float learningRate, int batchSize) {
-        this(epochs, learningRate, 0,false, 0, batchSize, 0, 0); // Default all optional hyperparameters to 0
+        this(epochs, learningRate, 0,false, 0, batchSize, 0, 0, false); // Default all optional hyperparameters to 0
     }
 
     public int getEpochs() {
@@ -69,6 +71,9 @@ public class Hyperparameters {
 
     public float getWeightDecay() {
         return weightDecay;
+    }
+    public boolean isGradients_new_method() {
+        return gradients_new_method;
     }
 
     public void setEpochs(int epochs) {

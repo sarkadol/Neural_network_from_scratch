@@ -83,7 +83,8 @@ public class HyperparameterTester {
                                                 learningDecayRate,
                                                 clipValue,
                                                 momentum,
-                                                weightDecay
+                                                weightDecay,
+                                                false
                                         );
                                         //System.out.println("Testing hyperparameters: " + hp);
                                         try {
