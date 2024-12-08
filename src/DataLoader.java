@@ -1,13 +1,11 @@
 package src;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 /**
  * The {@code DataLoader} class provides utility methods for loading image data
@@ -19,7 +17,6 @@ public class DataLoader {
             "T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
             "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"
     };
-
 
     /**
      * Loads 28x28 pixel images from a CSV file where each line contains 784
@@ -45,7 +42,6 @@ public class DataLoader {
         return images;
     }
 
-
     /**
      * Writes and array to given csv file.
      * @param array
@@ -63,7 +59,6 @@ public class DataLoader {
             System.err.println("Error writing array to CSV: " + e.getMessage());
         }
     }
-
 
     /**
      * Loads labels from a file where each line contains a single integer label.
@@ -127,10 +122,14 @@ public class DataLoader {
             }
             normalizedImages.add(normalizedImage);
         }
-
         return normalizedImages;
     }
 
+    /**
+     * Converts int label into Strong label.
+     * @param label integer 0-9 expressing the label
+     * @return a string name according to Fashion MNIST dataset
+     */
     public static String getLabelName(int label) {
         if (label >= 0 && label < LABEL_NAMES.length) {
             return LABEL_NAMES[label];
@@ -164,71 +163,4 @@ public class DataLoader {
         reader.close();
         return images;
     }
-
-    public static void writeToFileForPython(float[] losses, float[] learningRates, int train_vector_count, String layers, Hyperparameters hp) {
-        try (FileWriter writer = new FileWriter("Java_to_Python.txt")) {
-            writer.write("losses = " + Arrays.toString(losses) + "\n");
-            writer.write("learning_rates = " + Arrays.toString(learningRates) + "\n");
-            writer.write("train_vector_count = " + train_vector_count + "\n");
-            writer.write("layers = " + layers + "\n");
-            writer.write("batch_size = " + hp.getBatchSize() + "\n");
-            writer.write("decay_rate = " + hp.getWeightDecay() + "\n");
-            writer.write("momentum = " + hp.getMomentum() + "\n");
-            writer.write("learning_decay_rate = " + hp.getLearningDecayRate() + "\n");
-            writer.write("clip_value = " + hp.getClipValue() + "\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //System.out.println("Data written to file for Python graph evaluation.");
-    }
-    public static void writeToCsvForComparison(int train_vector_count, String layers, Hyperparameters hp,long totalTime) {
-
-        try (FileWriter writer = new FileWriter("all_tries.csv",true)) {
-            // Prepare the data in a single row with semicolons as delimiters
-            String dataRow = String.join(";",
-                    Integer.toString(train_vector_count),
-                    layers,
-                    Integer.toString(hp.getBatchSize()),
-                    Float.toString(hp.getWeightDecay()),
-                    Float.toString(hp.getMomentum()),
-                    Float.toString(hp.getLearningDecayRate()),
-                    Float.toString(hp.getClipValue()),
-                    Float.toString(evaluate("NEW_test_predictions.csv","data/fashion_mnist_test_labels.csv")),
-                    Long.toString(totalTime),
-                    Integer.toString(hp.getEpochs())
-            );
-
-            writer.write(dataRow + "\n"); // Write the data to the file
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //System.out.println("Data written to CSV file for comparison.");
-    }
-
-    // Evaluate accuracy
-    private static float evaluate(String predictionsPath, String truthPath) throws IOException {
-        List<String> predictions = readFileAsList(predictionsPath);
-        List<String> truth = readFileAsList(truthPath);
-
-        if (predictions.size() != truth.size()) {
-            throw new IllegalArgumentException("Predictions and truth sizes do not match!");
-        }
-
-        int hits = 0;
-        for (int i = 0; i < predictions.size(); i++) {
-            if (predictions.get(i).equals(truth.get(i))) {
-                hits++;
-            }
-        }
-
-        return (float) hits / predictions.size();
-    }
-    // Read file as a list of strings
-    private static List<String> readFileAsList(String filePath) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            return br.lines().collect(Collectors.toList());
-        }
-    }
-
-
 }

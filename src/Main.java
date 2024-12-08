@@ -34,7 +34,7 @@ public class Main {
         System.out.println("Loading completed");
 
         Hyperparameters hyperparameters = new Hyperparameters(
-                100,
+                10,
                 0.01f,
                 20,
                 true,
@@ -65,7 +65,7 @@ public class Main {
             long totalTime = endTime - startTime+endTimePrediction - startTimePrediction;
 
             DataLoader.writeArrayToCSV(predicted_labels,"train_predictions.csv"); //for evaluation (see README)
-            DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime);
+            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime);
 
             System.out.println("Predicting train dataset in "+(endTimePrediction - startTimePrediction) + " milliseconds");
         }
@@ -80,7 +80,7 @@ public class Main {
 
             DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv"); //for us
             DataLoader.writeArrayToCSV(predicted_labels,"test_predictions.csv"); //for evaluation (see README)
-            DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime);
+            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime);
 
             System.out.println("Predicting test dataset in "+(endTimePrediction - startTimePrediction) + " milliseconds");
         }

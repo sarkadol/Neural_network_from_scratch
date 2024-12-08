@@ -344,7 +344,7 @@ public class Network {
         //System.out.println("learning_rates = " + Arrays.toString(learning_rates));
 
         //pass this to file which is read by Python to plot the changes during epochs
-        DataLoader.writeToFileForPython(losses,learning_rates,trainVectors.size(),Arrays.toString(getLayersLength()),hp);
+        Helper.writeToFileForPython(losses,learning_rates,trainVectors.size(),Arrays.toString(getLayersLength()),hp);
     }
 
 

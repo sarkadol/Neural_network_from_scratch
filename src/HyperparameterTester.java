@@ -97,7 +97,7 @@ public class HyperparameterTester {
 
                                             //System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
                                             DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv");
-                                            DataLoader.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hp,totalTime);
+                                            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hp,totalTime);
 
                                             System.out.println("Predicting "+(endTimePrediction - startTimePrediction) + " milliseconds");
                                             System.out.println("Training: "+ (endTime - startTime) + " milliseconds");
