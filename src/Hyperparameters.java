@@ -13,7 +13,7 @@ public class Hyperparameters {
 
     /**
      * Constructs a Hyperparameters object with the specified values for epochs, learning rate, decay rate,
-     * gradient clipping value, and batch size.
+     * gradient clipping value, and batch size. It is then used while training the network.
      *
      * @param epochs        the total number of training epochs (iterations over the entire dataset)
      * @param learning_rate  the initial learning rate for the optimizer, typically a small positive value (e.g., 0.1 or 0.01)
@@ -66,7 +66,6 @@ public class Hyperparameters {
         return use_learning_decay_rate;
     }
 
-
     public float getWeightDecay() {
         return weightDecay;
     }
@@ -91,11 +90,9 @@ public class Hyperparameters {
         this.learningDecayRate = learningDecayRate;
     }
 
-
     public void setMomentum(float momentum) {
         this.momentum = momentum;
     }
-
 
     public void setWeightDecay(float weight_decay) {
         this.weightDecay = weight_decay;

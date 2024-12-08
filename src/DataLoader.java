@@ -91,6 +91,7 @@ public class DataLoader {
             System.out.println();
         }
     }
+
     /**
      * Prints a 28x28 normalized image from an array of floats, each representing a pixel
      * value in the range [0, 1].
@@ -105,6 +106,7 @@ public class DataLoader {
             System.out.println();
         }
     }
+
     /**
      * Normalizes a list of images by scaling pixel values to the range [0, 1].
      * Each pixel value is divided by 255.
@@ -126,7 +128,7 @@ public class DataLoader {
     }
 
     /**
-     * Converts int label into Strong label.
+     * Converts int label into String label.
      * @param label integer 0-9 expressing the label
      * @return a string name according to Fashion MNIST dataset
      */
@@ -137,7 +139,6 @@ public class DataLoader {
             return "Unknown";
         }
     }
-
 
     /**
      * Loads 28x28 pixel images from a CSV file where each line contains 784

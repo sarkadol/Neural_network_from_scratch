@@ -221,7 +221,16 @@ public class Util {
         }
     }
 
-
+    /**
+     * Divides a list into smaller batches of a specified size.
+     *
+     * @param <T> The type of elements in the list.
+     * @param list The list to be divided into batches.
+     * @param batchSize The maximum size of each batch.
+     * @return A list of sublists (batches) containing the elements of the original list.
+     *         The last batch may contain fewer elements if the list size is not a multiple of batchSize.
+     * @throws IllegalArgumentException if batchSize is less than or equal to 0.
+     */
     public static <T> List<List<T>> divideToBatches(List<T> list, int batchSize) {
         int currentBatchStart = 0;
         int listLength = list.size();

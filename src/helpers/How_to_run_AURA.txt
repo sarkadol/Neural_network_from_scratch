@@ -12,13 +12,12 @@ spuštění na auře:
 8) spustit                      ./run.sh
 
 Sarky pocitac:
-
 Git bash:
 cd Desktop/FI\ MUNI/Neural\ Networks/pv021_project
 ./run.sh
 
 HYPERPARAMETER TUNING:
 https://github.com/vktr274/MLP-Fashion-MNIST
-
+https://medium.com/@artjovianprojects/deep-learning-project-multilayer-perceptron-e34017941918
 
 
