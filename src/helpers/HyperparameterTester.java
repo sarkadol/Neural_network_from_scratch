@@ -11,16 +11,15 @@ public class HyperparameterTester {
     public static void main(String[] args) throws IOException {
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28 * 28);
-        Layer layer1 = new Layer(layer0, 1024, "relu");
-        Layer layer2 = new Layer(layer1, 512, "relu");
-        Layer layer3 = new Layer(layer2, 256, "relu");
-        Layer layer4 = new Layer(layer3, 10, "softmax");
-        Layer[] layers = new Layer[]{layer0, layer1, layer2, layer3,layer4};
+        Layer layer1 = new Layer(layer0, 512, "relu");
+        Layer layer2 = new Layer(layer1, 256, "relu");
+        Layer layer3 = new Layer(layer2, 10, "softmax");
+        Layer[] layers = new Layer[]{layer0, layer1, layer2, layer3};
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
 
-        int number_of_images = 10; // max 60000
+        int number_of_images = 1000; // max 60000
         System.out.println("Loading and normalizing a subset of data...");
         List<float[]> train_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, number_of_images);
         List<Integer> train_labels = DataLoader.loadLabels("data/fashion_mnist_train_labels.csv").subList(0, number_of_images);
@@ -50,16 +49,16 @@ public class HyperparameterTester {
 
     public void runTests(int number_of_images) {
         // Define ranges for hyperparameters
-        int[] batchSizes = {20};
+        int[] batchSizes = {20,64,128};
         float[] learningRates = {0.01f};
         float[] momentums = {0.8f};
         float[] weightDecays = {0.01f};
-        float[] learningDecayRates = {500};
+        float[] learningDecayRates = {500,200};
         float[] clipValues = {5f};
         int[] epochs = {10};
 
         // Calculate the total number of combinations
-        int totalRuns = batchSizes.length * learningRates.length * momentums.length * epochs.length*weightDecays.length * learningDecayRates.length * clipValues.length * 5; // 5 is for repeated runs
+        int totalRuns = batchSizes.length * learningRates.length * momentums.length * epochs.length*weightDecays.length * learningDecayRates.length * clipValues.length * 2; // 5 is for repeated runs
         int currentRun = 0;
         // Print total runs to be executed
         System.out.println("Total training runs to be executed: " + totalRuns);
@@ -72,7 +71,7 @@ public class HyperparameterTester {
                         for (float learningDecayRate : learningDecayRates) {
                             for (float clipValue : clipValues) {
                                 for (int epoch : epochs) {
-                                    for (int i=0; i<5; i++) {
+                                    for (int i=0; i<2; i++) {
                                         currentRun++;
                                         System.out.println("RUN "+currentRun+" out of "+ totalRuns);
                                         Hyperparameters hp = new Hyperparameters(
@@ -84,14 +83,14 @@ public class HyperparameterTester {
                                                 clipValue,
                                                 momentum,
                                                 weightDecay,
-                                                false
+                                                true
                                         );
                                         //System.out.println("Testing hyperparameters: " + hp);
                                         try {
                                             long startTime = System.currentTimeMillis();
                                             network.trainNetwork(trainVectors, trainLabels, hp, false);
                                             long endTime = System.currentTimeMillis();
-                                            System.out.println("Predicting...");
+                                            System.out.println("Predicting 60,000 images...");
                                             List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_test_vectors.csv");
                                             long startTimePrediction = System.currentTimeMillis();
                                             int[] predicted_labels = network.predictAll(test_vectors);

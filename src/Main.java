@@ -17,8 +17,8 @@ public class Main {
         long total_start_time = System.currentTimeMillis();
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28*28);
-        Layer layer1 = new Layer(layer0, 300, "relu");
-        Layer layer2 = new Layer(layer1, 100, "relu");
+        Layer layer1 = new Layer(layer0, 128, "relu");
+        Layer layer2 = new Layer(layer1, 128, "relu");
         Layer layer3 = new Layer(layer2, 10, "softmax");
         Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
         System.out.println("Layers initialized");
@@ -35,13 +35,13 @@ public class Main {
 
         Hyperparameters hyperparameters = new Hyperparameters(
                 20,
-                0.001f,
-                64,
-                false,
-                0,
+                0.084f,
+                128,
+                true,
+                100,
                 5.0f,
-                0.34F,
-                0.0F,
+                0.314F,
+                0.01F,
                 true);
 
         long startTime = System.currentTimeMillis();
