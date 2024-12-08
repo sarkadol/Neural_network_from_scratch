@@ -2,19 +2,23 @@ ssh xdoleza1@aisa.fi.muni.cz
 ssh xdoleza1@aura.fi.muni.cz
 
 spuštění na auře:
-1) zip na Windows, cmd windows
+1) zip na Windows, cmd windows  cd "C:\Users\sarka\Desktop\FI MUNI\Neural Networks\"
 2) přesun windows -> aisa       scp pv021_project.zip xdoleza1@aisa.fi.muni.cz:~
 3) přesun aisa -> aura          scp pv021_project.zip xdoleza1@aura.fi.muni.cz:~
 4) unzip aura                   unzip pv021_project.zip
-5) jít do složky projektu       ls pv021_project
+5) jít do složky projektu       cd pv021_project
 6) nastavení executable práv    chmod +x run.sh
-7) spustit                      ./run.sh
+7) načíst správný module        module load jdk-21
+8) spustit                      ./run.sh
 
 Sarky pocitac:
 
 Git bash:
 cd Desktop/FI\ MUNI/Neural\ Networks/pv021_project
 ./run.sh
+
+HYPERPARAMETER TUNING:
+https://github.com/vktr274/MLP-Fashion-MNIST
 
 
 
