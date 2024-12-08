@@ -41,7 +41,8 @@ public class Main {
                 0,
                 5.0f,
                 0.34F,
-                0.0F);
+                0.0F,
+                true);
 
         long startTime = System.currentTimeMillis();
 
