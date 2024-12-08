@@ -178,13 +178,20 @@ public class Layer {
         return weight_gradients;
     }
 
-
-
+    /**
+     * Initializes weight gradients as a zero matrix for all neurons and their inputs.
+     * @return A 2D float array representing the initialized weight gradients.
+     */
     public float[][] initializeWeightGradients() {
         return new float[neurons.length][x.length + 1];
     }
 
-
+    /**
+     * Adds current weight gradients to the total weight gradients for accumulation.
+     * @param weight_gradients Current weight gradients.
+     * @param total_weight_gradients Accumulated weight gradients.
+     * @return Updated total weight gradients.
+     */
     public float[][] addWeightGradients(float[][] weight_gradients, float[][] total_weight_gradients) {
         for (int i = 0; i < total_weight_gradients.length; i++) {
             for (int j = 0; j < total_weight_gradients[i].length; j++) {
@@ -193,8 +200,6 @@ public class Layer {
         }
         return total_weight_gradients;
     }
-
-
 
     /**
      * Converts gradient of outputs of neurons to gradient of their weights; works for layers with a simple activation

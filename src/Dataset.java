@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+/**
+ * Class containing two lists of vectors and labels representing images
+ * from Fashion MNIST dataset
+ */
 public class Dataset {
     List<float[]> vectors;
     List<Integer> labels;
@@ -19,6 +23,11 @@ public class Dataset {
     public List<Integer> getLabels() {
         return labels;
     }
+
+    /**
+     * Randomly shuffles the dataset, ensuring vectors and labels remain synchronized.
+     * Useful for removing order bias before training.
+     */
     public void shuffle() {
         // Create a list of indices
         List<Integer> indices = new ArrayList<>();
@@ -36,7 +45,6 @@ public class Dataset {
         List<Integer> shuffledLabels = indices.stream()
                                               .map(labels::get)
                                               .collect(Collectors.toList());
-
         // Update the attributes
         this.vectors = shuffledVectors;
         this.labels = shuffledLabels;

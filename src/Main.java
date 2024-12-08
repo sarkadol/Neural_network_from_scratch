@@ -17,17 +17,15 @@ public class Main {
         long total_start_time = System.currentTimeMillis();
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28*28);
-        Layer layer1 = new Layer(layer0, 526, "relu");
-        Layer layer2 = new Layer(layer1, 256, "relu");
-        Layer layer3 = new Layer(layer2, 128, "relu");
-        Layer layer4 = new Layer(layer3, 16, "relu");
-        Layer layer5 = new Layer(layer4, 10, "softmax");
-        Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3, layer4, layer5};
+        Layer layer1 = new Layer(layer0, 300, "relu");
+        Layer layer2 = new Layer(layer1, 100, "relu");
+        Layer layer3 = new Layer(layer2, 10, "softmax");
+        Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
 
-        int number_of_images = 1000; //max 60000
+        int number_of_images = 60000; //max 60000
         System.out.println("Loading and normalizing a subset of data...");
         //training set of 60,000 examples
         //test set of 10,000 examples
@@ -36,15 +34,14 @@ public class Main {
         System.out.println("Loading completed");
 
         Hyperparameters hyperparameters = new Hyperparameters(
-                10,
-                0.01f,
                 20,
-                true,
-                500,
+                0.001f,
+                64,
+                false,
+                0,
                 5.0f,
-                0.8F,
-                0.01F,
-                true);
+                0.34F,
+                0.0F);
 
         long startTime = System.currentTimeMillis();
 
@@ -58,7 +55,7 @@ public class Main {
 
         System.out.println(String.format("Training time: %02d:%02d:%03d", minutes, seconds, millis));
 
-        if (false) {        //PREDICTING TRAIN DATASET
+        if (true) {        //PREDICTING TRAIN DATASET
             System.out.println("Predicting train dataset of 60,000 images...");
             List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv");
             long startTimePrediction = System.currentTimeMillis();

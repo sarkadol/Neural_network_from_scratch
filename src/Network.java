@@ -65,6 +65,11 @@ public class Network {
         return label;
     }
 
+    /**
+     * Predicts all images - vectors representing images to predict
+     * @param vectors List of float arrays
+     * @return an array of ints - labels
+     */
     public int[] predictAll(List<float[]> vectors){
         int[] labels = new int[vectors.size()];
         for(int i = 0; i < vectors.size(); i++){
@@ -184,9 +189,8 @@ public class Network {
         return gradients;
     }
 
-
     /**
-     * BACKPROPAGATION and WEIGHTS UPDATE
+     * BACKPROPAGATION and WEIGHTS UPDATE - without batches, a prototype used earlier
      * First, it handles the output layer separately, and then it loops over the hidden layers.
      * At each layer:
      * 1) output gradients are computed,
@@ -196,8 +200,6 @@ public class Network {
      * @param outputs list of computed probabilities from forward pass
      * @param hyperparameters hyperparameters - learning rate and clip value used
      */
-    /*
-    no longer used, instead the function computeWeightGradients below is used
     public void train(float[] target, float[] outputs, Hyperparameters hyperparameters) {
 
         float loss = Util.crossEntropy(target, outputs);
@@ -240,18 +242,14 @@ public class Network {
             current_output_gradient = previous_output_gradient; //move to another layer
         }
     }
-    */
 
     /**
-     * BACKPROPAGATION and COMPUTING WEIGHT GRADIENTS
-     * First, it handles the output layer separately, and then it loops over the hidden layers.
-     * At each layer:
-     * 1) output gradients are computed,
-     * 2) weight gradients are computed
-     * @param target list of desired probabilities given by label
-     * @param outputs list of computed probabilities from forward pass
-     * @param hyperparameters hyperparameters - clip value used
-     * @return list of weight gradients for every layer
+     * Computes weight gradients for all layers during backpropagation.
+     *
+     * @param target Target probabilities.
+     * @param outputs Predicted probabilities from forward pass.
+     * @param hyperparameters Hyperparameters controlling training.
+     * @return List of weight gradients for all layers.
      */
     public List<float[][]> computeWeightGradients(float[] target, float[] outputs, Hyperparameters hyperparameters) {
 
@@ -270,8 +268,7 @@ public class Network {
         // 2) weight gradients
         float[][] output_layer_weight_gradients = outputLayer.computeOutputLayerWeightGradients(output_layer_gradients); //gradient wrt w
         // Clip gradients for output layer
-        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, hyperparameters.getClipValue());
-        //TODO how to choose a good clip value? recommended 1-5, but possible up to 20... - HYPERPARAMETER
+        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, hyperparameters.getClipValue()); // Example clip value
 
         weightGradients.add(output_layer_weight_gradients);
         float[] VLayerOutputGradients = null;
@@ -313,8 +310,15 @@ public class Network {
         Collections.reverse(weightGradients);
         return weightGradients;
     }
-
-
+    /**
+     * Trains the network using mini-batches of data.
+     *
+     * @param trainVectors List of input vectors for training.
+     * @param trainLabels List of corresponding labels for training.
+     * @param hp Hyperparameters controlling training.
+     * @param verbose If true, prints debug information during training.
+     * @return Average loss over the mini-batches.
+     */
     public float trainBatch(List<float[]> trainVectors, List<Integer> trainLabels,
                            Hyperparameters hp,
                            boolean verbose) {
@@ -348,10 +352,6 @@ public class Network {
                 System.out.println("Learning rate: " + hp.getLearningRate());
             }
         }
-        /* if(false){//if we want to use the exponential learning rate - maybe to hyperparameter
-            hp.setLearningRate(hp.getLearningRate() * (float)Math.pow(0.1, epoch / hp.getDecayRate())); //slightly decrease the learning rate - exponential scheduling
-            //ϵ(t) = ϵ0 · 0.1^(t/s) -> slide 118 from NEW_continuously_updated_slides.pdf
-        } */
 
         for (int i = 0; i < layers.length - 1; i++) {
             layers[i + 1].updateWeights(
@@ -364,12 +364,20 @@ public class Network {
         return totalLoss / trainVectors.size();
     }
 
+    /**
+     * Trains the network over multiple epochs using the entire training dataset.
+     *
+     * @param trainVectors List of input vectors for training.
+     * @param trainLabels List of corresponding labels for training.
+     * @param hp Hyperparameters controlling training.
+     * @param verbose If true, prints debug information during training.
+     */
     public void trainNetwork(List<float[]> trainVectors, List<Integer> trainLabels,
                              Hyperparameters hp,   // Hyperparameters
                              boolean verbose) {
         System.out.println("\nTraining "+hp.getEpochs()+" epochs...");
 
-        final long MAX_EPOCH_TIME = 10 * 60 * 1000; // 10 minutes in milliseconds
+        final long MAX_EPOCH_TIME = 10 * 60 * 1000; // Time after which it cancells the process
 
         Dataset dataset = new Dataset(trainVectors, trainLabels);
         int batchSize = hp.getBatchSize();
@@ -399,8 +407,7 @@ public class Network {
             }
 
             if(hp.useLearningDecayRate()){//if we want to use the exponential learning rate
-                hp.setLearningRate(hp.getLearningRate() * (float)Math.pow(0.1, epoch
-                        / hp.getLearningDecayRate())); //slightly decrease the learning rate - exponential scheduling
+                hp.setLearningRate(hp.getLearningRate() * (float)Math.pow(0.1, epoch / hp.getLearningDecayRate())); //slightly decrease the learning rate - exponential scheduling
                 //ϵ(t) = ϵ0 · 0.1^(t/s) -> slide 118 from NEW_continuously_updated_slides.pdf
             }
             losses[epoch] = totalLoss / numberOfBatches;    // The last batch may be smaller, so it is not the same

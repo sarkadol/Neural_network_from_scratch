@@ -8,7 +8,7 @@ rm -rf out/*
 echo "#########################"
 echo "COMPILING JAVA PROJECT..."
 echo "#########################"
-javac -d out -sourcepath src $(find src -name "*.java")
+javac -J-Xmx4G -J-XX:+UnlockExperimentalVMOptions -J-XX:+UseParallelGC -d out -sourcepath src $(find src -name "*.java")
 #java -cp out -XX:+TieredCompilation -XX:+AggressiveOpts -XX:+UseParallelGC src.Main
 
 
