@@ -377,7 +377,7 @@ public class Network {
                              boolean verbose) {
         System.out.println("\nTraining "+hp.getEpochs()+" epochs...");
 
-        final long MAX_EPOCH_TIME = 10 * 60 * 1000; // Time after which it cancells the process
+        final long MAX_EPOCH_TIME = 20 * 60 * 1000; // Time after which it cancells the process in milliseconds
 
         Dataset dataset = new Dataset(trainVectors, trainLabels);
         int batchSize = hp.getBatchSize();
