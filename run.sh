@@ -13,6 +13,7 @@ echo "#################"
 ## dont forget to use compiler optimizations (e.g. -O3 or -Ofast)
 # g++ -Wall -std=c++17 -O3 src/main.cpp src/file2.cpp -o network
 rm -rf out/*
+module load jdk-17
 
 #javac -d out -sourcepath src $(find src -name "*.java")
 javac -J-Xmx4G -J-XX:+UnlockExperimentalVMOptions -J-XX:+UseParallelGC -d out -sourcepath src $(find src -name "*.java")
