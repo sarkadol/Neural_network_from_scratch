@@ -89,39 +89,27 @@ public class Layer {
      */
     public void InitializeWeights() {
         Random random = new Random(); //TODO check if it is correct
-        boolean useReLU = false;
+        boolean useReLU = activation_function.equals("relu"); // If the activation function is relu, it uses different intialization
 
-        if (activation_function.equals("relu")) {  // If the activation function is relu, it uses different intialization
-            useReLU = true;
-        }
+        // Calculate the standard deviation for the normal distribution
+        float stddev = useReLU
+                ? (float) Math.sqrt(2.0 / x.length) // He Initialization
+                : (float) Math.sqrt(2.0 / (x.length + neurons.length)); // Xavier Normal Initialization
 
-        float range = 0.05f; // Adjust this to control how close to 0 the weights should be
-        float stddev = 0;
+        // Initialize weights and biases
+        for (int i = 0; i < neurons.length; i++) {
+            float[] neuron_weights = new float[x.length]; // array of weights of one neuron
+            float bias = 0; // Bias can be initialized to zero or a small constant
 
-        if (useReLU) {
-            stddev = (float) Math.sqrt(2.0 / x.length); // He Initialization for ReLU
-        } else {
-            range = (float) Math.sqrt(6.0 / (x.length + neurons.length)); // Xavier (Glorot) Initialization for softmax/tanh/linear
-        }
-
-        for (int i = 0; i < neurons.length; i++) {//each neuron i
-
-            float[] neuron_weights = new float[x.length];// array of weights of one neuron
-            float bias = 0; // Initialize bias to zero (or small constant)
-            //float bias = (random.nextFloat() * 2 - 1) * range;
-
-            for (int j = 0; j < x.length; j++) {//each input j in particular neuron
-                // Generate weights based on the chosen method
-                if (useReLU) {
-                    neuron_weights[j] = (float) (random.nextGaussian() * stddev);
-                } else {
-                    neuron_weights[j] = random.nextFloat() * 2 * range - range;
-                }
+            for (int j = 0; j < x.length; j++) {
+                // Sample weights from a normal distribution with the calculated standard deviation
+                neuron_weights[j] = (float) (random.nextGaussian() * stddev);
             }
             neurons[i].setWeights(neuron_weights);
             neurons[i].setBias(bias);
-            //neurons[i].printInfo();
         }
+            //neurons[i].printInfo();
+
         //System.out.println("Weights initialized");
     }
 
