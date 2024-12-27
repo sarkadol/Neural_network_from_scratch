@@ -108,8 +108,8 @@ public class Network {
      * @return gradients of outputs for previous layer
      */
     private float[] backpropagateHiddenLayer(float[] currentGradients, Layer currentLayer, Layer previousLayer) {
-        int currentNeuronCount = currentLayer.neurons.length;
-        int previousNeuronCount = previousLayer.neurons.length;
+        int currentNeuronCount = currentLayer.y.length;
+        int previousNeuronCount = previousLayer.y.length;
 
         float[] previousGradients = new float[previousNeuronCount]; // Gradient for previous layer
 
@@ -134,13 +134,13 @@ public class Network {
     private float[] computeOutputLayerSoftmaxVector() {
         Layer VLayer = layers[layers.length - 2];
         Layer outputLayer = layers[layers.length - 1];
-        int neuronsNumberV = VLayer.neurons.length;
-        int neuronsNumberY = outputLayer.neurons.length;
+        int neuronsNumberV = VLayer.y.length;
+        int neuronsNumberY = outputLayer.y.length;
         float[] resultVector = new float[neuronsNumberY];
         for (int j = 0; j < neuronsNumberY; j++) {
             resultVector[j] = 0;
             for (int l = 0; l < neuronsNumberV; l++) {
-                resultVector[j] += outputLayer.neurons[j].weights[l] * VLayer.y[l];
+                resultVector[j] += outputLayer.layer_weights[j][l + 1] * VLayer.y[l]; // Use weights and activations
             }
         }
         return resultVector;
@@ -150,21 +150,22 @@ public class Network {
     public float[] computeVLayerOutputGradients(float[] targets) {
         Layer VLayer = layers[layers.length - 2];
         Layer outputLayer = layers[layers.length - 1];
-        int neuronsNumberV = VLayer.neurons.length;
-        int neuronsNumberY = outputLayer.neurons.length;
+        int neuronsNumberV = VLayer.y.length;
+        int neuronsNumberY = outputLayer.y.length;
         float[] gradients = new float[neuronsNumberV];
         float[] outputLayerSoftmax = Util.softmax(computeOutputLayerSoftmaxVector());   // σ(v→)
         for (int l = 0; l < neuronsNumberV; l++) {
 
             float innerSum = 0;     //Σ_j∈Y(w_jl · σ(v→)_j) it is used later, but does not depend on any other index than l
             for (int j = 0; j < neuronsNumberY; j++) {
-                innerSum += outputLayer.neurons[j].weights[l] * outputLayerSoftmax[j];
+                innerSum += outputLayer.layer_weights[j][l + 1] * outputLayerSoftmax[j]; // Use weights and softmax
             }
 
             gradients[l] = 0;
             for (int i = 0; i < neuronsNumberY; i++) {
 
-                gradients[l] += targets[i] * (outputLayer.neurons[i].weights[l] - innerSum);    // di · (wil − innerSum); innerSum is described in the above comment
+                gradients[l] += targets[i] * (outputLayer.layer_weights[i][l + 1] - innerSum); // di · (w_il − innerSum)
+                // di · (wil − innerSum); innerSum is described in the above comment
             }
             gradients[l] *= -1;
         }
@@ -401,7 +402,7 @@ public class Network {
                 totalLoss += trainBatch(vectorBatches.get(i), labelBatches.get(i), hp, verbose);
 
                 if ((System.currentTimeMillis()-trainingStartTime) > MAX_EPOCH_TIME) {
-                    System.out.println("\nEpoch " + epoch + " exceeded 10 minutes in total. Training stopped, returning current model state.");
+                    System.out.println("\nEpoch " + epoch + " exceeded 20 minutes in total. Training stopped, returning current model state.");
                     return;
                 }
             }

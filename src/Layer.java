@@ -5,7 +5,6 @@ import java.util.Random;
 
 
 public class Layer {
-    public Neuron[] neurons;
     String activation_function;
     float[] x; //inputs
     float[] y; //outputs
@@ -22,12 +21,6 @@ public class Layer {
      */
     public Layer(Layer previous_layer, int neurons_number, String activation_function) {
         this.activation_function = activation_function;
-        this.neurons = new Neuron[neurons_number]; // Initialize the neurons array
-        for (int i = 0; i < neurons_number; i++) {
-            //float weights = 0;
-            //float bias = 0;
-            this.neurons[i] = new Neuron();
-        }
         int input_length = previous_layer.getOutputLength();
         this.x = new float[input_length]; // number of inputs for this layer
         this.y = new float[neurons_number];
@@ -104,8 +97,6 @@ public class Layer {
         // Initialize weights and biases
         for (int j = 0; j < y.length; j++) {
             float[] neuron_weights = new float[x.length]; // array of weights of one neuron
-            float bias = 0; // Bias can be initialized to zero or a small constant
-
             for (int i = 0; i < x.length; i++) {
                 // Sample weights from a normal distribution with the calculated standard deviation
                 neuron_weights[i] = (float) (random.nextGaussian() * stddev);
@@ -114,9 +105,6 @@ public class Layer {
                 layer_weights[j][i+1] = neuron_weights[i];
             }
             layer_weights[j][0] = 0; //bias is 0
-
-            neurons[j].setWeights(neuron_weights);
-            neurons[j].setBias(bias);
         }
         //System.out.println(Arrays.deepToString(layer_weights));
         //System.out.println("Weights initialized");
