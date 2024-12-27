@@ -8,7 +8,7 @@ public class Layer {
     String activation_function;
     float[] x; //inputs
     float[] y; //outputs
-    float[][] layer_weights; //TODO weights of neuron w[j][i] from i to j. w[j][0] = -bias[j]
+    float[][] layer_weights; //TODO weights of neuron w[j][i] from i to j. w[j][0] = bias[j]
     float [] layer_inner_potentials;
     float [][] prev_weight_updates;
 
@@ -70,11 +70,6 @@ public class Layer {
     public float[] getYs(){
         return y;
     }
-
-    /*
-    public Neuron getNeuron(int index){
-        return null;
-    }*/
 
     /**
      * Randomly initializes weights and biases for each neuron in this layer.
