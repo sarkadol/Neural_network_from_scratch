@@ -9,6 +9,8 @@ public class Layer {
     String activation_function;
     float[] x; //inputs
     float[] y; //outputs
+    float[][] layer_weights; //TODO weights of neuron w[j][i] from i to j. w[j][0] = -bias[j]
+    float [] layer_inner_potentials;
 
     /**
      * creates a hidden/output layer
@@ -27,7 +29,9 @@ public class Layer {
         }
         int input_length = previous_layer.getOutputLength();
         this.x = new float[input_length]; // number of inputs for this layer
-        this.y = new float[this.neurons.length];
+        this.y = new float[neurons_number];
+
+        this.layer_weights = new float[neurons_number][input_length+1]; //one more for bias
     }
 
     /**
@@ -94,23 +98,51 @@ public class Layer {
         // Calculate the standard deviation for the normal distribution
         float stddev = useReLU
                 ? (float) Math.sqrt(2.0 / x.length) // He Initialization
-                : (float) Math.sqrt(2.0 / (x.length + neurons.length)); // Xavier Normal Initialization
+                : (float) Math.sqrt(2.0 / (x.length + y.length)); // Xavier Normal Initialization
 
         // Initialize weights and biases
-        for (int i = 0; i < neurons.length; i++) {
+        for (int j = 0; j < y.length; j++) {
             float[] neuron_weights = new float[x.length]; // array of weights of one neuron
             float bias = 0; // Bias can be initialized to zero or a small constant
 
-            for (int j = 0; j < x.length; j++) {
+            for (int i = 0; i < x.length; i++) {
                 // Sample weights from a normal distribution with the calculated standard deviation
-                neuron_weights[j] = (float) (random.nextGaussian() * stddev);
-            }
-            neurons[i].setWeights(neuron_weights);
-            neurons[i].setBias(bias);
-        }
-            //neurons[i].printInfo();
+                neuron_weights[i] = (float) (random.nextGaussian() * stddev);
+                //System.out.printf("Initializing weight for neuron[%d] from input[%d]: %f\n", j, i, neuron_weights[i]);
 
+                layer_weights[j][i+1] = neuron_weights[i];
+            }
+            layer_weights[j][0] = 0; //bias is 0
+
+            neurons[j].setWeights(neuron_weights);
+            neurons[j].setBias(bias);
+        }
+        //System.out.println(Arrays.deepToString(layer_weights));
         //System.out.println("Weights initialized");
+    }
+
+    /**
+     * Computes the inner potentials (ξ_j) for all neurons in the layer.
+     * Formula: computes the inner potential of neuron j, with inputs i
+     * ξ_j = ∑ w_ji * y_i
+     * Careful! bias of neuron j is stored in w_j0, so it needs to be shifted by 1 when computing.
+     * @return
+     */
+    public float[] layerComputeInnerPotentials() {
+        int neuron_count = layer_weights.length; // Number of neurons in the layer: j
+        int input_count = layer_weights[0].length - 1; // Number of inputs (excluding bias): i - 1
+        layer_inner_potentials = new float[neuron_count]; // Array to store inner potentials: ξ_j
+
+        for (int j = 0; j < neuron_count; j++) {
+            float inner_potential = 0; // Initialize inner potential for neuron j
+            for (int i = 0; i < input_count; i++) {
+                inner_potential += layer_weights[j][i+1] * x[i];
+                // Sum over inputs and weights (and take into account the bias - skip it for now)
+            }
+            inner_potential += layer_weights[j][0];// bias
+            layer_inner_potentials[j] = inner_potential; // Store computed inner potential
+        }
+        return layer_inner_potentials; // Return the array of inner potentials
     }
 
     /**
@@ -129,13 +161,14 @@ public class Layer {
             inner_potentials[j] = neurons[j].computeInnerPotential();
             //System.out.println("Neuron " + j + " inner potential: " + inner_potentials[j]);
         }
+        layer_inner_potentials = layerComputeInnerPotentials();
         float[] outputs;
         if (activation_function.equals("softmax")) { //softmax is a special case
-            outputs = Util.softmax(inner_potentials);
+            outputs = Util.softmax(layer_inner_potentials);
         } else {
             outputs = new float[output_length];
             for (int j = 0; j < output_length; j++) { //for each neuron j
-                outputs[j] = Util.activationFunction(inner_potentials[j], activation_function);
+                outputs[j] = Util.activationFunction(layer_inner_potentials[j], activation_function);
             }
         }
         y = outputs; // Save neurons' outputs
