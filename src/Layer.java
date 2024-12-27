@@ -294,8 +294,7 @@ public class Layer {
     /**
      * Prints information about the layer
      *
-     * @param includeNeurons if true, then it prints also property of each neuron in this layer,
-     *                       see {@link Neuron#printInfoLine()}
+     *
      */
     public void printInfo() {
         System.out.println("---Layer Info:");
