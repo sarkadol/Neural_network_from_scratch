@@ -108,19 +108,21 @@ public class Network {
      * @return gradients of outputs for previous layer
      */
     private float[] backpropagateHiddenLayer(float[] currentGradients, Layer currentLayer, Layer previousLayer) {
-        int currentNeuronCount = currentLayer.y.length;
-        int previousNeuronCount = previousLayer.y.length;
+        int currentNeuronCount = currentLayer.getOutputLength();
+        int previousNeuronCount = previousLayer.getOutputLength();
 
         float[] previousGradients = new float[previousNeuronCount]; // Gradient for previous layer
+        //System.out.println("Current gradiets "+Arrays.toString(currentGradients));
 
         for (int j = 0; j < previousNeuronCount; j++) {
             previousGradients[j] = 0; // Initialize gradient
             for (int r = 0; r < currentNeuronCount; r++) {
-                // Backpropagate gradient from current layer
-                previousGradients[j] +=
-                        currentGradients[r] *
-                        currentLayer.neurons[r].weights[j] *
-                        activationDerivative(currentLayer.neurons[r].getInnerPotential(), currentLayer.activation_function);
+                float weight = currentLayer.layer_weights[r][j + 1]; // Skip bias (stored at index 0)
+                float inner_potential = currentLayer.layer_inner_potentials[r];
+                float activation_deriv = activationDerivative(inner_potential, currentLayer.activation_function);
+                // Gradient computation
+                float gradContribution = currentGradients[r] * weight * activation_deriv;
+                previousGradients[j] += gradContribution;
             }
         }
         return previousGradients;
@@ -134,8 +136,8 @@ public class Network {
     private float[] computeOutputLayerSoftmaxVector() {
         Layer VLayer = layers[layers.length - 2];
         Layer outputLayer = layers[layers.length - 1];
-        int neuronsNumberV = VLayer.y.length;
-        int neuronsNumberY = outputLayer.y.length;
+        int neuronsNumberV = VLayer.getOutputLength();
+        int neuronsNumberY = outputLayer.getOutputLength();
         float[] resultVector = new float[neuronsNumberY];
         for (int j = 0; j < neuronsNumberY; j++) {
             resultVector[j] = 0;
@@ -150,8 +152,8 @@ public class Network {
     public float[] computeVLayerOutputGradients(float[] targets) {
         Layer VLayer = layers[layers.length - 2];
         Layer outputLayer = layers[layers.length - 1];
-        int neuronsNumberV = VLayer.y.length;
-        int neuronsNumberY = outputLayer.y.length;
+        int neuronsNumberV = VLayer.getOutputLength();
+        int neuronsNumberY = outputLayer.getOutputLength();
         float[] gradients = new float[neuronsNumberV];
         float[] outputLayerSoftmax = Util.softmax(computeOutputLayerSoftmaxVector());   // σ(v→)
         for (int l = 0; l < neuronsNumberV; l++) {
@@ -295,6 +297,8 @@ public class Network {
             // the new method for computing the gradients, we start one layer lower
             Layer currentLayer = layers[i];
             Layer previousLayer = layers[i - 1];
+            //System.out.println("currentLayer "+i);
+            //System.out.println("previousLayer "+(i-1));
 
             // 1) output gradients
             float[] previous_output_gradient = backpropagateHiddenLayer(currentOutputGradients, currentLayer, previousLayer);

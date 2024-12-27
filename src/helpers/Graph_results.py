@@ -25,6 +25,7 @@ axs[0].set_xlabel('Epoch', fontsize=12)
 axs[0].set_ylabel('Cross-Entropy loss', fontsize=12)
 axs[0].legend(fontsize=10)
 axs[0].grid(True, linestyle='--', alpha=0.7)
+axs[0].set_ylim(bottom=0)  # For the losses plot
 
 # Plot the learning rates in the second subplot
 axs[1].plot(learning_rates, marker='o', linestyle='-', color='red', label='Learning rate')

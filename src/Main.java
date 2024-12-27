@@ -17,7 +17,7 @@ public class Main {
         long total_start_time = System.currentTimeMillis();
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28*28);
-        Layer layer1 = new Layer(layer0, 128, "relu");
+        Layer layer1 = new Layer(layer0, 256, "relu");
         Layer layer2 = new Layer(layer1, 128, "relu");
         Layer layer3 = new Layer(layer2, 10, "softmax");
         Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
@@ -25,7 +25,7 @@ public class Main {
 
         Network network = new Network(layers);
 
-        int number_of_images = 60000; //max 60000
+        int number_of_images = 100; //max 60000
         System.out.println("Loading and normalizing a subset of data...");
         //training set of 60,000 examples
         //test set of 10,000 examples
@@ -34,13 +34,13 @@ public class Main {
         System.out.println("Loading completed");
 
         Hyperparameters hyperparameters = new Hyperparameters(
+                10,
+                0.001f,
                 20,
-                0.084f,
-                128,
-                true,
+                false,
                 100,
                 5.0f,
-                0.314F,
+                0.8F,
                 0.01F,
                 true);
 
@@ -56,7 +56,7 @@ public class Main {
 
         System.out.println(String.format("Training time: %02d:%02d:%03d", minutes, seconds, millis));
 
-        if (true) {        //PREDICTING TRAIN DATASET
+        if (false) {        //PREDICTING TRAIN DATASET
             System.out.println("Predicting train dataset of 60,000 images...");
             List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv");
             long startTimePrediction = System.currentTimeMillis();

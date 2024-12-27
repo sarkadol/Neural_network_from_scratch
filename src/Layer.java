@@ -3,7 +3,6 @@ package src;
 import java.util.Arrays;
 import java.util.Random;
 
-
 public class Layer {
     String activation_function;
     float[] x; //inputs
@@ -67,10 +66,6 @@ public class Layer {
         }
     }
 
-    public float[] getYs(){
-        return y;
-    }
-
     /**
      * Randomly initializes weights and biases for each neuron in this layer.
      * The method uses different initialization strategies depending on the activation function of the layer:
@@ -81,7 +76,7 @@ public class Layer {
      * where n is the number of inputs to the layer, m is the number of neurons in the layer above
      */
     public void InitializeWeights() {
-        Random random = new Random(); //TODO check if it is correct
+        Random random = new Random();
         boolean useReLU = activation_function.equals("relu"); // If the activation function is relu, it uses different intialization
 
         // Calculate the standard deviation for the normal distribution
@@ -90,19 +85,13 @@ public class Layer {
                 : (float) Math.sqrt(2.0 / (x.length + y.length)); // Xavier Normal Initialization
 
         // Initialize weights and biases
-        for (int j = 0; j < y.length; j++) {
-            float[] neuron_weights = new float[x.length]; // array of weights of one neuron
-            for (int i = 0; i < x.length; i++) {
+        for (int j = 0; j < y.length; j++) { // each neuron
+            for (int i = 0; i < x.length; i++) { // each input of that neuron
                 // Sample weights from a normal distribution with the calculated standard deviation
-                neuron_weights[i] = (float) (random.nextGaussian() * stddev);
-                //System.out.printf("Initializing weight for neuron[%d] from input[%d]: %f\n", j, i, neuron_weights[i]);
-
-                layer_weights[j][i+1] = neuron_weights[i];
+                layer_weights[j][i+1] = (float) (random.nextGaussian() * stddev);
             }
             layer_weights[j][0] = 0; //bias is 0
         }
-        //System.out.println(Arrays.deepToString(layer_weights));
-        //System.out.println("Weights initialized");
     }
 
     /**
@@ -110,10 +99,10 @@ public class Layer {
      * Formula: computes the inner potential of neuron j, with inputs i
      * ξ_j = ∑ w_ji * y_i
      * Careful! bias of neuron j is stored in w_j0, so it needs to be shifted by 1 when computing.
-     * @return
+     * @return ξ_j
      */
     public float[] layerComputeInnerPotentials() {
-        int neuron_count = layer_weights.length; // Number of neurons in the layer: j
+        int neuron_count = y.length; // Number of neurons in the layer: j
         int input_count = layer_weights[0].length - 1; // Number of inputs (excluding bias): i - 1
         layer_inner_potentials = new float[neuron_count]; // Array to store inner potentials: ξ_j
 
@@ -165,12 +154,11 @@ public class Layer {
      */
     public float[][] computeOutputLayerWeightGradients(float[] output_layer_inner_potential_gradients) {
         int num_neurons = output_layer_inner_potential_gradients.length; // Number of neurons in the output layer
-        int num_inputs = x.length; // Number of inputs to the output layer
 
-        float[][] weight_gradients = new float[num_neurons][num_inputs + 1]; // +1 for bias gradient
+        float[][] weight_gradients = new float[num_neurons][x.length + 1]; // +1 for bias gradient
         for (int j = 0; j < num_neurons; j++) { // For each neuron in the output layer
-            for (int i = 1; i < num_inputs+1; i++) { // For each weight of that neuron (skipping bias)
-                weight_gradients[j][i] = output_layer_inner_potential_gradients[j] * x[i-1];
+            for (int i = 0; i < x.length; i++) { // For each weight of that neuron (skipping bias)
+                weight_gradients[j][i+1] = output_layer_inner_potential_gradients[j] * x[i];
             }
             // Compute the bias gradient as the last element in the row
             weight_gradients[j][0] = output_layer_inner_potential_gradients[j];
@@ -220,7 +208,6 @@ public class Layer {
         float[][] weight_gradients = new float[y.length][x.length + 1];// plus bias
         float weight_independent_part;
         for (int j = 0; j < y.length; j++) { //For each neuron
-            //weight_independent_part = output_gradients[j] * Util.activationFunctionDerivative(neurons[j].getInnerPotential(), activation_function);
             weight_independent_part = output_gradients[j] * Util.activationFunctionDerivative(layer_inner_potentials[j], activation_function);
 
             for (int i = 0; i < x.length; i++) {    //For each weight (skipping bias)
@@ -229,7 +216,6 @@ public class Layer {
             // Add bias gradient as the last element
             weight_gradients[j][0] = weight_independent_part;
         }
-        //System.out.println("Weight gradients: " + Arrays.deepToString(weight_gradients));
         return weight_gradients;
     }
 
@@ -260,7 +246,7 @@ public class Layer {
         }
 
         for (int j = 0; j < y.length; j++) { // For each neuron in this layer
-            for (int i = 0; i <= x.length; i++) { // For each weight and bias
+            for (int i = 0; i < x.length+1; i++) { // For each weight and bias
                 float regularization = (i == 0) ? 0 : 2 * weight_decay * layer_weights[j][i]; // Regularization for weights, not bias
                 float current_update = -learningRate * (weight_gradients[j][i] + regularization)
                         + momentum * prev_weight_updates[j][i];
@@ -276,7 +262,6 @@ public class Layer {
 
     /**
      * Prints information about the layer
-     *
      *
      */
     public void printInfo() {
