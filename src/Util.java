@@ -171,22 +171,18 @@ public class Util {
     public static float crossEntropy(float[] desired_output, float[] real_output){
         //log(0) is not defined!
         //log(1) = 0
-        float epsilon = 1e-8f; // Small constant to avoid log(0)
-        float result = 0;
-
-        // Step 1: Clip the real_output to avoid 0 or 1 probabilities
-        float[] clipped_real_output = new float[real_output.length];
-        for (int i = 0; i < real_output.length; i++) {
-            clipped_real_output[i] = Math.max(epsilon, Math.min(1 - epsilon, real_output[i]));
-            //Ensure all probabilities are within the range [epsilon,1−epsilon]
-            //if real output is 0, it sets it very close to 0
-            //if real output is 1, it sets it slightly less than one
+        // Gradient clipping for fashion MNIST dataset should not be necessary.
+        // If your gradients are exploding/vanishing you have incorrectly implemented some operations.
+        if (desired_output.length != real_output.length) {
+            throw new IllegalArgumentException("Arrays must be of the same length");
         }
-        // Step 2: Compute the logarithm of the clipped probabilities
-        float[] log_real_output = mapToNaturalLog(clipped_real_output);
+
+        // Step 1: gradient clipping - deleted
+        // Step 2: Compute the logarithm of the  probabilities
+        float[] log_real_output = mapToNaturalLog(real_output);
 
         // Step 3: Compute the cross-entropy as the negative scalar product
-        result = -scalarProduct(log_real_output, desired_output);
+        float result = -scalarProduct(log_real_output, desired_output);
 
         return result;
     }
