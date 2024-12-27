@@ -11,6 +11,7 @@ public class Layer {
     float[] y; //outputs
     float[][] layer_weights; //TODO weights of neuron w[j][i] from i to j. w[j][0] = -bias[j]
     float [] layer_inner_potentials;
+    float [][] prev_weight_updates;
 
     /**
      * creates a hidden/output layer
@@ -155,12 +156,7 @@ public class Layer {
      */
     public float[] computeOutput(float[] input) {
         int output_length = getOutputLength();
-        float[] inner_potentials = new float[output_length];
-        for (int j = 0; j < output_length; j++) { //for each neuron j
-            neurons[j].setX(input);
-            inner_potentials[j] = neurons[j].computeInnerPotential();
-            //System.out.println("Neuron " + j + " inner potential: " + inner_potentials[j]);
-        }
+
         layer_inner_potentials = layerComputeInnerPotentials();
         float[] outputs;
         if (activation_function.equals("softmax")) { //softmax is a special case
@@ -204,7 +200,7 @@ public class Layer {
      * @return A 2D float array representing the initialized weight gradients.
      */
     public float[][] initializeWeightGradients() {
-        return new float[neurons.length][x.length + 1];
+        return new float[y.length][x.length + 1];
     }
 
     /**
@@ -233,17 +229,19 @@ public class Layer {
      * in the layer
      */
     public float[][] computeWeightGradients(float[] output_gradients) {
-        if (output_gradients.length != neurons.length) {
+        if (output_gradients.length != y.length) {
             throw new IllegalArgumentException("Gradients length must match the number of neurons. \n" +
-                    "Gradients length: " + output_gradients.length + ", Neurons length: " + neurons.length);
+                    "Gradients length: " + output_gradients.length + ", Neurons length: " + y.length);
         }
 
-        float[][] weight_gradients = new float[neurons.length][x.length + 1];// plus bias
+        float[][] weight_gradients = new float[y.length][x.length + 1];// plus bias
         float weight_independent_part;
-        for (int j = 0; j < neurons.length; j++) { //For each neuron
-            weight_independent_part = output_gradients[j] * Util.activationFunctionDerivative(neurons[j].getInnerPotential(), activation_function);
-            for (int i = 1; i < x.length+1; i++) {    //For each weight (skipping bias)
-                weight_gradients[j][i] = weight_independent_part * x[i-1];
+        for (int j = 0; j < y.length; j++) { //For each neuron
+            //weight_independent_part = output_gradients[j] * Util.activationFunctionDerivative(neurons[j].getInnerPotential(), activation_function);
+            weight_independent_part = output_gradients[j] * Util.activationFunctionDerivative(layer_inner_potentials[j], activation_function);
+
+            for (int i = 0; i < x.length; i++) {    //For each weight (skipping bias)
+                weight_gradients[j][i+1] = weight_independent_part * x[i];
             }
             // Add bias gradient as the last element
             weight_gradients[j][0] = weight_independent_part;
@@ -273,33 +271,23 @@ public class Layer {
         if (learningRate <= 0) {
             throw new IllegalArgumentException("Learning rate must be greater than 0.");}
 
-        for (int i = 0; i < neurons.length; i++) { //for each neuron in this layer:
-            float[] weights = neurons[i].getWeights();
+        // Initialize `prev_weight_updates` if not already done
+        if (prev_weight_updates == null) {
+            prev_weight_updates = new float[y.length][x.length + 1];
+        }
 
-            if (neurons[i].getPrevWeightUpdate() == null) { // Initialize prevWeightUpdate if not already done
-                neurons[i].setPrevWeightUpdate(new float[weights.length+1]); // all 0 instead of null
-            }
-            float[] prevWeightUpdate = neurons[i].getPrevWeightUpdate();
-            // Update bias
-            float biasGradient = weight_gradients[i][0];
-            float biasRegularization = 0; // No regularization applied to the bias
-            float biasUpdate = -learningRate * (biasGradient + biasRegularization) + momentum * prevWeightUpdate[0];
-            neurons[i].setBias(neurons[i].getBias() + biasUpdate);
-            prevWeightUpdate[0] = biasUpdate; // Store the update for momentum
+        for (int j = 0; j < y.length; j++) { // For each neuron in this layer
+            for (int i = 0; i <= x.length; i++) { // For each weight and bias
+                float regularization = (i == 0) ? 0 : 2 * weight_decay * layer_weights[j][i]; // Regularization for weights, not bias
+                float current_update = -learningRate * (weight_gradients[j][i] + regularization)
+                        + momentum * prev_weight_updates[j][i];
 
-            //update weights and bias of a neuron
-            for (int j = 1; j < weights.length+1; j++) {
-                //change every weight according to its gradient
-                //hyperparameter learning rate
-                //hyperparameter momentum
-                //hyperparameter weight decay
-                float regularizationTerm = 2 * weight_decay * weights[j-1];
-                float currentUpdate = -learningRate * (weight_gradients[i][j-1] + regularizationTerm) + momentum * prevWeightUpdate[j-1];
-                prevWeightUpdate[j] = currentUpdate; // Store the current update as the new "previous update"
+                // Update weight/bias
+                layer_weights[j][i] += current_update;
+
+                // Store current update for momentum
+                prev_weight_updates[j][i] = current_update;
             }
-            // Update weights
-            neurons[i].setWeights(weights);
-            neurons[i].setPrevWeightUpdate(prevWeightUpdate); //for momentum
         }
     }
 
@@ -309,21 +297,11 @@ public class Layer {
      * @param includeNeurons if true, then it prints also property of each neuron in this layer,
      *                       see {@link Neuron#printInfoLine()}
      */
-    public void printInfo(boolean includeNeurons) {
+    public void printInfo() {
         System.out.println("---Layer Info:");
         System.out.println("activation function: " + activation_function);
         System.out.println("x count: " + (x != null ? x.length : 0));
-        System.out.println("neurons: " + (neurons != null ? neurons.length : 0));
         System.out.println("y count: " + (y != null ? y.length : 0));
-
-
-        if (includeNeurons && neurons != null) {
-            for (int i = 0; i < neurons.length; i++) {
-                //System.out.print("Neuron " + (i + 1) + ": ");
-                System.out.printf("Neuron %-4d ", (i + 1)); // Why different indexing?
-                neurons[i].printInfoLine();
-            }
-        }
     }
 
     /**
@@ -335,7 +313,6 @@ public class Layer {
                 "-Layer - " +
                         "activation function: " + activation_function + ", " +
                         "x count: " + (x != null ? x.length : 0) + ", " +
-                        "neurons count: " + (neurons != null ? neurons.length : 0) + ", " +
                         "y count: " + (y != null ? y.length : 0));
     }
 }
