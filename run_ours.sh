@@ -4,6 +4,7 @@ echo "#########################"
 echo "CLEANING OLD FILES..."
 echo "#########################"
 rm -rf out/*
+module load jdk-17
 
 echo "#########################"
 echo "COMPILING JAVA PROJECT..."

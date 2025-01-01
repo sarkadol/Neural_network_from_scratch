@@ -176,6 +176,8 @@ public class Network {
 
 
     /**
+     * Does NOTHING by now!
+     *
      * Clips the gradients to prevent exploding.
      * −clipValue ≤ gradients[i][j] ≤ clipValue
      * (see the slide 108 "Issues in gradient descent – too fast descent")
@@ -186,7 +188,11 @@ public class Network {
     public static float[][] clipGradients(float[][] gradients, float clipValue) {
         for (int i = 0; i < gradients.length; i++) {
             for (int j = 0; j < gradients[i].length; j++) {
-                gradients[i][j] = Math.max(-clipValue, Math.min(clipValue, gradients[i][j]));
+                //gradients[i][j] = Math.max(-clipValue, Math.min(clipValue, gradients[i][j]));
+                // just the fastest way to get rid of gradient clipping
+                // Andrej Šimurka's feedback:
+                // Gradient clipping for fashion MNIST dataset should not be necessary.
+                // If your gradients are exploding/vanishing you have incorrectly implemented some operations.
             }
         }
         return gradients;
