@@ -19,14 +19,14 @@ public class Main {
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28*28);
         Layer layer1 = new Layer(layer0, 256, "relu");
-        Layer layer2 = new Layer(layer1, 128, "relu");
+        Layer layer2 = new Layer(layer1, 196, "relu");
         Layer layer3 = new Layer(layer2, 10, "softmax");
         Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
         System.out.println("Layers initialized");
 
         Network network = new Network(layers);
 
-        int number_of_images = 1000; //max 60000
+        int number_of_images = 60000; //max 60000
         System.out.println("Loading and normalizing a subset of data...");
         //training set of 60,000 examples
         //test set of 10,000 examples
@@ -36,10 +36,10 @@ public class Main {
 
         Hyperparameters hyperparameters = new Hyperparameters(
                 10,
-                0.001f,
+                0.01f,
                 64,
-                false,
-                100,
+                true,
+                500,
                 5.0f,
                 0.8F,
                 0.01F,

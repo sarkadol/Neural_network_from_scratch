@@ -248,9 +248,6 @@ public class Network {
      */
     public List<float[][]> computeWeightGradients(float[] target, float[] outputs, Hyperparameters hyperparameters) {
 
-        //float loss = Util.crossEntropy(target, outputs);
-        //System.out.println("cross entropy: "+loss);
-
         int numberOfLayers = layers.length;
         List<float[][]> weightGradients = new ArrayList<>(numberOfLayers - 1);
 
@@ -289,8 +286,6 @@ public class Network {
             // the new method for computing the gradients, we start one layer lower
             Layer currentLayer = layers[i];
             Layer previousLayer = layers[i - 1];
-            //System.out.println("currentLayer "+i);
-            //System.out.println("previousLayer "+(i-1));
 
             // 1) output gradients
             float[] previous_output_gradient = backpropagateHiddenLayer(currentOutputGradients, currentLayer, previousLayer);
