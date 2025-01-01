@@ -3,6 +3,7 @@ package src.helpers;
 import src.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -99,7 +100,7 @@ public class HyperparameterTester {
 
                                             //System.out.println("Predicted labels:\n"+Arrays.toString(predicted_labels));
                                             DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv");
-                                            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hp,totalTime);
+                                            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hp,totalTime, LocalDateTime.now());
 
                                             System.out.println("Predicting "+(endTimePrediction - startTimePrediction) + " milliseconds");
                                             System.out.println("Training: "+ (endTime - startTime) + " milliseconds");

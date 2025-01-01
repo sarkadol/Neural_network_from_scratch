@@ -2,6 +2,7 @@ package src;
 
 import src.helpers.Helper;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +32,7 @@ public class Network {
      */
     public float[] forwardPass(float[] inputs){
         //System.out.println("Forward pass proceeding...");
-        for (int i = 1; i < layers.length; i++){    // V tuto chvíli je nepotřebná vstupní vrstva
+        for (int i = 1; i < layers.length; i++){
             layers[i].setX(inputs); // Save respective attributes
             inputs = layers[i].computeOutput(inputs);
         }
@@ -54,7 +55,6 @@ public class Network {
         }
         //System.out.println("\nPredicting...");
         float[] outputs = forwardPass(inputs);
-        //System.out.println("Outputs: "+Arrays.toString(outputs));
         int label = 0;
         for (int i = 1; i < outputs.length; i++) {
             if (outputs[i] > outputs[label]) { //if values are the same, it predicts the first one
@@ -148,6 +148,16 @@ public class Network {
         return resultVector;
     }
 
+    /**
+     * Computes gradients for the penultimate layer (VLayer) in an MLP during backpropagation.
+     *
+     * @param targets Target values (one-hot encoded).
+     * @return Gradients for each neuron in VLayer.
+     *
+     * - Uses softmax on output layer to compute probabilities.
+     * - Calculates gradients based on target values and output layer weights.
+     * - Supports weight updates during training.
+     */
 
     public float[] computeVLayerOutputGradients(float[] targets) {
         Layer VLayer = layers[layers.length - 2];
@@ -170,30 +180,6 @@ public class Network {
                 // di · (wil − innerSum); innerSum is described in the above comment
             }
             gradients[l] *= -1;
-        }
-        return gradients;
-    }
-
-
-    /**
-     * Does NOTHING by now!
-     *
-     * Clips the gradients to prevent exploding.
-     * −clipValue ≤ gradients[i][j] ≤ clipValue
-     * (see the slide 108 "Issues in gradient descent – too fast descent")
-     * @param gradients 2D array f gradients
-     * @param clipValue treshold value
-     * @return
-     */
-    public static float[][] clipGradients(float[][] gradients, float clipValue) {
-        for (int i = 0; i < gradients.length; i++) {
-            for (int j = 0; j < gradients[i].length; j++) {
-                //gradients[i][j] = Math.max(-clipValue, Math.min(clipValue, gradients[i][j]));
-                // just the fastest way to get rid of gradient clipping
-                // Andrej Šimurka's feedback:
-                // Gradient clipping for fashion MNIST dataset should not be necessary.
-                // If your gradients are exploding/vanishing you have incorrectly implemented some operations.
-            }
         }
         return gradients;
     }
@@ -223,7 +209,7 @@ public class Network {
         // 2) weight gradients
         float[][] output_layer_weight_gradients = outputLayer.computeOutputLayerWeightGradients(output_layer_gradients); //gradient wrt w
         // Clip gradients for output layer
-        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, hyperparameters.getClipValue()); // Example clip value
+        //output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, hyperparameters.getClipValue()); // Example clip value
         //TODO how to choose a good clip value? recommended 1-5, but possible up to 20... - HYPERPARAMETER
 
         // 3) weight update
@@ -243,7 +229,7 @@ public class Network {
             // 2) weight gradients
             float[][] previous_weight_gradients = previousLayer.computeWeightGradients(previous_output_gradient);
             // Clip gradients for the current hidden layer
-            previous_weight_gradients = clipGradients(previous_weight_gradients, 5.0f); // Example clip value
+            //previous_weight_gradients = clipGradients(previous_weight_gradients, 5.0f); // Example clip value
 
             // 3) weight update
             previousLayer.updateWeights(previous_weight_gradients, hyperparameters.getLearningRate(), hyperparameters.getMomentum(), hyperparameters.getWeightDecay());
@@ -277,7 +263,7 @@ public class Network {
         // 2) weight gradients
         float[][] output_layer_weight_gradients = outputLayer.computeOutputLayerWeightGradients(output_layer_gradients); //gradient wrt w
         // Clip gradients for output layer
-        output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, hyperparameters.getClipValue()); // Example clip value
+        //output_layer_weight_gradients = clipGradients(output_layer_weight_gradients, hyperparameters.getClipValue()); // Example clip value
 
         weightGradients.add(output_layer_weight_gradients);
         float[] VLayerOutputGradients = null;
@@ -312,7 +298,7 @@ public class Network {
             // 2) weight gradients
             float[][] previous_weight_gradients = previousLayer.computeWeightGradients(previous_output_gradient);
             // Clip gradients for the current hidden layer
-            previous_weight_gradients = clipGradients(previous_weight_gradients, hyperparameters.getClipValue()); // Example clip value
+            //previous_weight_gradients = clipGradients(previous_weight_gradients, hyperparameters.getClipValue()); // Example clip value
 
             weightGradients.add(previous_weight_gradients);
 
@@ -438,7 +424,7 @@ public class Network {
         //System.out.println("learning_rates = " + Arrays.toString(learning_rates));
 
         //pass this to file which is read by Python to plot the changes during epochs
-        Helper.writeToFileForPython(losses,learning_rates,trainVectors.size(),Arrays.toString(getLayersLength()),hp);
+        Helper.writeToFileForPython(losses,learning_rates,trainVectors.size(),Arrays.toString(getLayersLength()),hp, LocalDateTime.now());
     }
 
 
@@ -473,4 +459,26 @@ public class Network {
         }
         return lengths;
     }
+
+    /**
+     * Clips the gradients to prevent exploding.
+     * −clipValue ≤ gradients[i][j] ≤ clipValue
+     * (see the slide 108 "Issues in gradient descent – too fast descent")
+     * @param gradients 2D array f gradients
+     * @param clipValue treshold value
+     * @return
+     */
+    public static float[][] clipGradients(float[][] gradients, float clipValue) {
+        for (int i = 0; i < gradients.length; i++) {
+            for (int j = 0; j < gradients[i].length; j++) {
+                gradients[i][j] = Math.max(-clipValue, Math.min(clipValue, gradients[i][j]));
+                // Andrej Šimurka's feedback:
+                // Gradient clipping for fashion MNIST dataset should not be necessary.
+                // If your gradients are exploding/vanishing you have incorrectly implemented some operations.
+            }
+        }
+        return gradients;
+    }
+
 }
+

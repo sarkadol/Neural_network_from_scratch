@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class Helper {
 
-    public static void writeToFileForPython(float[] losses, float[] learningRates, int train_vector_count, String layers, Hyperparameters hp) {
+    public static void writeToFileForPython(float[] losses, float[] learningRates, int train_vector_count, String layers, Hyperparameters hp, LocalDateTime time) {
         try (FileWriter writer = new FileWriter("Java_to_Python.txt")) {
             writer.write("losses = " + Arrays.toString(losses) + "\n");
             writer.write("learning_rates = " + Arrays.toString(learningRates) + "\n");
@@ -26,12 +27,13 @@ public class Helper {
             writer.write("momentum = " + hp.getMomentum() + "\n");
             writer.write("learning_decay_rate = " + hp.getLearningDecayRate() + "\n");
             writer.write("clip_value = " + hp.getClipValue() + "\n");
+            writer.write("time = " + time + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
         //System.out.println("Data written to file for Python graph evaluation.");
     }
-    public static void writeToCsvForComparison(int train_vector_count, String layers, Hyperparameters hp,long totalTime) {
+    public static void writeToCsvForComparison(int train_vector_count, String layers, Hyperparameters hp,long totalTime,LocalDateTime time) {
 
         try (FileWriter writer = new FileWriter("all_tries.csv",true)) {
             // Prepare the data in a single row with semicolons as delimiters
@@ -45,7 +47,8 @@ public class Helper {
                     Float.toString(hp.getClipValue()),
                     Float.toString(evaluate("NEW_test_predictions.csv","data/fashion_mnist_test_labels.csv")),
                     Long.toString(totalTime),
-                    Integer.toString(hp.getEpochs())
+                    Integer.toString(hp.getEpochs()),
+                    time.toString()
             );
 
             writer.write(dataRow + "\n"); // Write the data to the file

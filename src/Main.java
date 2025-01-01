@@ -3,6 +3,7 @@ package src;
 import src.helpers.Helper;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class Main {
             long totalTime = endTime - startTime+endTimePrediction - startTimePrediction;
 
             DataLoader.writeArrayToCSV(predicted_labels,"train_predictions.csv"); //for evaluation (see README)
-            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime);
+            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime, LocalDateTime.now());
 
             System.out.println("Predicting train dataset in "+(endTimePrediction - startTimePrediction) + " milliseconds");
         }
@@ -81,7 +82,7 @@ public class Main {
 
             DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv"); //for us
             DataLoader.writeArrayToCSV(predicted_labels,"test_predictions.csv"); //for evaluation (see README)
-            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime);
+            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime,LocalDateTime.now());
 
             System.out.println("Predicting test dataset in "+(endTimePrediction - startTimePrediction) + " milliseconds");
         }
