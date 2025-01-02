@@ -79,35 +79,6 @@ public class DataLoader {
     }
 
     /**
-     * Prints a 28x28 pixel image from an array of integers.
-     *
-     * @param pixels Array of 784 integers representing an image.
-     */
-    public static void printData(float[] pixels) {
-        for (int i = 0; i < 28; i++) {
-            for (int j = 0; j < 28; j++) {
-                System.out.printf("%3d ", pixels[i * 28 + j]);
-            }
-            System.out.println();
-        }
-    }
-
-    /**
-     * Prints a 28x28 normalized image from an array of floats, each representing a pixel
-     * value in the range [0, 1].
-     *
-     * @param pixels Array of 784 floats representing a normalized image.
-     */
-    public static void printNormalizedData(float[] pixels) {
-        for (int i = 0; i < 28; i++) {
-            for (int j = 0; j < 28; j++) {
-                System.out.printf("%4.2f ", pixels[i * 28 + j]);
-            }
-            System.out.println();
-        }
-    }
-
-    /**
      * Normalizes a list of images by scaling pixel values to the range [0, 1].
      * Each pixel value is divided by 255.
      *
@@ -163,5 +134,34 @@ public class DataLoader {
         }
         reader.close();
         return images;
+    }
+
+    /**
+     * Prints a 28x28 pixel image from an array of integers.
+     *
+     * @param pixels Array of 784 integers representing an image.
+     */
+    public static void printData(float[] pixels) {
+        for (int i = 0; i < 28; i++) {
+            for (int j = 0; j < 28; j++) {
+                System.out.printf("%3d ", pixels[i * 28 + j]);
+            }
+            System.out.println();
+        }
+    }
+
+    /**
+     * Prints a 28x28 normalized image from an array of floats, each representing a pixel
+     * value in the range [0, 1].
+     *
+     * @param pixels Array of 784 floats representing a normalized image.
+     */
+    public static void printNormalizedData(float[] pixels) {
+        for (int i = 0; i < 28; i++) {
+            for (int j = 0; j < 28; j++) {
+                System.out.printf("%4.2f ", pixels[i * 28 + j]);
+            }
+            System.out.println();
+        }
     }
 }

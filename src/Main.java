@@ -26,7 +26,7 @@ public class Main {
 
         Network network = new Network(layers);
 
-        int number_of_images = 60000; //max 60000
+        int number_of_images = 100; //max 60000
         System.out.println("Loading and normalizing a subset of data...");
         //training set of 60,000 examples
         //test set of 10,000 examples
@@ -38,7 +38,7 @@ public class Main {
                 10,
                 0.01f,
                 64,
-                true,
+                false,
                 500,
                 5.0f,
                 0.8F,

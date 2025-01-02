@@ -110,7 +110,6 @@ public class Util {
                 max_potential = potential;
             }
         }
-        //System.out.println("max potential "+ max_potential);
 
         // Step 2: Calculate the exponential of each element and sum them up
         for (int i = 0; i < n; i++) {
@@ -143,10 +142,6 @@ public class Util {
      */
     public static float ReLUDerivative(float inner_potential){
         return inner_potential > 0 ? 1 : 0;
-    }
-
-    public static float SoftmaxDerivative(float inner_potential){
-        return 0;
     }
 
     /**
