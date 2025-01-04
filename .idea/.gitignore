@@ -9,3 +9,4 @@
 /dataSources.local.xml
 /data/*
 !/data/all_tries.csv
+!/data/all_tries_new.csv

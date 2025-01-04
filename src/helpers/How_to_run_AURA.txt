@@ -8,8 +8,7 @@ spuštění na auře:
 4) unzip aura                   unzip pv021_project.zip
 5) jít do složky projektu       cd pv021_project
 6) nastavení executable práv    chmod +x run.sh
-7) načíst správný module        module load jdk-21
-8) spustit                      ./run.sh
+7) spustit                      ./run.sh
 
 Sarky pocitac:
 Git bash:

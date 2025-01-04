@@ -35,17 +35,19 @@ public class Helper {
     }
     public static void writeToCsvForComparison(int train_vector_count, String layers, Hyperparameters hp,long totalTime,LocalDateTime time) {
 
-        try (FileWriter writer = new FileWriter("all_tries.csv",true)) {
+        try (FileWriter writer = new FileWriter("all_tries_new.csv",true)) {
             // Prepare the data in a single row with semicolons as delimiters
             String dataRow = String.join(";",
                     Integer.toString(train_vector_count),
                     layers,
+                    Float.toString(evaluate("NEW_test_predictions.csv","data/fashion_mnist_test_labels.csv")),
+                    Float.toString(hp.getLearningRate()),
                     Integer.toString(hp.getBatchSize()),
-                    Float.toString(hp.getWeightDecay()),
-                    Float.toString(hp.getMomentum()),
+                    Boolean.toString(hp.useLearningDecayRate()),
                     Float.toString(hp.getLearningDecayRate()),
                     Float.toString(hp.getClipValue()),
-                    Float.toString(evaluate("NEW_test_predictions.csv","data/fashion_mnist_test_labels.csv")),
+                    Float.toString(hp.getMomentum()),
+                    Float.toString(hp.getWeightDecay()),
                     Long.toString(totalTime),
                     Integer.toString(hp.getEpochs()),
                     time.toString()
