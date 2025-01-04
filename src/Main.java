@@ -26,8 +26,8 @@ public class Main {
 
         Network network = new Network(layers);
 
-        int number_of_images = 1000; //max 60000
-        System.out.println("Loading and normalizing a subset of data...");
+        int number_of_images = 60000; //max 60000
+        System.out.println("Loading and normalizing data...");
         //training set of 60,000 examples
         //test set of 10,000 examples
         List<float[]> train_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_train_vectors.csv").subList(0, number_of_images);
@@ -64,10 +64,8 @@ public class Main {
             int[] predicted_labels = network.predictAll(test_vectors);
             long endTimePrediction = System.currentTimeMillis();
 
-            long totalTime = endTime - startTime+endTimePrediction - startTimePrediction;
-
             DataLoader.writeArrayToCSV(predicted_labels,"train_predictions.csv"); //for evaluation (see README)
-            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime, LocalDateTime.now());
+            //Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime, LocalDateTime.now());
 
             long elapsedPredictionMillis = endTimePrediction - startTimePrediction;
             long predictionMinutes = (elapsedPredictionMillis / 1000) / 60;
@@ -83,11 +81,9 @@ public class Main {
             int[] predicted_labels = network.predictAll(test_vectors);
             long endTimePrediction = System.currentTimeMillis();
 
-            long totalTime = endTime - startTime+endTimePrediction - startTimePrediction;
-
-            DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv"); //for us
+            //DataLoader.writeArrayToCSV(predicted_labels,"NEW_test_predictions.csv"); //for us
             DataLoader.writeArrayToCSV(predicted_labels,"test_predictions.csv"); //for evaluation (see README)
-            Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime,LocalDateTime.now());
+            //Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime,LocalDateTime.now());
 
             long elapsedPredictionMillis = endTimePrediction - startTimePrediction;
             long predictionMinutes = (elapsedPredictionMillis / 1000) / 60;
