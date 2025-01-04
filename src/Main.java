@@ -19,7 +19,7 @@ public class Main {
         System.out.println("Initializing layers...");
         Layer layer0 = new Layer(28*28);
         Layer layer1 = new Layer(layer0, 256, "relu");
-        Layer layer2 = new Layer(layer1, 196, "relu");
+        Layer layer2 = new Layer(layer1, 256, "relu");
         Layer layer3 = new Layer(layer2, 10, "softmax");
         Layer[] layers = new Layer[] {layer0, layer1, layer2, layer3};
         System.out.println("Layers initialized");
@@ -69,8 +69,13 @@ public class Main {
             DataLoader.writeArrayToCSV(predicted_labels,"train_predictions.csv"); //for evaluation (see README)
             Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime, LocalDateTime.now());
 
-            System.out.println("Predicting train dataset in "+(endTimePrediction - startTimePrediction) + " milliseconds");
-        }
+            long elapsedPredictionMillis = endTimePrediction - startTimePrediction;
+            long predictionMinutes = (elapsedPredictionMillis / 1000) / 60;
+            long predictionSeconds = (elapsedPredictionMillis / 1000) % 60;
+            long predictionMillis = elapsedPredictionMillis % 1000;
+
+            System.out.println(String.format("Prediction time (train dataset): %02d:%02d:%03d", predictionMinutes, predictionSeconds, predictionMillis));        }
+
         if (true) {        //PREDICTING TEST DATASET
             System.out.println("Predicting test dataset of 10,000 images...");
             List<float[]> test_vectors = DataLoader.loadAndNormalizeVectors("data/fashion_mnist_test_vectors.csv");
@@ -84,7 +89,12 @@ public class Main {
             DataLoader.writeArrayToCSV(predicted_labels,"test_predictions.csv"); //for evaluation (see README)
             Helper.writeToCsvForComparison(number_of_images, Arrays.toString(network.getLayersLength()), hyperparameters,totalTime,LocalDateTime.now());
 
-            System.out.println("Predicting test dataset in "+(endTimePrediction - startTimePrediction) + " milliseconds");
+            long elapsedPredictionMillis = endTimePrediction - startTimePrediction;
+            long predictionMinutes = (elapsedPredictionMillis / 1000) / 60;
+            long predictionSeconds = (elapsedPredictionMillis / 1000) % 60;
+            long predictionMillis = elapsedPredictionMillis % 1000;
+
+            System.out.println(String.format("Prediction time (test dataset): %02d:%02d:%03d", predictionMinutes, predictionSeconds, predictionMillis));
         }
 
         long total_end_time = System.currentTimeMillis();
